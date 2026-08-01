@@ -17,6 +17,7 @@ interface QuestionPageProps {
 
 
 interface AudioMeta {
+  audioName?: string
   audioLinked?: boolean
   audioPlayback?: 'auto' | 'manual'
 }
@@ -128,9 +129,11 @@ function getQuestionAudioMeta(
 function QuestionAudioControl({
   questionId,
   showAnswer,
+  variant = 'overlay',
 }: {
   questionId: string
   showAnswer: boolean
+  variant?: 'overlay' | 'media'
 }) {
   const [audioUrl, setAudioUrl] =
     useState('')
@@ -242,6 +245,102 @@ function QuestionAudioControl({
 
   if (!audioUrl) return null
 
+  const playAudio = () => {
+    const audio =
+      audioRef.current
+
+    if (!audio) return
+
+    audio.currentTime = 0
+    void audio.play()
+  }
+
+  if (variant === 'media') {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          minHeight: 0,
+          display: 'grid',
+          placeItems: 'center',
+          overflow: 'hidden',
+          borderRadius: 12,
+          background:
+            'linear-gradient(145deg, rgba(7,17,29,.98), rgba(18,45,77,.96))',
+        }}
+      >
+        <audio
+          ref={audioRef}
+          src={audioUrl}
+          preload="auto"
+          style={{ display: 'none' }}
+        />
+
+        <div
+          style={{
+            width: 'min(520px, 86%)',
+            padding: '30px 24px',
+            display: 'grid',
+            placeItems: 'center',
+            gap: 18,
+            color: '#fff',
+            textAlign: 'center',
+          }}
+        >
+          <Volume2
+            size={70}
+            strokeWidth={1.8}
+          />
+
+          <strong
+            style={{
+              fontSize:
+                'clamp(23px, 2.5vw, 38px)',
+              lineHeight: 1.2,
+              fontWeight: 900,
+            }}
+          >
+            {playbackMode === 'auto'
+              ? '문제 음성 자동 재생'
+              : '문제 음성'}
+          </strong>
+
+          {playbackMode ===
+            'manual' && (
+            <button
+              type="button"
+              title="문제 듣기"
+              aria-label="문제 듣기"
+              onClick={playAudio}
+              style={{
+                minWidth: 150,
+                height: 48,
+                padding: '0 20px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent:
+                  'center',
+                gap: 9,
+                color: '#07111d',
+                border: 0,
+                borderRadius: 9,
+                background:
+                  'var(--accent)',
+                fontSize: 17,
+                fontWeight: 900,
+                cursor: 'pointer',
+              }}
+            >
+              <Volume2 size={20} />
+              문제 듣기
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <>
       <audio
@@ -257,15 +356,7 @@ function QuestionAudioControl({
             type="button"
             title="문제 듣기"
             aria-label="문제 듣기"
-            onClick={() => {
-              const audio =
-                audioRef.current
-
-              if (!audio) return
-
-              audio.currentTime = 0
-              void audio.play()
-            }}
+            onClick={playAudio}
             style={{
               position: 'absolute',
               left: 18,
@@ -292,6 +383,218 @@ function QuestionAudioControl({
           </button>
         )}
     </>
+  )
+}
+
+
+function AdaptiveQuestionImage({
+  src,
+  alt,
+  className,
+}: {
+  src: string
+  alt: string
+  className?: string
+}) {
+  const [
+    hasTransparency,
+    setHasTransparency,
+  ] = useState<boolean | null>(
+    null,
+  )
+
+  useEffect(() => {
+    let active = true
+    const image = new Image()
+
+    image.onload = () => {
+      if (!active) return
+
+      const sourceType =
+        src.startsWith('data:')
+          ? src.slice(
+              5,
+              src.indexOf(';'),
+            )
+          : ''
+
+      if (
+        sourceType ===
+        'image/jpeg'
+      ) {
+        setHasTransparency(false)
+        return
+      }
+
+      try {
+        const canvas =
+          document.createElement(
+            'canvas',
+          )
+
+        const maxSampleEdge = 320
+        const longestEdge =
+          Math.max(
+            image.naturalWidth,
+            image.naturalHeight,
+          )
+
+        const scale =
+          longestEdge >
+          maxSampleEdge
+            ? maxSampleEdge /
+              longestEdge
+            : 1
+
+        canvas.width = Math.max(
+          1,
+          Math.round(
+            image.naturalWidth *
+              scale,
+          ),
+        )
+
+        canvas.height = Math.max(
+          1,
+          Math.round(
+            image.naturalHeight *
+              scale,
+          ),
+        )
+
+        const context =
+          canvas.getContext(
+            '2d',
+            {
+              willReadFrequently:
+                true,
+            },
+          )
+
+        if (!context) {
+          setHasTransparency(false)
+          return
+        }
+
+        context.clearRect(
+          0,
+          0,
+          canvas.width,
+          canvas.height,
+        )
+
+        context.drawImage(
+          image,
+          0,
+          0,
+          canvas.width,
+          canvas.height,
+        )
+
+        const pixels =
+          context.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height,
+          ).data
+
+        let transparent = false
+
+        for (
+          let index = 3;
+          index < pixels.length;
+          index += 4
+        ) {
+          if (
+            pixels[index] < 255
+          ) {
+            transparent = true
+            break
+          }
+        }
+
+        setHasTransparency(
+          transparent,
+        )
+      } catch {
+        setHasTransparency(false)
+      }
+    }
+
+    image.onerror = () => {
+      if (active) {
+        setHasTransparency(false)
+      }
+    }
+
+    image.src = src
+
+    return () => {
+      active = false
+    }
+  }, [src])
+
+  const normalizedSource =
+    src.split('?')[0].toLowerCase()
+
+  const isPng =
+    src.startsWith(
+      'data:image/png',
+    ) ||
+    normalizedSource.endsWith(
+      '.png',
+    )
+
+  const useContain =
+    isPng ||
+    hasTransparency === true
+
+  return (
+    <span
+      className={className}
+      style={{
+        width: '100%',
+        height: '100%',
+        maxWidth: '100%',
+        maxHeight: '100%',
+        minWidth: 0,
+        minHeight: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'visible',
+      }}
+    >
+      <img
+        src={src}
+        alt={alt}
+        style={
+          useContain
+            ? {
+                width: 'auto',
+                height: 'auto',
+                maxWidth: '100%',
+                maxHeight: '100%',
+                display: 'block',
+                objectFit: 'contain',
+                objectPosition:
+                  'center center',
+                flex: '0 0 auto',
+              }
+            : {
+                width: '100%',
+                height: '100%',
+                minWidth: 0,
+                minHeight: 0,
+                display: 'block',
+                objectFit: 'cover',
+                objectPosition:
+                  'center center',
+              }
+        }
+      />
+    </span>
   )
 }
 
@@ -555,6 +858,34 @@ export function QuestionPage({
     ? question.answer
     : question.question
 
+  const audioMeta =
+    getQuestionAudioMeta(
+      question.id,
+    )
+
+  const hasAudioMedia =
+    !showAnswer &&
+    Boolean(
+      audioMeta.audioName &&
+      audioMeta.audioLinked !== false,
+    )
+
+  const hasVideoMedia =
+    !showAnswer &&
+    type === 'video' &&
+    Boolean(question.mediaUrl)
+
+  const hasImageMedia =
+    Boolean(visibleImage)
+
+  const hasMedia =
+    !isHiddenPicture &&
+    (
+      hasVideoMedia ||
+      hasImageMedia ||
+      hasAudioMedia
+    )
+
   const choices = question.choices ?? []
 
   return (
@@ -562,11 +893,6 @@ export function QuestionPage({
       className="question-view"
       style={{ position: 'relative' }}
     >
-      <QuestionAudioControl
-        questionId={question.id}
-        showAnswer={showAnswer}
-      />
-
       <header className="question-toolbar">
         <button onClick={onBack}>
           <ArrowLeft size={18} />
@@ -580,10 +906,28 @@ export function QuestionPage({
         className={`question-stage ${
           isHiddenPicture ? 'hidden-picture-stage' : ''
         }`}
+        style={
+          hasMedia
+            ? {
+                display: 'grid',
+                gridTemplateRows:
+                  !showAnswer &&
+                  answerType ===
+                    'multiple' &&
+                  choices.length > 0
+                    ? 'minmax(0, 1fr) auto auto'
+                    : 'minmax(0, 1fr) auto',
+                alignItems: 'stretch',
+                gap: 10,
+                minHeight: 0,
+                overflow: 'visible',
+              }
+            : undefined
+        }
       >
         {isHiddenPicture ? (
           visibleImage ? (
-            <img
+            <AdaptiveQuestionImage
               className="hidden-picture"
               src={visibleImage}
               alt={showAnswer ? '정답 표시 그림' : '숨은그림 원본'}
@@ -593,23 +937,90 @@ export function QuestionPage({
           )
         ) : (
           <>
-            {type === 'video' && question.mediaUrl && (
-              <div className="question-media">
-                <video src={question.mediaUrl} controls preload="metadata" />
-              </div>
-            )}
+            {hasMedia && (
+              <div
+                className="question-media"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  minWidth: 0,
+                  minHeight: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'visible',
+                }}
+              >
+                {hasVideoMedia &&
+                  question.mediaUrl && (
+                    <video
+                      src={question.mediaUrl}
+                      controls
+                      preload="metadata"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'block',
+                        objectFit: 'contain',
+                        objectPosition:
+                          'center',
+                        background: '#000',
+                      }}
+                    />
+                  )}
 
-            {type !== 'video' && visibleImage && (
-              <div className="question-media">
-                <img
-                  src={visibleImage}
-                  alt={showAnswer ? '정답 이미지' : '문제 이미지'}
-                />
+                {!hasVideoMedia &&
+                  hasImageMedia &&
+                  visibleImage && (
+                    <AdaptiveQuestionImage
+                      src={visibleImage}
+                      alt={
+                        showAnswer
+                          ? '정답 이미지'
+                          : '문제 이미지'
+                      }
+                    />
+                  )}
+
+                {!hasVideoMedia &&
+                  !hasImageMedia &&
+                  hasAudioMedia && (
+                    <QuestionAudioControl
+                      questionId={
+                        question.id
+                      }
+                      showAnswer={
+                        showAnswer
+                      }
+                      variant="media"
+                    />
+                  )}
               </div>
             )}
 
             <div
               className={`question-text ${getTextSize(visibleText.length)}`}
+              style={
+                hasMedia
+                  ? {
+                      width: '100%',
+                      maxHeight: '24vh',
+                      padding:
+                        '10px 18px',
+                      overflow: 'hidden',
+                      fontSize:
+                        'clamp(20px, 2.2vw, 36px)',
+                      lineHeight: 1.22,
+                      textAlign: 'center',
+                      wordBreak:
+                        'keep-all',
+                      overflowWrap:
+                        'anywhere',
+                    }
+                  : undefined
+              }
             >
               {visibleText}
             </div>

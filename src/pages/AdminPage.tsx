@@ -95,6 +95,14 @@ const ASSET_STORE_NAME = 'assets'
 
 const AUTOSAVE_DELAY = 700
 
+const SUPPORTED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+] as const
+
+const MAX_IMAGE_EDGE = 1920
+
 const emptyForm: QuestionForm = {
   type: 'general',
   answerType: 'short',
@@ -213,7 +221,7 @@ const styles: Record<
     minHeight: 0,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'stretch',
     justifyContent: 'center',
     gap: 8,
     overflow: 'hidden',
@@ -221,7 +229,7 @@ const styles: Record<
   previewMedia: {
     width: '100%',
     minHeight: 0,
-    maxHeight: '48%',
+    flex: '1 1 auto',
     display: 'grid',
     placeItems: 'center',
     overflow: 'hidden',
@@ -243,7 +251,8 @@ const styles: Record<
   },
   previewText: {
     width: '100%',
-    maxHeight: '42%',
+    flex: '0 0 auto',
+    maxHeight: '34%',
     overflow: 'hidden',
     color: '#fff',
     fontSize: 20,
@@ -252,6 +261,12 @@ const styles: Record<
     textAlign: 'center',
     wordBreak: 'keep-all',
     overflowWrap: 'anywhere',
+  },
+  previewTextWithImage: {
+    maxHeight: '25%',
+    padding: '2px 4px 0',
+    fontSize: 14,
+    lineHeight: 1.24,
   },
   previewHint: {
     width: '100%',
@@ -338,6 +353,7 @@ const styles: Record<
     fontWeight: 900,
   },
   mediaName: {
+    width: '100%',
     minWidth: 0,
     overflow: 'hidden',
     color: '#6b7280',
@@ -360,10 +376,76 @@ const styles: Record<
     borderColor: '#ff730f',
     background: '#fff2e8',
   },
+  unifiedMediaZone: {
+    position: 'relative',
+  },
+  mediaDropWrap: {
+    position: 'relative',
+    minWidth: 0,
+  },
+  mediaDeleteOverlay: {
+    position: 'absolute',
+    right: 9,
+    bottom: 9,
+    zIndex: 8,
+    width: 32,
+    minWidth: 32,
+    height: 32,
+    padding: 0,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#fff',
+    border:
+      '1px solid rgba(255, 255, 255, .72)',
+    borderRadius: 7,
+    background:
+      'rgba(20, 28, 40, .78)',
+    boxShadow:
+      '0 3px 10px rgba(0, 0, 0, .22)',
+    cursor: 'pointer',
+  },
+  unifiedMediaHint: {
+    position: 'absolute',
+    inset: 0,
+    display: 'grid',
+    placeItems: 'center',
+    pointerEvents: 'none',
+  },
+  unifiedMediaHintBox: {
+    maxWidth: '82%',
+    padding: '10px 14px',
+    display: 'grid',
+    placeItems: 'center',
+    gap: 6,
+    color: '#0e3166',
+    borderRadius: 9,
+    background:
+      'rgba(255, 255, 255, .9)',
+    boxShadow:
+      '0 4px 16px rgba(14, 49, 102, .12)',
+    fontSize: 12,
+    lineHeight: 1.45,
+    fontWeight: 800,
+    textAlign: 'center',
+  },
+  unifiedMediaFooter: {
+    width: '100%',
+    minWidth: 0,
+    display: 'grid',
+    gap: 7,
+  },
   mediaPreviewImage: {
     width: '100%',
     height: '100%',
+    display: 'block',
+    objectPosition: 'center',
+  },
+  mediaPreviewContain: {
     objectFit: 'contain',
+  },
+  mediaPreviewCover: {
+    objectFit: 'cover',
   },
   mediaPreviewVideo: {
     width: '100%',
@@ -513,7 +595,7 @@ function getFixedScore(
 }
 
 function readFileAsDataUrl(
-  file: File,
+  file: Blob,
 ): Promise<string> {
   return new Promise(
     (resolve, reject) => {
@@ -537,6 +619,164 @@ function readFileAsDataUrl(
       reader.readAsDataURL(file)
     },
   )
+}
+
+function loadImageElement(
+  sourceUrl: string,
+): Promise<HTMLImageElement> {
+  return new Promise(
+    (resolve, reject) => {
+      const image =
+        new Image()
+
+      image.onload = () =>
+        resolve(image)
+
+      image.onerror = () =>
+        reject(
+          new Error(
+            '이미지를 불러오지 못했습니다.',
+          ),
+        )
+
+      image.src = sourceUrl
+    },
+  )
+}
+
+function canvasToBlob(
+  canvas: HTMLCanvasElement,
+  mimeType: string,
+): Promise<Blob> {
+  return new Promise(
+    (resolve, reject) => {
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            resolve(blob)
+            return
+          }
+
+          reject(
+            new Error(
+              '이미지 최적화에 실패했습니다.',
+            ),
+          )
+        },
+        mimeType,
+        mimeType === 'image/png'
+          ? undefined
+          : 0.9,
+      )
+    },
+  )
+}
+
+async function optimizeImage(
+  file: File,
+): Promise<string> {
+  if (
+    !SUPPORTED_IMAGE_TYPES.includes(
+      file.type as
+        (typeof SUPPORTED_IMAGE_TYPES)[number],
+    )
+  ) {
+    throw new Error(
+      'JPG, PNG, WEBP 형식만 등록할 수 있습니다.',
+    )
+  }
+
+  const sourceUrl =
+    URL.createObjectURL(file)
+
+  try {
+    const image =
+      await loadImageElement(
+        sourceUrl,
+      )
+
+    const longestEdge =
+      Math.max(
+        image.naturalWidth,
+        image.naturalHeight,
+      )
+
+    if (
+      longestEdge <=
+      MAX_IMAGE_EDGE
+    ) {
+      return readFileAsDataUrl(
+        file,
+      )
+    }
+
+    const scale =
+      MAX_IMAGE_EDGE /
+      longestEdge
+
+    const width =
+      Math.max(
+        1,
+        Math.round(
+          image.naturalWidth *
+            scale,
+        ),
+      )
+
+    const height =
+      Math.max(
+        1,
+        Math.round(
+          image.naturalHeight *
+            scale,
+        ),
+      )
+
+    const canvas =
+      document.createElement(
+        'canvas',
+      )
+
+    canvas.width = width
+    canvas.height = height
+
+    const context =
+      canvas.getContext('2d')
+
+    if (!context) {
+      throw new Error(
+        '이미지 최적화를 지원하지 않는 브라우저입니다.',
+      )
+    }
+
+    context.imageSmoothingEnabled =
+      true
+
+    context.imageSmoothingQuality =
+      'high'
+
+    context.drawImage(
+      image,
+      0,
+      0,
+      width,
+      height,
+    )
+
+    const optimizedBlob =
+      await canvasToBlob(
+        canvas,
+        file.type,
+      )
+
+    return readFileAsDataUrl(
+      optimizedBlob,
+    )
+  } finally {
+    URL.revokeObjectURL(
+      sourceUrl,
+    )
+  }
 }
 
 function loadMetaMap(): Record<
@@ -742,6 +982,175 @@ function inferFileName(
   )
 }
 
+
+function AdaptiveImagePreview({
+  src,
+  alt,
+  baseStyle,
+}: {
+  src: string
+  alt: string
+  baseStyle?: CSSProperties
+}) {
+  const [
+    hasTransparency,
+    setHasTransparency,
+  ] = useState<boolean | null>(
+    null,
+  )
+
+  useEffect(() => {
+    let active = true
+    const image = new Image()
+
+    image.onload = () => {
+      if (!active) return
+
+      const sourceType =
+        src.slice(
+          5,
+          src.indexOf(';'),
+        )
+
+      if (
+        sourceType ===
+        'image/jpeg'
+      ) {
+        setHasTransparency(false)
+        return
+      }
+
+      try {
+        const canvas =
+          document.createElement(
+            'canvas',
+          )
+
+        const maxSampleEdge = 320
+        const longestEdge =
+          Math.max(
+            image.naturalWidth,
+            image.naturalHeight,
+          )
+
+        const scale =
+          longestEdge >
+          maxSampleEdge
+            ? maxSampleEdge /
+              longestEdge
+            : 1
+
+        canvas.width = Math.max(
+          1,
+          Math.round(
+            image.naturalWidth *
+              scale,
+          ),
+        )
+
+        canvas.height = Math.max(
+          1,
+          Math.round(
+            image.naturalHeight *
+              scale,
+          ),
+        )
+
+        const context =
+          canvas.getContext(
+            '2d',
+            {
+              willReadFrequently:
+                true,
+            },
+          )
+
+        if (!context) {
+          setHasTransparency(
+            false,
+          )
+          return
+        }
+
+        context.clearRect(
+          0,
+          0,
+          canvas.width,
+          canvas.height,
+        )
+
+        context.drawImage(
+          image,
+          0,
+          0,
+          canvas.width,
+          canvas.height,
+        )
+
+        const pixels =
+          context.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height,
+          ).data
+
+        let transparent = false
+
+        for (
+          let index = 3;
+          index < pixels.length;
+          index += 4
+        ) {
+          if (
+            pixels[index] < 255
+          ) {
+            transparent = true
+            break
+          }
+        }
+
+        setHasTransparency(
+          transparent,
+        )
+      } catch {
+        setHasTransparency(
+          false,
+        )
+      }
+    }
+
+    image.onerror = () => {
+      if (active) {
+        setHasTransparency(
+          false,
+        )
+      }
+    }
+
+    image.src = src
+
+    return () => {
+      active = false
+    }
+  }, [src])
+
+  return (
+    <img
+      style={{
+        ...(baseStyle ??
+          styles.mediaPreviewImage),
+        ...(hasTransparency ===
+        true
+          ? styles.mediaPreviewContain
+          : styles.mediaPreviewCover),
+      }}
+      src={src}
+      alt={alt}
+    />
+  )
+}
+
 function DropMediaCard({
   title,
   icon,
@@ -752,6 +1161,8 @@ function DropMediaCard({
   emphasized,
   hasFile,
   previewLabel,
+  unifiedMediaPicker,
+  emptyActionLabel,
   onPreview,
   onSelect,
   onDelete,
@@ -765,6 +1176,8 @@ function DropMediaCard({
   emphasized?: boolean
   hasFile: boolean
   previewLabel?: '미리보기' | '재생'
+  unifiedMediaPicker?: boolean
+  emptyActionLabel?: string
   onPreview?: () => void
   onSelect: (file?: File) => void
   onDelete: () => void
@@ -820,9 +1233,13 @@ function DropMediaCard({
         {icon}
       </div>
 
-      <label
-        style={{
-          ...styles.dropZone,
+      <div style={styles.mediaDropWrap}>
+        <label
+          style={{
+            ...styles.dropZone,
+          ...(unifiedMediaPicker
+            ? styles.unifiedMediaZone
+            : {}),
           ...(dragging
             ? styles.dropZoneActive
             : {}),
@@ -842,84 +1259,158 @@ function DropMediaCard({
       >
         {preview || (
           <span style={styles.mediaEmpty}>
-            <UploadCloud size={28} />
-            {emptyText}
+            {unifiedMediaPicker ? (
+              <FolderOpen size={28} />
+            ) : (
+              <UploadCloud size={28} />
+            )}
+
+            {unifiedMediaPicker
+              ? emptyActionLabel ??
+                emptyText
+              : emptyText}
+
             <small>
               드래그하거나 클릭해서 선택
             </small>
           </span>
         )}
 
-        {fileInput}
-      </label>
+        {unifiedMediaPicker &&
+          preview &&
+          dragging && (
+            <span
+              style={
+                styles.unifiedMediaHint
+              }
+            >
+              <span
+                style={
+                  styles.unifiedMediaHintBox
+                }
+              >
+                <FolderOpen size={22} />
+                새 파일을 놓으면 교체됩니다.
+              </span>
+            </span>
+          )}
 
-      <div
-        style={styles.mediaName}
-        title={fileName}
-      >
-        {hasFile && fileName
-          ? fileName
-          : '등록된 파일 없음'}
-      </div>
-
-      <div style={styles.mediaActions}>
-        <label
-          style={styles.selectButton}
-          title="파일 선택"
-          aria-label="파일 선택"
-        >
-          <FolderOpen size={17} />
           {fileInput}
         </label>
 
-        {previewLabel && (
+        {hasFile && (
           <button
             type="button"
+            style={
+              styles.mediaDeleteOverlay
+            }
+            title="삭제"
+            aria-label="삭제"
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+              onDelete()
+            }}
+          >
+            <Trash2 size={15} />
+          </button>
+        )}
+      </div>
+
+      {!unifiedMediaPicker && (
+        <div
+          style={styles.mediaName}
+          title={fileName}
+        >
+          {hasFile && fileName
+            ? fileName
+            : '등록된 파일 없음'}
+        </div>
+      )}
+
+      {unifiedMediaPicker ? (
+        <div
+          style={
+            styles.unifiedMediaFooter
+          }
+        >
+          <div
+            style={styles.mediaName}
+            title={fileName}
+          >
+            {hasFile && fileName
+              ? fileName
+              : '등록된 파일 없음'}
+          </div>
+
+          <div style={styles.mediaActions}>
+            {previewLabel && (
+              <button
+                type="button"
+                style={{
+                  ...styles.mediaActionButton,
+                  ...(!hasFile
+                    ? styles.disabledButton
+                    : {}),
+                }}
+                title={previewLabel}
+                aria-label={previewLabel}
+                disabled={!hasFile}
+                onClick={onPreview}
+              >
+                <Play size={16} />
+              </button>
+            )}
+
+
+          </div>
+        </div>
+      ) : (
+        <div style={styles.mediaActions}>
+          <label
+            style={styles.selectButton}
+            title="파일 선택"
+            aria-label="파일 선택"
+          >
+            <FolderOpen size={17} />
+            {fileInput}
+          </label>
+
+          {previewLabel && (
+            <button
+              type="button"
+              style={{
+                ...styles.mediaActionButton,
+                ...(!hasFile
+                  ? styles.disabledButton
+                  : {}),
+              }}
+              title={previewLabel}
+              aria-label={previewLabel}
+              disabled={!hasFile}
+              onClick={onPreview}
+            >
+              <Play size={16} />
+            </button>
+          )}
+
+          <label
             style={{
               ...styles.mediaActionButton,
               ...(!hasFile
                 ? styles.disabledButton
                 : {}),
             }}
-            title={previewLabel}
-            aria-label={previewLabel}
-            disabled={!hasFile}
-            onClick={onPreview}
+            title="변경"
+            aria-label="변경"
           >
-            <Play size={16} />
-          </button>
-        )}
+            <RefreshCw size={16} />
+            {hasFile && fileInput}
+          </label>
 
-        <label
-          style={{
-            ...styles.mediaActionButton,
-            ...(!hasFile
-              ? styles.disabledButton
-              : {}),
-          }}
-          title="변경"
-          aria-label="변경"
-        >
-          <RefreshCw size={16} />
-          {hasFile && fileInput}
-        </label>
 
-        <button
-          type="button"
-          style={{
-            ...styles.deleteButton,
-            ...(!hasFile
-              ? styles.disabledButton
-              : {}),
-          }}
-          title="삭제"
-          aria-label="삭제"
-          disabled={!hasFile}
-          onClick={onDelete}
-        >
-          <Trash2 size={16} />
-        </button>
-      </div>
+        </div>
+      )}
     </section>
   )
 }
@@ -1365,9 +1856,14 @@ export function AdminPage({
 
     try {
       const value =
-        await readFileAsDataUrl(
-          file,
-        )
+        field ===
+        'questionImageUrl'
+          ? await optimizeImage(
+              file,
+            )
+          : await readFileAsDataUrl(
+              file,
+            )
 
       setForm((current) => ({
         ...current,
@@ -1384,11 +1880,16 @@ export function AdminPage({
       })
 
       setMessage(
-        '이미지를 불러왔습니다.',
+        field ===
+        'questionImageUrl'
+          ? '문제 이미지를 최적화하여 불러왔습니다.'
+          : '이미지를 불러왔습니다.',
       )
-    } catch {
+    } catch (error) {
       setMessage(
-        '이미지를 읽지 못했습니다.',
+        error instanceof Error
+          ? error.message
+          : '이미지를 읽지 못했습니다.',
       )
     }
   }
@@ -2054,8 +2555,10 @@ export function AdminPage({
                             size={18}
                           />
                         }
-                        accept="image/*"
+                        accept="image/jpeg,image/png,image/webp"
                         hasFile={hasQuestionImage}
+                        unifiedMediaPicker
+                        emptyActionLabel="이미지 넣기"
                         emphasized={
                           isQuestionImageEmphasized
                         }
@@ -2068,10 +2571,7 @@ export function AdminPage({
                         }
                         preview={
                           form.questionImageUrl ? (
-                            <img
-                              style={
-                                styles.mediaPreviewImage
-                              }
+                            <AdaptiveImagePreview
                               src={
                                 form.questionImageUrl
                               }
@@ -2107,8 +2607,10 @@ export function AdminPage({
                             size={18}
                           />
                         }
-                        accept="image/*"
+                        accept="image/jpeg,image/png,image/webp"
                         hasFile={hasAnswerImage}
+                        unifiedMediaPicker
+                        emptyActionLabel="이미지 넣기" 
                         fileName={
                           assetMeta.answerImageName ??
                           inferFileName(
@@ -2118,10 +2620,7 @@ export function AdminPage({
                         }
                         preview={
                           form.answerImageUrl ? (
-                            <img
-                              style={
-                                styles.mediaPreviewImage
-                              }
+                            <AdaptiveImagePreview
                               src={
                                 form.answerImageUrl
                               }
@@ -2154,6 +2653,8 @@ export function AdminPage({
                         }
                         accept="video/*"
                         hasFile={hasVideo}
+                        unifiedMediaPicker
+                        emptyActionLabel="동영상 등록"
                         emphasized
                         previewLabel="미리보기"
                         onPreview={() => {
@@ -2210,6 +2711,8 @@ export function AdminPage({
                           }
                           accept="audio/*"
                           hasFile={hasAudio}
+                          unifiedMediaPicker
+                          emptyActionLabel="오디오 등록"
                           emphasized
                           previewLabel="재생"
                           onPreview={() => {
@@ -2421,8 +2924,8 @@ export function AdminPage({
                       </div>
                     ) : previewImage ? (
                       <div style={styles.previewMedia}>
-                        <img
-                          style={
+                        <AdaptiveImagePreview
+                          baseStyle={
                             styles.previewImage
                           }
                           src={
@@ -2433,7 +2936,14 @@ export function AdminPage({
                       </div>
                     ) : null}
 
-                    <div style={styles.previewText}>
+                    <div
+                      style={{
+                        ...styles.previewText,
+                        ...(previewImage
+                          ? styles.previewTextWithImage
+                          : {}),
+                      }}
+                    >
                       {previewText ||
                         (previewMode ===
                         'question'
