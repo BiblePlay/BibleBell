@@ -4,7 +4,7 @@ import {
   Eye,
   Flag,
   Music2,
-  MusicOff,
+  VolumeX,
   Sparkles,
   XCircle,
 } from 'lucide-react'
@@ -108,7 +108,7 @@ export function PresenterPanel({
 
       <section className="presenter-toggle-row">
         <button onClick={onToggleSound}>
-          {soundEnabled ? <Music2 size={18} /> : <MusicOff size={18} />}
+          {soundEnabled ? <Music2 size={18} /> : <VolumeX size={18} />}
           효과음 {soundEnabled ? 'ON' : 'OFF'}
         </button>
         <button onClick={onToggleEffect}>

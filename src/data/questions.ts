@@ -10,6 +10,7 @@ const make = (
     number: index + 1,
     question,
     answer,
+    score: 10,
     explanation,
   }))
 
