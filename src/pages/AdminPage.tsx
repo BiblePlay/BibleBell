@@ -23,6 +23,9 @@ import {
   UploadCloud,
 } from 'lucide-react'
 import { categories } from '../data/categories'
+import { exportQuestionsToExcel } from '../utils/excelExport'
+import { importQuestionsFromExcel } from '../utils/excelImport'
+
 import type {
   AnswerType,
   CategoryId,
@@ -1460,6 +1463,8 @@ export function AdminPage({
 
   const [message, setMessage] =
     useState('')
+const [excelLoading, setExcelLoading] =
+  useState(false)
 
   const [
     autosaveState,
@@ -1779,7 +1784,41 @@ export function AdminPage({
     }
   }
 
-  const saveCurrentQuestion = (
+const importExcelQuestions = async (
+  file: File,
+) => {
+  try {
+    setExcelLoading(true)
+
+    const imported =
+      await importQuestionsFromExcel(file)
+
+    const next = [
+      ...imported,
+    ].sort(
+      (a, b) =>
+        a.categoryId.localeCompare(
+          b.categoryId,
+        ) ||
+        a.number - b.number,
+    )
+
+    onSave(next)
+
+    setMessage(
+      `${imported.length}개의 문제가 추가되었습니다.`,
+    )
+  } catch (error) {
+    console.error(error)
+    setMessage(
+      '엑셀 가져오기에 실패했습니다.',
+    )
+  } finally {
+    setExcelLoading(false)
+  }
+}
+  
+const saveCurrentQuestion = (
     showMessage = true,
   ) => {
     const savedQuestion =
@@ -2171,7 +2210,20 @@ export function AdminPage({
               표시됩니다.
             </p>
           </div>
+<input
+  id="excel-upload"
+  type="file"
+  accept=".xlsx,.xls"
+  style={{ display: 'none' }}
+  onChange={async (event) => {
+    const file = event.target.files?.[0]
 
+    if (file) {
+      await importExcelQuestions(file)
+      event.target.value = ''
+    }
+  }}
+/>
           <div className="admin-header-actions">
             <button
               className="admin-secondary-button"
@@ -2180,6 +2232,17 @@ export function AdminPage({
               <ArrowLeft size={18} />
               행사 화면
             </button>
+<button
+  type="button"
+  className="admin-secondary-button"
+onClick={() => {
+  document
+    .getElementById('excel-upload')
+    ?.click()
+}}
+>
+  엑셀 가져오기
+</button>
           </div>
         </header>
 
@@ -3041,7 +3104,7 @@ export function AdminPage({
                 </div>
               </aside>
             </div>
-
+          
             <footer className="admin-form-footer">
               <div>
                 <p>{message}</p>
@@ -3049,6 +3112,15 @@ export function AdminPage({
                   {autosaveState}
                 </span>
               </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  exportQuestionsToExcel(questions)
+                }
+              >
+                엑셀 다운로드
+              </button>
 
               <button type="submit">
                 <Save size={18} />

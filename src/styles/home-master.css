@@ -189,11 +189,7 @@ body,
       #182332,
       #111a26
     );
-  font-size: clamp(
-    28px,
-    2.15vw,
-    43px
-  );
+font-size: 64px;
   line-height: 1;
   font-weight: 900;
   letter-spacing: -0.05em;

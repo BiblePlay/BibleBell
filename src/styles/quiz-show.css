@@ -170,9 +170,13 @@
 }
 
 .question-mode-ox .question-text {
-  padding: 22px 28px;
-  border-top: 1px solid #24405d;
-  border-bottom: 1px solid #24405d;
+
+  padding: 0;
+
+  border-top: none;
+
+  border-bottom: none;
+
 }
 
 .ox-choice-stage {
@@ -184,13 +188,13 @@
 }
 
 .ox-choice {
-  min-height: 220px;
+  min-height: 120px;
   display: grid;
   place-items: center;
   border: 2px solid #24476c;
-  border-radius: 28px;
+  border-radius: 20px;
   background: #0a1726;
-  font-size: 135px;
+  font-size: 80px;
 }
 
 .ox-choice-o {
@@ -225,6 +229,10 @@
   background: #0a1726;
   text-align: left;
   line-height: 1.42;
+  font-size: clamp(42px, 4vw, 72px);
+}
+.question-mode-memory .question-text.size-md {
+  font-size: clamp(42px, 4vw, 72px);
 }
 
 .question-mode-person .question-media {
@@ -783,7 +791,7 @@
 
 .question-text {
   max-width: 100%;
-  max-height: 52vh;
+  max-height: 65vh;
   padding-inline: 8px;
   overflow: visible;
   white-space: normal;
@@ -793,12 +801,12 @@
 }
 
 .question-text.size-xs {
-  font-size: clamp(23px, 1.9vw, 35px);
+  font-size: clamp(32px, 2.6vw, 48px);
   line-height: 1.28;
 }
 
 .question-text.size-xxs {
-  font-size: clamp(19px, 1.55vw, 29px);
+  font-size: clamp(28px, 2.3vw, 42px);
   line-height: 1.3;
 }
 

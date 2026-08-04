@@ -603,30 +603,6 @@ function getTextSize(length: number): string {
   if (length <= 140) return 'size-lg'
   return 'size-md'
 }
-function getTextOnlyQuestionStyle(
-  length: number,
-): CSSProperties {
-  const fontSize =
-    length <= 28
-      ? 'clamp(72px, 6vw, 112px)'
-      : length <= 55
-        ? 'clamp(64px, 5.2vw, 98px)'
-        : length <= 90
-          ? 'clamp(54px, 4.4vw, 84px)'
-          : 'clamp(46px, 3.7vw, 70px)'
-
-  return {
-    width: 'min(1380px, 96%)',
-    maxHeight: 'none',
-    padding: 0,
-    overflow: 'visible',
-    fontSize,
-    lineHeight: 1.16,
-    textAlign: 'center',
-    wordBreak: 'keep-all',
-    overflowWrap: 'anywhere',
-  }
-}
 
 function getChoiceSize(length: number): string {
   if (length <= 18) return 'choice-lg'
@@ -1042,7 +1018,7 @@ className={`question-text ${
                       overflowWrap:
                         'anywhere',
                     }
-    : getTextOnlyQuestionStyle(visibleText.length)
+                  : undefined
               }
             >
               {visibleText}
