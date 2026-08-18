@@ -850,7 +850,11 @@ export function QuestionPage({
   onBack,
 }: QuestionPageProps) {
   const type = question.type ?? 'general'
-  const answerType = question.answerType ?? 'short'
+  const choices = question.choices ?? []
+  const answerType =
+    question.answerType === 'multiple' || choices.length > 0
+      ? 'multiple'
+      : 'short'
   const isHiddenPicture = type === 'hidden'
   const isOx = type === 'ox'
 
@@ -906,8 +910,6 @@ export function QuestionPage({
       hasImageMedia ||
       hasAudioMedia
     )
-
-  const choices = question.choices ?? []
 
   return (
     <main

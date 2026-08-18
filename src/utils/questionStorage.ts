@@ -8,12 +8,14 @@ export function getFixedScore(number: number): number { return FIXED_SCORES[numb
 
 function normalizeQuestion(question: Omit<QuizQuestion, 'score'> & Partial<Pick<QuizQuestion, 'score'>>): QuizQuestion {
   const type = question.type ?? 'general'
+  const hasChoices = Array.isArray(question.choices) && question.choices.length > 0
+  const answerType = question.answerType === 'multiple' || hasChoices ? 'multiple' : 'short'
   return {
     ...question,
     type,
-    answerType: question.answerType ?? 'short',
+    answerType,
     score: getFixedScore(question.number),
-    choices: question.answerType === 'multiple' && Array.isArray(question.choices) ? question.choices.slice(0, 4) : undefined,
+    choices: answerType === 'multiple' && Array.isArray(question.choices) ? question.choices.slice(0, 4) : undefined,
     questionImageUrl: question.questionImageUrl ?? ((type === 'image' || type === 'person' || type === 'hidden') ? question.mediaUrl : undefined),
   }
 }
@@ -31,13 +33,31 @@ export function loadQuestions(): QuizQuestion[] {
 }
 
 export async function loadQuestionsFromProject(): Promise<QuizQuestion[]> {
-  const response = await fetch('/BibleBell/api/questions', { cache: 'no-store' })
-  if (!response.ok) throw new Error('프로젝트 문제 파일을 읽지 못했습니다.')
-  const parsed = await response.json()
+  let parsed: unknown = null
+
+  // 로컬 실행에서는 Vite API의 실제 프로젝트 데이터를 우선 사용합니다.
+  try {
+    const apiResponse = await fetch('/BibleBell/api/questions', { cache: 'no-store' })
+    if (apiResponse.ok) {
+      parsed = await apiResponse.json()
+    }
+  } catch {
+    // GitHub Pages에서는 API가 없으므로 아래 정적 공개 데이터를 사용합니다.
+  }
+
+  // GitHub Pages 등 정적 배포에서는 public/content/questions.json을 읽습니다.
+  if (!Array.isArray(parsed) || parsed.length !== EXPECTED_QUESTION_COUNT) {
+    const publicUrl = `${import.meta.env.BASE_URL}content/questions.json`
+    const staticResponse = await fetch(publicUrl, { cache: 'no-store' })
+    if (!staticResponse.ok) throw new Error('공개용 문제 파일을 읽지 못했습니다.')
+    parsed = await staticResponse.json()
+  }
+
   if (!Array.isArray(parsed) || parsed.length !== EXPECTED_QUESTION_COUNT) {
     throw new Error(`questions.json은 정확히 ${EXPECTED_QUESTION_COUNT}문제여야 합니다.`)
   }
-  const normalized = parsed.map(normalizeQuestion)
+
+  const normalized = (parsed as QuizQuestion[]).map(normalizeQuestion)
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized))
   return normalized
 }
