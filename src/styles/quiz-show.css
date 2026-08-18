@@ -250,8 +250,15 @@
 }
 
 .question-mode-video .question-media-video {
-  width: min(1080px, 96%);
-  max-height: 62%;
+  width: 100%;
+  max-width: none;
+  max-height: 100%;
+}
+
+.question-mode-video .question-media-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 /* 정답 공개 전용 화면 */

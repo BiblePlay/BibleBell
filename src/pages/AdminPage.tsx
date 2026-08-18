@@ -25,6 +25,7 @@ import {
 import { categories } from '../data/categories'
 import { exportQuestionsToExcel } from '../utils/excelExport'
 import { importQuestionsFromExcel } from '../utils/excelImport'
+import { uploadProjectAsset } from '../utils/questionStorage'
 
 import type {
   AnswerType,
@@ -49,6 +50,7 @@ interface QuestionForm {
   mediaUrl: string
   questionImageUrl: string
   answerImageUrl: string
+  hiddenShowText: boolean
 }
 
 interface AssetMeta {
@@ -116,6 +118,7 @@ const emptyForm: QuestionForm = {
   mediaUrl: '',
   questionImageUrl: '',
   answerImageUrl: '',
+  hiddenShowText: false,
 }
 
 const emptyAssetMeta: AssetMeta = {}
@@ -1557,6 +1560,9 @@ const [excelLoading, setExcelLoading] =
         answerImageUrl:
           selectedQuestion
             .answerImageUrl ?? '',
+
+        hiddenShowText:
+          selectedQuestion.hiddenShowText ?? false,
       })
     }
 
@@ -1746,14 +1752,12 @@ const [excelLoading, setExcelLoading] =
 
       question:
         form.type === 'hidden'
-          ? questionText ||
-            '숨은그림을 찾아보세요.'
+          ? questionText
           : questionText,
 
       answer:
         form.type === 'hidden'
-          ? answerText ||
-            '정답 그림을 확인하세요.'
+          ? answerText
           : answerText,
 
       hint:
@@ -1781,6 +1785,11 @@ const [excelLoading, setExcelLoading] =
       answerImageUrl:
         form.answerImageUrl ||
         undefined,
+
+      hiddenShowText:
+        form.type === 'hidden'
+          ? form.hiddenShowText
+          : undefined,
     }
   }
 
@@ -1894,15 +1903,22 @@ const saveCurrentQuestion = (
     if (!file) return
 
     try {
-      const value =
-        field ===
-        'questionImageUrl'
-          ? await optimizeImage(
-              file,
-            )
-          : await readFileAsDataUrl(
-              file,
-            )
+      const blob =
+        field === 'questionImageUrl'
+          ? await optimizeImage(file)
+          : await readFileAsDataUrl(file)
+
+      const uploadBlob =
+        typeof blob === 'string'
+          ? await (await fetch(blob)).blob()
+          : blob
+
+      const value = await uploadProjectAsset(
+        questionId,
+        field === 'questionImageUrl' ? 'questionImage' : 'answerImage',
+        uploadBlob,
+        file.name,
+      )
 
       setForm((current) => ({
         ...current,
@@ -1963,17 +1979,14 @@ const saveCurrentQuestion = (
     if (!file) return
 
     try {
-      await putAsset(
-        getAssetKey(
-          questionId,
-          'video',
-        ),
+      const savedUrl = await uploadProjectAsset(
+        questionId,
+        'video',
         file,
+        file.name,
       )
 
-      setVideoPreviewUrl(
-        URL.createObjectURL(file),
-      )
+      setVideoPreviewUrl(savedUrl)
 
       updateMeta({
         ...assetMeta,
@@ -1981,14 +1994,9 @@ const saveCurrentQuestion = (
         videoLinked: true,
       })
 
-      const dataUrl =
-        await readFileAsDataUrl(
-          file,
-        )
-
       setForm((current) => ({
         ...current,
-        mediaUrl: dataUrl,
+        mediaUrl: savedUrl,
       }))
 
       setMessage(
@@ -2025,17 +2033,19 @@ const saveCurrentQuestion = (
     if (!file) return
 
     try {
+      const savedUrl = await uploadProjectAsset(
+        questionId,
+        'audio',
+        file,
+        file.name,
+      )
+
       await putAsset(
-        getAssetKey(
-          questionId,
-          'audio',
-        ),
+        getAssetKey(questionId, 'audio'),
         file,
       )
 
-      setAudioPreviewUrl(
-        URL.createObjectURL(file),
-      )
+      setAudioPreviewUrl(savedUrl)
 
       updateMeta({
         ...assetMeta,
@@ -2150,7 +2160,8 @@ const saveCurrentQuestion = (
   }
 
   const showTextFields =
-    form.type !== 'hidden'
+    form.type !== 'hidden' ||
+    form.hiddenShowText
 
   const showChoices =
     form.answerType ===
@@ -2159,7 +2170,8 @@ const saveCurrentQuestion = (
     form.type !== 'hidden'
 
   const showAnswerInput =
-    form.type !== 'hidden'
+    form.type !== 'hidden' ||
+    form.hiddenShowText
 
   const showQuestionImage = true
   const showAnswerImage = true
@@ -2435,12 +2447,39 @@ onClick={() => {
                     )}
                 </div>
 
+                {form.type === 'hidden' && (
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      padding: '12px 14px',
+                      border: '1px solid #d9dee7',
+                      borderRadius: 10,
+                      background: '#f8fafc',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={form.hiddenShowText}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          hiddenShowText: event.target.checked,
+                        }))
+                      }
+                      style={{ width: 18, height: 18 }}
+                    />
+                    <span>숨은그림 화면에 문제·정답 글자 표시</span>
+                  </label>
+                )}
+
                 {showTextFields && (
                   <label>
                     <span>문제</span>
 
                     <textarea
-                      rows={7}
+                      rows={form.type === 'hidden' ? 2 : 7}
                       value={
                         form.question
                       }
@@ -2999,20 +3038,23 @@ onClick={() => {
                       </div>
                     ) : null}
 
-                    <div
-                      style={{
-                        ...styles.previewText,
-                        ...(previewImage
-                          ? styles.previewTextWithImage
-                          : {}),
-                      }}
-                    >
-                      {previewText ||
-                        (previewMode ===
-                        'question'
-                          ? '문제 내용이 여기에 표시됩니다.'
-                          : '정답 내용이 여기에 표시됩니다.')}
-                    </div>
+                    {(form.type !== 'hidden' ||
+                      form.hiddenShowText) && (
+                      <div
+                        style={{
+                          ...styles.previewText,
+                          ...(previewImage
+                            ? styles.previewTextWithImage
+                            : {}),
+                        }}
+                      >
+                        {previewText ||
+                          (previewMode ===
+                          'question'
+                            ? '문제 내용이 여기에 표시됩니다.'
+                            : '정답 내용이 여기에 표시됩니다.')}
+                      </div>
+                    )}
 
                     {previewMode ===
                       'question' &&

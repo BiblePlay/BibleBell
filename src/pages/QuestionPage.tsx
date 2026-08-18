@@ -947,15 +947,49 @@ export function QuestionPage({
         }
       >
         {isHiddenPicture ? (
-          visibleImage ? (
-            <AdaptiveQuestionImage
-              className="hidden-picture"
-              src={visibleImage}
-              alt={showAnswer ? '정답 표시 그림' : '숨은그림 원본'}
-            />
-          ) : (
-            <div className="empty-media">이미지를 등록해 주세요.</div>
-          )
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              minHeight: 0,
+              display: 'grid',
+              gridTemplateRows:
+                question.hiddenShowText && visibleText.trim()
+                  ? 'minmax(0, 1fr) auto'
+                  : 'minmax(0, 1fr)',
+              gap:
+                question.hiddenShowText && visibleText.trim()
+                  ? 8
+                  : 0,
+            }}
+          >
+            {visibleImage ? (
+              <AdaptiveQuestionImage
+                className="hidden-picture"
+                src={visibleImage}
+                alt={showAnswer ? '정답 표시 그림' : '숨은그림 원본'}
+              />
+            ) : (
+              <div className="empty-media">이미지를 등록해 주세요.</div>
+            )}
+
+            {question.hiddenShowText && visibleText.trim() && (
+              <div
+                className="hidden-picture-text"
+                style={{
+                  padding: '5px 14px 2px',
+                  textAlign: 'center',
+                  fontSize: 'clamp(18px, 1.45vw, 26px)',
+                  lineHeight: 1.2,
+                  fontWeight: 750,
+                  color: '#f8fafc',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {visibleText}
+              </div>
+            )}
+          </div>
         ) : (
           <>
             {hasMedia && (

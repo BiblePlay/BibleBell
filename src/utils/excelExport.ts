@@ -1,14 +1,12 @@
 import * as XLSX from 'xlsx'
 import type { QuizQuestion } from '../types'
 
-export function exportQuestionsToExcel(
-  questions: QuizQuestion[],
-) {
+export function exportQuestionsToExcel(questions: QuizQuestion[]) {
   const rows = questions.map((q) => ({
     번호: q.number,
     카테고리: q.categoryId,
-    문제유형: q.type ?? '',
-    답변유형: q.answerType ?? '',
+    문제유형: q.type ?? 'general',
+    답변유형: q.answerType ?? 'short',
     문제: q.question,
     정답: q.answer,
     보기1: q.choices?.[0] ?? '',
@@ -21,22 +19,22 @@ export function exportQuestionsToExcel(
     문제이미지: q.questionImageUrl ?? '',
     정답이미지: q.answerImageUrl ?? '',
     미디어: q.mediaUrl ?? '',
+    숨은그림텍스트표시: q.hiddenShowText ? 'TRUE' : 'FALSE',
   }))
 
-  const worksheet =
-    XLSX.utils.json_to_sheet(rows)
+  const worksheet = XLSX.utils.json_to_sheet(rows)
 
-  const workbook =
-    XLSX.utils.book_new()
+  // Excel에서 바로 필터/정렬할 수 있도록 헤더에 AutoFilter를 넣습니다.
+  if (worksheet['!ref']) worksheet['!autofilter'] = { ref: worksheet['!ref'] }
+  worksheet['!cols'] = [
+    { wch: 6 }, { wch: 12 }, { wch: 12 }, { wch: 12 },
+    { wch: 46 }, { wch: 30 },
+    { wch: 24 }, { wch: 24 }, { wch: 24 }, { wch: 24 },
+    { wch: 8 }, { wch: 30 }, { wch: 40 },
+    { wch: 38 }, { wch: 38 }, { wch: 38 }, { wch: 18 },
+  ]
 
-  XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    '문제목록',
-  )
-
-  XLSX.writeFile(
-    workbook,
-    '도전바이블골든벨_문제목록.xlsx',
-  )
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, '문제목록')
+  XLSX.writeFile(workbook, '도전바이블골든벨_문제목록.xlsx')
 }

@@ -6,7 +6,7 @@ import { AdminPage } from './pages/AdminPage'
 import { HomePage } from './pages/HomePage'
 import { QuestionPage } from './pages/QuestionPage'
 import type { QuizQuestion, Screen, TeamScore } from './types'
-import { loadQuestions, saveQuestions } from './utils/questionStorage'
+import { loadQuestions, loadQuestionsFromProject, saveQuestions } from './utils/questionStorage'
 
 const PLAYED_STORAGE_KEY = 'biblebell-played-question-ids'
 
@@ -77,6 +77,18 @@ export default function App() {
       ) ?? null
     )
   }, [quizQuestions, screen])
+
+  useEffect(() => {
+    let active = true
+    void loadQuestionsFromProject()
+      .then((items) => {
+        if (active) setQuizQuestions(items)
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+    return () => { active = false }
+  }, [])
 
   useEffect(() => {
     const handlePopState = () => {

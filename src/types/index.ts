@@ -30,6 +30,7 @@ export interface QuizQuestion {
   mediaUrl?: string
   questionImageUrl?: string
   answerImageUrl?: string
+  hiddenShowText?: boolean
 }
 
 export interface TeamScore {

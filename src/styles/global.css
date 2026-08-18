@@ -494,8 +494,8 @@ select:focus-visible {
 }
 
 .choice-list {
-  width: min(960px, 96%);
-  margin-top: 24px;
+  width: min(1280px, 98%);
+  margin: 24px auto 0;
   display: grid;
   grid-template-columns:
     repeat(
@@ -506,7 +506,7 @@ select:focus-visible {
 }
 
 .choice {
-  min-height: 84px;
+  min-height: 90px;
   padding: 14px 16px;
   display: flex;
   align-items: center;
@@ -543,15 +543,15 @@ select:focus-visible {
 }
 
 .choice.choice-lg strong {
-  font-size: 26px;
+  font-size: 30px;
 }
 
 .choice.choice-md strong {
-  font-size: 22px;
+  font-size: 26px;
 }
 
 .choice.choice-sm strong {
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .choice-list-ox {
@@ -955,3 +955,18 @@ flex-basis: 64px;
   display: none;
 }
 
+
+/* 영상퀴즈: 공통 미디어의 350px 높이 제한 해제 */
+.question-media > video {
+  max-height: none;
+}
+
+/* 숨은그림: 남은 화면의 세로·가로 공간을 최대한 사용 */
+.hidden-picture > img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+}
