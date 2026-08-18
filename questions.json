@@ -1,0 +1,1196 @@
+[
+  {
+    "id": "Q081",
+    "categoryId": "bible",
+    "number": 1,
+    "score": 10,
+    "type": "image",
+    "answerType": "short",
+    "question": "의와 공의가 주의 □□의 기초라 인자함과 진실함이 주 앞에 있나이다 (시편 89편 13절)",
+    "answer": ""
+  },
+  {
+    "id": "Q082",
+    "categoryId": "bible",
+    "number": 2,
+    "score": 10,
+    "type": "image",
+    "answerType": "short",
+    "question": "예수님에게는 참사람이신 모습과 참하나님이신 모습이 함께 있습니다. 이 두 성품을 각각 무엇이라고 하나요?",
+    "answer": "인성과 신성"
+  },
+  {
+    "id": "Q083",
+    "categoryId": "bible",
+    "number": 3,
+    "score": 20,
+    "type": "image",
+    "answerType": "short",
+    "question": "설교 시작 전에 함께 부르는 말씀송 가사 문제입니다. 첫 시작에서 “말씀이 □□하기를\"",
+    "answer": ""
+  },
+  {
+    "id": "Q084",
+    "categoryId": "bible",
+    "number": 4,
+    "score": 20,
+    "type": "image",
+    "answerType": "short",
+    "question": "하도 오해를 해서 하나님이 직접 자기를 □□하신 말씀입니다. 빈칸을 채워보세요. (다 맞추면 X2)",
+    "answer": "자기소개서, 자비, 은혜, 노"
+  },
+  {
+    "id": "Q085",
+    "categoryId": "bible",
+    "number": 5,
+    "score": 30,
+    "type": "image",
+    "answerType": "short",
+    "question": "설교 시작 전에 함께 부르는 말씀송 가사 문제입니다. 첫 시작에서 “말씀이 역사하기를” 다음에 나오는 “ 말씀이 □□있기를",
+    "answer": ""
+  },
+  {
+    "id": "Q086",
+    "categoryId": "bible",
+    "number": 6,
+    "score": 30,
+    "type": "image",
+    "answerType": "short",
+    "question": "온유한 사람을 하나님나라 모드에 넣었더니“□을 유업으로 받는다 (물려받는다)” 라고 합니다",
+    "answer": "땅"
+  },
+  {
+    "id": "Q087",
+    "categoryId": "bible",
+    "number": 7,
+    "score": 40,
+    "type": "image",
+    "answerType": "short",
+    "question": "마태복음 5장에 나오는 ‘복이 있는 사람’에 대한 여덟 가지 선언을 무엇이라고 부르나요?",
+    "answer": ""
+  },
+  {
+    "id": "Q088",
+    "categoryId": "bible",
+    "number": 8,
+    "score": 40,
+    "type": "image",
+    "answerType": "short",
+    "question": "애통하는 자는 복이 있나니",
+    "answer": "\"애통하는 자는 복이 있나니 그들이 위로를 받을 것임이요.\" (마태복음 5장 4절)"
+  },
+  {
+    "id": "Q089",
+    "categoryId": "bible",
+    "number": 9,
+    "score": 50,
+    "type": "general",
+    "answerType": "short",
+    "question": "초성퀴즈 : ㅈㄱㄷㅁ",
+    "answer": "주기도문"
+  },
+  {
+    "id": "Q090",
+    "categoryId": "bible",
+    "number": 10,
+    "score": 50,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "",
+    "answer": "작, 작, 큰",
+    "hiddenShowText": false
+  },
+  {
+    "id": "Q061",
+    "categoryId": "character",
+    "number": 1,
+    "score": 10,
+    "type": "image",
+    "answerType": "multiple",
+    "question": "이 그림은 몇번째 유형일까요?",
+    "answer": "2. 함께 달리는 친구 (조련된 동행)",
+    "choices": [
+      "끌려가는 주인 (비겁한 사자)",
+      "함께 달리는 친구 (조련된 동행)",
+      "사자가 왕이 된 집 (파괴적 맹수)",
+      "회복된 조련사 (상처 입은 치유자)"
+    ]
+  },
+  {
+    "id": "Q062",
+    "categoryId": "character",
+    "number": 2,
+    "score": 10,
+    "type": "general",
+    "answerType": "short",
+    "question": "아는 선생님 이름 3명을 적으세요.(1명당 10점)",
+    "answer": "모두 합산한 점수가 팀별 점수로 올라갑니다!!"
+  },
+  {
+    "id": "Q063",
+    "categoryId": "character",
+    "number": 3,
+    "score": 20,
+    "type": "image",
+    "answerType": "short",
+    "question": "이 그림 안에는 총 몇명일까요?(5초)",
+    "answer": "42명"
+  },
+  {
+    "id": "Q064",
+    "categoryId": "character",
+    "number": 4,
+    "score": 20,
+    "type": "image",
+    "answerType": "short",
+    "question": "캐릭터로 되어 있으신 선생님들 성함을 적어주세요.",
+    "answer": "이해진 선생님, 김수영 선생님, 정은숙 선생님, 박희성 선생님"
+  },
+  {
+    "id": "Q065",
+    "categoryId": "character",
+    "number": 5,
+    "type": "general",
+    "answerType": "short",
+    "question": "요셉을 상인들에게 팔자고 제안했지만 훗날 베냐민 대신 종이 되겠다고 나선 형은 누구인가요?",
+    "answer": "유다",
+    "score": 30,
+    "explanation": "창세기 37:26-27; 44:33"
+  },
+  {
+    "id": "Q066",
+    "categoryId": "character",
+    "number": 6,
+    "score": 30,
+    "type": "general",
+    "answerType": "short",
+    "question": "요셉의 친동생이며 다른 형들보다 다섯 배의 음식을 받은 사람은 누구인가요?",
+    "answer": "베냐민"
+  },
+  {
+    "id": "Q067",
+    "categoryId": "character",
+    "number": 7,
+    "score": 40,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "캐릭터로 되어 있는 인물을 맞추세요.",
+    "answer": "이신명 선생님, 이해순 선생님, 신은식 선생님, 이도경 학생",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q068",
+    "categoryId": "character",
+    "number": 8,
+    "type": "general",
+    "answerType": "short",
+    "question": "요셉에게 특별한 옷을 지어 입힌 아버지이며 이스라엘이라고도 불린 인물은 누구인가요?",
+    "answer": "야곱",
+    "score": 40,
+    "explanation": "창세기 37:3"
+  },
+  {
+    "id": "Q069",
+    "categoryId": "character",
+    "number": 9,
+    "score": 50,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "나비의 번데기처럼 (녹아내리는) 고통과 인내를 통과하여 위대한 리더가 된 세명의 이름을 적어주세요.",
+    "answer": "",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q070",
+    "categoryId": "character",
+    "number": 10,
+    "score": 50,
+    "type": "general",
+    "answerType": "short",
+    "question": "자기팀 멤버 이름을 다 적어보세요.(한명당 10점)",
+    "answer": "점수 합산해서 팀별 점수로 올라갑니다.",
+    "hint": "말하지 않고 답만 씁니다."
+  },
+  {
+    "id": "Q001",
+    "categoryId": "hidden",
+    "number": 1,
+    "score": 10,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "요셉 만화책과 비교해 보세요. 뭐가 바뀌었나요?",
+    "answer": "아버지->어머니, 도자기> 꽃병, 형 4명-> 3명,  볏단 : 11-> 10+생쥐, 초등달-> 보름달(성경과 관계없음))",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q002",
+    "categoryId": "hidden",
+    "number": 2,
+    "score": 10,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "요셉 만화책과 비교해 보세요. 뭐가 바뀌었나요?",
+    "answer": "소->말, 관료중 남자-> 여자, 아이들로",
+    "hint": "그림 속 인물의 표정, 손, 물건과 배경을 차례로 살펴보세요.",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q003",
+    "categoryId": "hidden",
+    "number": 3,
+    "score": 20,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "숨은 그림을 찾아보세요.",
+    "answer": "나비",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q004",
+    "categoryId": "hidden",
+    "number": 4,
+    "score": 20,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "숨은 그림을 찾아보세요.",
+    "answer": "개(일명 걸레 개 : 걸레인줄 알았다는 개)",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q005",
+    "categoryId": "hidden",
+    "number": 5,
+    "score": 30,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "숨은 그림을 찾아보세요.",
+    "answer": "물고기 (스톤 피쉬)",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q006",
+    "categoryId": "hidden",
+    "number": 6,
+    "score": 30,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "덥석 퀴즈 : 왼쪽에 미끼입니다. 우측에는 이것을 덥석 무는 누군가입니다.",
+    "answer": "원숭이",
+    "hint": "그림 속 인물의 표정, 손, 물건과 배경을 차례로 살펴보세요.",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q007",
+    "categoryId": "hidden",
+    "number": 7,
+    "score": 40,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "왼쪽에 미끼입니다. 우측에는 이것을 덥석 무는 누군가입니다.",
+    "answer": "사람들",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q008",
+    "categoryId": "hidden",
+    "number": 8,
+    "score": 40,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "왼쪽에 미끼입니다. 우측에는 이것을 덥석 무는 누군가입니다.",
+    "answer": "여러분",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q009",
+    "categoryId": "hidden",
+    "number": 9,
+    "score": 50,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "숨은 그림을 찾아 보세요.",
+    "answer": "",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q010",
+    "categoryId": "hidden",
+    "number": 10,
+    "score": 50,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "",
+    "answer": "숨은 그림을 찾아 보세요.",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q071",
+    "categoryId": "initial",
+    "number": 1,
+    "score": 10,
+    "type": "general",
+    "answerType": "short",
+    "question": "초성 ‘ㅅㄷㅅㄱ’ : 우리가 무엇을 믿는지 고백하며 예배 때 함께 읽는 신앙고백은 무엇인가요?",
+    "answer": "사도신경"
+  },
+  {
+    "id": "Q072",
+    "categoryId": "initial",
+    "number": 2,
+    "score": 10,
+    "type": "general",
+    "answerType": "short",
+    "question": "초성 ‘ㄱㅇ’ :  하나님의 크고 위대하심을 인정하고 존경하며 두려워하는 마음은 무엇인가요?",
+    "answer": "경외"
+  },
+  {
+    "id": "Q073",
+    "categoryId": "initial",
+    "number": 3,
+    "score": 20,
+    "type": "general",
+    "answerType": "short",
+    "question": "초성 ‘ㅂㅎ’ :  예수님이 십자가에서 죽으신 뒤 사흘 만에 다시 살아나신 사건은 무엇인가요?",
+    "answer": "부활"
+  },
+  {
+    "id": "Q074",
+    "categoryId": "initial",
+    "number": 4,
+    "score": 20,
+    "type": "general",
+    "answerType": "short",
+    "question": "초성 ‘ㅅㄹ’ : 예수님이 동정녀 마리아에게 잉태되실 때 역사하신 분은 누구인가요?",
+    "answer": "성령"
+  },
+  {
+    "id": "Q075",
+    "categoryId": "initial",
+    "number": 5,
+    "score": 30,
+    "type": "general",
+    "answerType": "short",
+    "question": "초성 ‘ㄴㄱ’ :  예수님이 겸손의 왕으로 예루살렘에 들어가실 때 타신 동물은 무엇인가요?",
+    "answer": "나귀"
+  },
+  {
+    "id": "Q076",
+    "categoryId": "initial",
+    "number": 6,
+    "score": 30,
+    "type": "image",
+    "answerType": "short",
+    "question": "초성 ‘ㅇㅂㅇㅇ’ : 보리떡 다섯 개와 물고기 두 마리로 많은 사람을 먹이신 사건은 무엇인가요?",
+    "answer": "오병이어"
+  },
+  {
+    "id": "Q077",
+    "categoryId": "initial",
+    "number": 7,
+    "score": 40,
+    "type": "person",
+    "answerType": "short",
+    "question": "제네시스는 한국말로 구약의 첫번째 : 초성 'ㅊㅅㄱ' 입니다.",
+    "answer": "창세기"
+  },
+  {
+    "id": "Q078",
+    "categoryId": "initial",
+    "number": 8,
+    "score": 40,
+    "type": "general",
+    "answerType": "short",
+    "question": "초성 ‘ㅎㅅㄴ’ :  예수님이 예루살렘에 들어가실 때 무리가 외친 말은 무엇인가요?",
+    "answer": "호산나"
+  },
+  {
+    "id": "Q079",
+    "categoryId": "initial",
+    "number": 9,
+    "score": 50,
+    "type": "general",
+    "answerType": "short",
+    "question": "초성 ‘ㅈㄹ’ : 시대와 문화가 바뀌어도 변하지 않는 하나님의 말씀과 기준을 무엇이라고 하나요?",
+    "answer": "진리"
+  },
+  {
+    "id": "Q080",
+    "categoryId": "initial",
+    "number": 10,
+    "score": 50,
+    "type": "general",
+    "answerType": "short",
+    "question": "초성 'ㅂ' : 마음이 청결한 자는 O이 있나니\n저희가 하나님을 볼 것임이요",
+    "answer": "복"
+  },
+  {
+    "id": "Q051",
+    "categoryId": "joseph",
+    "number": 1,
+    "score": 10,
+    "type": "general",
+    "answerType": "multiple",
+    "question": "야곱이 다른 아들들과 달리 요셉에게 특별히 지어 입힌 옷은 무엇인가요?",
+    "answer": "2. 채색옷",
+    "choices": [
+      "가죽옷",
+      "채색옷",
+      "나이키",
+      "갑옷"
+    ]
+  },
+  {
+    "id": "Q052",
+    "categoryId": "joseph",
+    "number": 2,
+    "score": 10,
+    "type": "general",
+    "answerType": "short",
+    "question": "요셉의 꿈에서 요셉의 볏단을 향해 절을 한 형들의 볏단은 모두 몇 개였나요?",
+    "answer": "11개"
+  },
+  {
+    "id": "Q053",
+    "categoryId": "joseph",
+    "number": 3,
+    "score": 20,
+    "type": "general",
+    "answerType": "multiple",
+    "question": "요셉의 형들이 요셉을 해치려고 던져 넣었던 장소는 어디인가요?",
+    "answer": "3. 우물(물없는 웅덩이)",
+    "choices": [
+      "감옥",
+      "바다",
+      "우물(물없는 웅덩이)",
+      "동굴"
+    ]
+  },
+  {
+    "id": "Q054",
+    "categoryId": "joseph",
+    "number": 4,
+    "score": 20,
+    "type": "general",
+    "answerType": "multiple",
+    "question": "요셉은 억울하게 가족과 떨어져 감옥에 갇혔을 때 걱정을 혼자 품고 원망하며 시간을 보냈다.",
+    "answer": "3. 아니야",
+    "choices": [
+      "당연하지",
+      "그랬을껄?",
+      "아니야",
+      "원망했지"
+    ]
+  },
+  {
+    "id": "Q055",
+    "categoryId": "joseph",
+    "number": 5,
+    "score": 30,
+    "type": "general",
+    "answerType": "multiple",
+    "question": "형들이 요셉을 이스마엘 상인들에게 팔고 받은 값은 얼마였나요?",
+    "answer": "2. 은 20개",
+    "choices": [
+      "은 10개",
+      "은 20개",
+      "은 30개",
+      "금 20개"
+    ]
+  },
+  {
+    "id": "Q056",
+    "categoryId": "joseph",
+    "number": 6,
+    "score": 30,
+    "type": "general",
+    "answerType": "multiple",
+    "question": "요셉이 보디발의 집에서 신뢰를 얻은 뒤, 억울한 누명을 쓰고 옮겨진 곳은 어디인가요?",
+    "answer": "3. 왕의 죄수들을 가두는 감옥",
+    "choices": [
+      "왕궁",
+      "광야",
+      "왕의 죄수들을 가두는 감옥",
+      "고센 땅"
+    ]
+  },
+  {
+    "id": "Q057",
+    "categoryId": "joseph",
+    "number": 7,
+    "score": 40,
+    "type": "general",
+    "answerType": "multiple",
+    "question": "감옥에서 풀려난 술 맡은 관원장이 요셉을 잊고 지낸 기간은 얼마였나요?",
+    "answer": "3. 2년",
+    "choices": [
+      "3일",
+      "1년",
+      "2년",
+      "7년"
+    ]
+  },
+  {
+    "id": "Q058",
+    "categoryId": "joseph",
+    "number": 8,
+    "score": 40,
+    "type": "general",
+    "answerType": "multiple",
+    "question": "요셉이 꾼 두 번째 꿈에서 요셉에게 절을 한 해와 달과 열한 별은 각각 누구를 상징하나요?",
+    "answer": "2. 아버지, 어머니, 형제들",
+    "choices": [
+      "할아버지, 할머니, 삼촌들",
+      "아버지, 어머니, 형제들",
+      "선생님, 친구들, 이웃들",
+      "천사들"
+    ]
+  },
+  {
+    "id": "Q059",
+    "categoryId": "joseph",
+    "number": 9,
+    "score": 50,
+    "type": "general",
+    "answerType": "multiple",
+    "question": "요셉의 형들이 요셉을 미워하게 된 가장 큰 원인 중 하나는 무엇인가요?",
+    "answer": "2. 요셉이 편애를 받고 꿈 이야기를 해서",
+    "choices": [
+      "요셉이 일을 안 해서",
+      "요셉이 편애를 받고 꿈 이야기를 해서",
+      "요셉이 돈을 훔쳐서",
+      "요셉이 싸움을 걸어서"
+    ]
+  },
+  {
+    "id": "Q060",
+    "categoryId": "joseph",
+    "number": 10,
+    "score": 50,
+    "type": "general",
+    "answerType": "multiple",
+    "question": "요셉이 형들의 변화된 마음을 확인한 마지막 시험에서, 베냐민 대신 종이 되겠다고 나선 사람은 누구인가요?",
+    "answer": "3. 유다",
+    "hint": "아버지에게 베냐민을 책임지겠다고 약속한 형입니다.",
+    "choices": [
+      "르우벤",
+      "시므온",
+      "유다",
+      "베냐민"
+    ]
+  },
+  {
+    "id": "Q011",
+    "categoryId": "memory",
+    "number": 1,
+    "score": 10,
+    "type": "general",
+    "answerType": "short",
+    "question": "하나님이 우리에게 주신 것은 두려워하는 마음이 아니요 오직 □□과 □□과 □□하는 □□이니",
+    "answer": "능력, 사랑,절제, 마음",
+    "hint": "디모데후서 1장 7절"
+  },
+  {
+    "id": "Q012",
+    "categoryId": "memory",
+    "number": 2,
+    "score": 10,
+    "type": "general",
+    "answerType": "short",
+    "question": "아무것도 염려하지 말고 다만 모든 일에 □□와 □□로, 너희 구할 것을 □□함으로 하나님께 아뢰라",
+    "answer": "기도, 간구, 감사",
+    "hint": "빌립보서 4장 6절"
+  },
+  {
+    "id": "Q013",
+    "categoryId": "memory",
+    "number": 3,
+    "score": 20,
+    "type": "general",
+    "answerType": "short",
+    "question": "내가 □을 향하여 □을 들리라 나의 □□이 어디서 올까 나의 도움은 □□를 지으신 여호와에게서로다",
+    "answer": "산, 눈, 도움, 천지",
+    "hint": "시편 121편 1~2절"
+  },
+  {
+    "id": "Q014",
+    "categoryId": "memory",
+    "number": 4,
+    "score": 20,
+    "type": "general",
+    "answerType": "short",
+    "question": "모든 □□ 만한 것 중에 더욱 네 □□을 지키라 □□의 근원이 이에서 남이니라",
+    "answer": "지킬, 마음, 생명",
+    "hint": "잠언 4장 23절"
+  },
+  {
+    "id": "Q015",
+    "categoryId": "memory",
+    "number": 5,
+    "score": 30,
+    "type": "general",
+    "answerType": "short",
+    "question": "내가 너희에게 분부한 모든 것을 가르쳐 지키게 하라 볼지어다 내가 □□ □□까지 너희와 □□ □□ 있으리라 하시니라",
+    "answer": "세상, 끝날, 항상, 함께",
+    "hint": "마태복음 28장 20절"
+  },
+  {
+    "id": "Q016",
+    "categoryId": "memory",
+    "number": 6,
+    "score": 30,
+    "type": "general",
+    "answerType": "short",
+    "question": "여호와는 나의 □□시니 내게 □□함이 없으리로다",
+    "answer": "목자, 부족",
+    "hint": "시편 23:1"
+  },
+  {
+    "id": "Q017",
+    "categoryId": "memory",
+    "number": 7,
+    "score": 40,
+    "type": "general",
+    "answerType": "short",
+    "question": "너희는 그 □□에 의하여 □□으로 말미암아 □□을 받았으니 이것은 너희에게서 난 것이 아니요 하나님의 □□이라",
+    "answer": "은혜, 믿음, 구원, 선물",
+    "hint": "에베소서 2:8"
+  },
+  {
+    "id": "Q018",
+    "categoryId": "memory",
+    "number": 8,
+    "score": 40,
+    "type": "general",
+    "answerType": "short",
+    "question": "그런즉 누구든지 그리스도 □에 있으면 □□□ 피조물이라 이전 것은 지나갔으니 보라 □ 것이 되었도다",
+    "answer": "안, 새로운, 새",
+    "hint": "고린도후서 5:17"
+  },
+  {
+    "id": "Q019",
+    "categoryId": "memory",
+    "number": 9,
+    "score": 50,
+    "type": "general",
+    "answerType": "short",
+    "question": "□□□ 그리하면 너희에게 □□ 것이요 □□□ 그리하면 □아낼 것이요 □을 두드리라 그리하면 너희에게 □릴 것이니",
+    "answer": "구하라, 주실, 찾으라, 찾, 문, 열",
+    "hint": "마태복음 7:7"
+  },
+  {
+    "id": "Q020",
+    "categoryId": "memory",
+    "number": 10,
+    "score": 50,
+    "type": "general",
+    "answerType": "short",
+    "question": "하나님이 □□을 이처럼 □□하사 독생자를 주셨으니 이는 그를 □는 자마다 □망하지 않고 □생을 얻게 하려 하심이라",
+    "answer": "세상, 사랑, 믿, 멸, 영",
+    "hint": "요한복음 3:16"
+  },
+  {
+    "id": "Q021",
+    "categoryId": "ox",
+    "number": 1,
+    "score": 10,
+    "type": "ox",
+    "answerType": "multiple",
+    "question": "율법은 하나님이 주신 좋은 것이며, 사람을 살리는 생명의 길을 가르쳐 준다.",
+    "answer": "O",
+    "choices": [
+      "O",
+      "X"
+    ]
+  },
+  {
+    "id": "Q022",
+    "categoryId": "ox",
+    "number": 2,
+    "score": 10,
+    "type": "ox",
+    "answerType": "multiple",
+    "question": "보디발의 아내가 요셉을 유혹할 때 요셉은 아무도 보지 않으므로 유혹에 넘어가도 괜찮다고 생각했다.",
+    "answer": "X",
+    "choices": [
+      "O",
+      "X"
+    ]
+  },
+  {
+    "id": "Q023",
+    "categoryId": "ox",
+    "number": 3,
+    "score": 20,
+    "type": "ox",
+    "answerType": "multiple",
+    "question": "요셉이 감옥에 갇혔을 때 하나님은 요셉이 죄를 지었기 때문에 그를 버리시고 함께하지 않으셨다.",
+    "answer": "X",
+    "choices": [
+      "O",
+      "X"
+    ]
+  },
+  {
+    "id": "Q024",
+    "categoryId": "ox",
+    "number": 4,
+    "score": 20,
+    "type": "ox",
+    "answerType": "multiple",
+    "question": "술 맡은 관원장은 감옥에서 나간 당일에 요셉의 은혜를 기억하고 바로 왕에게 요셉을 석방해 달라고 요청했다.",
+    "answer": "X",
+    "choices": [
+      "O",
+      "X"
+    ]
+  },
+  {
+    "id": "Q025",
+    "categoryId": "ox",
+    "number": 5,
+    "score": 30,
+    "type": "ox",
+    "answerType": "multiple",
+    "question": "요셉의 형들이 애굽에 와서 총리인 요셉에게 절한 것은 요셉이 어릴 적 꿨던 꿈이 그대로 성취된 것이다.",
+    "answer": "O",
+    "choices": [
+      "O",
+      "X"
+    ]
+  },
+  {
+    "id": "Q026",
+    "categoryId": "ox",
+    "number": 6,
+    "score": 30,
+    "type": "ox",
+    "answerType": "multiple",
+    "question": "우리 마음속에 생기는 두려움, 억울함, 질투 같은 강한 감정은 무조건 숨기거나 없애버려야만 하는 악한 것이다.",
+    "answer": "X",
+    "choices": [
+      "O",
+      "X"
+    ]
+  },
+  {
+    "id": "Q027",
+    "categoryId": "ox",
+    "number": 7,
+    "score": 40,
+    "type": "ox",
+    "answerType": "multiple",
+    "question": "옛날 사람들은 산에서 물, 열매, 짐승 등 필요한 모든 것을 얻을 수 있었기 때문에 산이 뭘 안줄까봐 두려워서 절을 하고 기도하고 빌었다.",
+    "answer": "O",
+    "choices": [
+      "O",
+      "X"
+    ]
+  },
+  {
+    "id": "Q028",
+    "categoryId": "ox",
+    "number": 8,
+    "score": 40,
+    "type": "ox",
+    "answerType": "multiple",
+    "question": "요셉은 감옥에서 2년동안 기다릴 때, 높이 올라갈 줄 알고서 잘 참은 것이다.",
+    "answer": "X",
+    "choices": [
+      "O",
+      "X"
+    ]
+  },
+  {
+    "id": "Q029",
+    "categoryId": "ox",
+    "number": 9,
+    "score": 50,
+    "type": "ox",
+    "answerType": "multiple",
+    "question": "요셉은 바로의 꿈을 자기 능력으로 해석할 수 있다고 자랑했다.",
+    "answer": "X",
+    "choices": [
+      "O",
+      "X"
+    ]
+  },
+  {
+    "id": "Q030",
+    "categoryId": "ox",
+    "number": 10,
+    "score": 50,
+    "type": "ox",
+    "answerType": "multiple",
+    "question": "전쟁터와 같은 위기 상황에서 다 망한 것 같을 때 찾아오는 하나님의 큰 도움을 뜻하는 히브리어 단어는 '에제르'이다.",
+    "answer": "O",
+    "choices": [
+      "O",
+      "X"
+    ]
+  },
+  {
+    "id": "Q031",
+    "categoryId": "sermon",
+    "number": 1,
+    "score": 10,
+    "type": "video",
+    "answerType": "short",
+    "question": "여기에 물을 부으면 어려운 문제가 해결되는 것 처럼 여러분의 OO제목에 손을 얹고 많은 분들이 OO와 사랑을 부어 주셨죠.",
+    "answer": "기도"
+  },
+  {
+    "id": "Q032",
+    "categoryId": "sermon",
+    "number": 2,
+    "score": 10,
+    "type": "image",
+    "answerType": "short",
+    "question": "세상나라는 힘있는 소수가 다수를 힘으로 누르는 삼각형구조라면 하나님의 나라는 O삼각형 구조입니다.",
+    "answer": "역삼각형"
+  },
+  {
+    "id": "Q033",
+    "categoryId": "sermon",
+    "number": 3,
+    "score": 20,
+    "type": "video",
+    "answerType": "short",
+    "question": "그림을 잘 보세요?",
+    "answer": "나침반과 지도(하나님의 설계도 대로 하나님의 형상이 무엇인지 나침반이 되어주셨죠)",
+    "hint": "없어진 것이 무엇인가요?"
+  },
+  {
+    "id": "Q034",
+    "categoryId": "sermon",
+    "number": 4,
+    "score": 20,
+    "type": "image",
+    "answerType": "multiple",
+    "question": "오병이어 사건에서 소년이 보리떡 5개와 물고기 2마리를 드렸을 때, (남자 어른만 셌을 때) 몇 명이나 먹었나요?",
+    "answer": "",
+    "hint": "옛날에는 군대나갈 수 있는 남자 숫자로 셌어요. 아이들과 여자와 어르신들도 합치면 훨씬 많아요.",
+    "choices": [
+      "5 명",
+      "2534 명",
+      "500 명",
+      "5000 명"
+    ]
+  },
+  {
+    "id": "Q035",
+    "categoryId": "sermon",
+    "number": 5,
+    "score": 30,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "창세기 2장 18절: 초성 'ㅎㅈ'",
+    "answer": "",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q036",
+    "categoryId": "sermon",
+    "number": 6,
+    "score": 30,
+    "type": "general",
+    "answerType": "multiple",
+    "question": "사자를 다스리는 4가지 유형 중 '몸에 붕대를 감고 있지만, 다시 고삐를 단단히 쥐고 사자를 이끌어 성공한 모습'을 뜻하는 것은 몇 번째 유형인가요?",
+    "answer": "네 번째 : 4. 회복된 조련사 (상처 입은 치유자)",
+    "choices": [
+      "첫 번째",
+      "두 번째",
+      "세 번째",
+      "네 번째"
+    ]
+  },
+  {
+    "id": "Q037",
+    "categoryId": "sermon",
+    "number": 7,
+    "score": 40,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "전쟁과 같은 위기 상황 속에서도 우리의 큰 도움이 되시는 하나님의 이름을 뜻하는 히브리어 단어는 무엇인가요?",
+    "answer": "에제르",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q038",
+    "categoryId": "sermon",
+    "number": 8,
+    "score": 40,
+    "type": "image",
+    "answerType": "short",
+    "question": "\"나를 한발짝 뒤에서 바라보는 능력\"(사자를 다스릴 수 있는 힘)",
+    "answer": ""
+  },
+  {
+    "id": "Q039",
+    "categoryId": "sermon",
+    "number": 9,
+    "score": 50,
+    "type": "image",
+    "answerType": "multiple",
+    "question": "사자를 다스리는 4가지 유형 중, 사자의 힘에 압도당해 감정이 하자는 대로 다 해주다가 결국 주변을 해치고 자신도 엎어지는 불쌍한 유형은 몇 번째 유형인가요?",
+    "answer": "세 번째 : 3. 사자가 왕이 된 집 (파괴적 맹수)",
+    "choices": [
+      "첫 번째",
+      "두 번째",
+      "세 번째",
+      "네 번째"
+    ]
+  },
+  {
+    "id": "Q040",
+    "categoryId": "sermon",
+    "number": 10,
+    "score": 50,
+    "type": "image",
+    "answerType": "multiple",
+    "question": "사자를 다스리는 4가지 유형 중, 사자에게 질질 끌려다니며 강한 충동에 지배당하는 첫 번째 유형의 이름은 무엇인가요?",
+    "answer": "1. 비겁한 사자 (끌려가는 주인)",
+    "choices": [
+      "비겁한 사자 끌려가는 주인",
+      "사자를 타고 달리는 조련사",
+      "성공한 개척자",
+      "게으른 지휘관"
+    ]
+  },
+  {
+    "id": "Q041",
+    "categoryId": "surprise",
+    "number": 1,
+    "score": 10,
+    "type": "image",
+    "answerType": "short",
+    "question": "숨은 그림 찾기?",
+    "answer": "도마뱀"
+  },
+  {
+    "id": "Q042",
+    "categoryId": "surprise",
+    "number": 2,
+    "score": 10,
+    "type": "video",
+    "answerType": "short",
+    "question": "시끄럽죠? 소리도 너무 커요. 그런데 왜 이렇게 크게 귀에 거슬리게, 많이, 매번 지하철을 탈 때마다 이 소리를 들어야 할까? OO되서 여러번 강조하는 것은 OO과 연결이 되어 있다고 했어요.",
+    "answer": "반복, 생명 (성경 말씀도 반복되서 나오는 것은 생명과 연결된 아주 중요할 때 입니다)"
+  },
+  {
+    "id": "Q043",
+    "categoryId": "surprise",
+    "number": 3,
+    "score": 20,
+    "type": "video",
+    "answerType": "short",
+    "question": "제네시스 차가 다양한 로보트의 기본인 것 처럼, OOO는 성경 전체흐르는 하나님과 사람, 세상, 죄, 구원회복 프로젝트 등 모든 것의 기본이 되어 모든 성경권마다 그 주제가 흐릅니다.",
+    "answer": "창세기"
+  },
+  {
+    "id": "Q044",
+    "categoryId": "surprise",
+    "number": 4,
+    "score": 20,
+    "type": "image",
+    "answerType": "multiple",
+    "question": "상상놀이에서 4가지 중 진짜 말도 안되는 것은?",
+    "answer": "모두 참이다.",
+    "choices": [
+      "땅에서 물고기를 파서 잡는다",
+      "물고기가 세로로 수영한다",
+      "5년도 넘은 마른 풀이 물을 접하고 얼마 안되서 살아난다",
+      "조개가 날라다닌다"
+    ]
+  },
+  {
+    "id": "Q045",
+    "categoryId": "surprise",
+    "number": 5,
+    "score": 30,
+    "type": "image",
+    "answerType": "short",
+    "question": "마법의 상자에 코끼리에게 풀을 많이 먹였더니 무엇이 나왔을까요?",
+    "answer": ""
+  },
+  {
+    "id": "Q046",
+    "categoryId": "surprise",
+    "number": 6,
+    "score": 30,
+    "type": "general",
+    "answerType": "short",
+    "question": "휴대폰을 넣었습니다. 엄마가 봤어요. 엄마가 뭐라고 했어요. 여러분에게서 입에서 무슨말이 나왔을까요?",
+    "answer": "\"5분만 더\"(시간 순삭)"
+  },
+  {
+    "id": "Q047",
+    "categoryId": "surprise",
+    "number": 7,
+    "score": 40,
+    "type": "video",
+    "answerType": "short",
+    "question": "세로로 서서 주로 사냥하는 물고기?",
+    "answer": "갈치"
+  },
+  {
+    "id": "Q048",
+    "categoryId": "surprise",
+    "number": 8,
+    "score": 40,
+    "type": "video",
+    "answerType": "multiple",
+    "question": "다음 2222 숫자로 그림을 그리면 무엇이 완성될까요?",
+    "answer": "4. 개",
+    "choices": [
+      "곰돌이",
+      "토끼",
+      "여우",
+      "개"
+    ]
+  },
+  {
+    "id": "Q049",
+    "categoryId": "surprise",
+    "number": 9,
+    "score": 50,
+    "type": "video",
+    "answerType": "multiple",
+    "question": "성경에서 같은 말이나 구조를 되풀이하여 중요성을 강하게 드러내는 표현 방법은 무엇인가요?",
+    "answer": "1. 반복",
+    "hint": "같은 내용을 여러 번 되풀이하는 방법입니다.",
+    "choices": [
+      "반복",
+      "비유",
+      "반어",
+      "과장"
+    ]
+  },
+  {
+    "id": "Q050",
+    "categoryId": "surprise",
+    "number": 10,
+    "score": 50,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "여기에 들어갈 글자를 적어주세요.",
+    "answer": "끌려갈, 길들일",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q091",
+    "categoryId": "teacher",
+    "number": 1,
+    "score": 10,
+    "type": "image",
+    "answerType": "short",
+    "question": "표지(page1)를 포함해서 이 페이지는 몇페이지에 있었을까요?",
+    "answer": "8 페이지"
+  },
+  {
+    "id": "Q092",
+    "categoryId": "teacher",
+    "number": 2,
+    "score": 10,
+    "type": "person",
+    "answerType": "short",
+    "question": "야곱의 12 아들 중 6명의 이름을 말해주세요.",
+    "answer": "르우벤, 시므온, 레위, 유다, 단, 납달리, 갓, 아셀, 잇사갈, 스불론, 요셉, 베냐민"
+  },
+  {
+    "id": "Q093",
+    "categoryId": "teacher",
+    "number": 3,
+    "score": 20,
+    "type": "general",
+    "answerType": "short",
+    "question": "야곱의 대가족들이 이집트의  풍요로운 땅 어디에 정착했나요?",
+    "answer": "고센"
+  },
+  {
+    "id": "Q094",
+    "categoryId": "teacher",
+    "number": 4,
+    "score": 20,
+    "type": "image",
+    "answerType": "short",
+    "question": "BABY 들이 크면 뭐가 될지 맞춰 보는 문제 였습니다. 기억하시나요? 이 씨앗은 커서 무엇이 되었나요?",
+    "answer": "바오밥 나무"
+  },
+  {
+    "id": "Q095",
+    "categoryId": "teacher",
+    "number": 5,
+    "score": 30,
+    "type": "image",
+    "answerType": "short",
+    "question": "BABY 들 문제입니다. 이것은 크면 뭐가 될지 맞춰 보세요.",
+    "answer": "개복치"
+  },
+  {
+    "id": "Q096",
+    "categoryId": "teacher",
+    "number": 6,
+    "score": 30,
+    "type": "hidden",
+    "answerType": "short",
+    "question": "나비의 번데기입니다. 버둥거리며 나오기 힘들어 하는 번데기를 까주면 어떻게 될까요?",
+    "answer": "",
+    "hiddenShowText": true
+  },
+  {
+    "id": "Q097",
+    "categoryId": "teacher",
+    "number": 7,
+    "type": "general",
+    "answerType": "short",
+    "question": "하나님의 음성에 마음을 기울이고 그 말씀에 따라 행동하는 것을 무엇이라고 하나요?",
+    "answer": "순종",
+    "score": 40,
+    "explanation": "순종은 듣는 데서 끝나지 않고 행동으로 이어지는 믿음입니다."
+  },
+  {
+    "id": "Q098",
+    "categoryId": "teacher",
+    "number": 8,
+    "type": "general",
+    "answerType": "multiple",
+    "question": "오병이어 사건을 통해 예수님이 자신을 어떤 분으로 보여 주셨다고 요한복음 6장은 설명하나요?",
+    "answer": "생명의 떡",
+    "score": 40,
+    "choices": [
+      "생명의 떡",
+      "세상의 왕",
+      "율법의 선생",
+      "광야의 장군"
+    ],
+    "hint": "광야의 만나와 연결해 생각해 보세요.",
+    "explanation": "예수님은 육신의 배고픔뿐 아니라 영원한 생명을 주시는 생명의 떡이십니다.\n요한복음 6:35"
+  },
+  {
+    "id": "Q099",
+    "categoryId": "teacher",
+    "number": 9,
+    "score": 50,
+    "type": "general",
+    "answerType": "multiple",
+    "question": "나가면 요셉의 억울함을 풀어주겠노라 했지만 2년후에 바로(왕)가 꿈해몽할 자를 찾자 요셉을 기억하고 왕에게 소개한 사람은?",
+    "answer": "2. 술 맡은 관원장",
+    "choices": [
+      "보디발",
+      "술 맡은 관원장",
+      "떡 굽는 자",
+      "감옥 간수장"
+    ]
+  },
+  {
+    "id": "Q100",
+    "categoryId": "teacher",
+    "number": 10,
+    "score": 50,
+    "type": "image",
+    "answerType": "short",
+    "question": "성경암송 3개를 한 자도 틀리지 않고 다 하실 수 있는 첫번째 선생님께 선물을 드립니다.\n\n학생 중에도 제일 처음 3개 다 성공한 사람 선물을 드리겠습니다 (선생님들 하실 동안 외워보세요~)",
+    "answer": "",
+    "hint": "심사는 칼날 같은 섬세함을 가지신 송선미 부장님께서"
+  }
+]
