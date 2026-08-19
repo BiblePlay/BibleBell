@@ -359,25 +359,35 @@ function normalizeImportedQuestionPaths(questions: QuizQuestion[]): QuizQuestion
 function portableGuideText(): string {
   const appUrl = getPublicAppUrl()
   return `도전 바이블 골든벨 - BibleBell_Data 사용안내\n\n` +
-    `이 폴더 하나를 통째로 보관하면 문제와 그림·영상·오디오를 다른 컴퓨터로 옮길 수 있습니다.\n\n` +
-    `1. BibleBell 실행\n${appUrl}\n` +
-    `- BibleBell_실행.url(Windows) 또는 BibleBell_실행.webloc(Mac)을 바탕화면에 복사해 두면 웹주소를 한 번에 열 수 있습니다.\n\n` +
-    `2. 다른 컴퓨터로 옮길 때\n` +
-    `- 이 BibleBell_Data 폴더 전체를 USB, 외장하드, 클라우드 등으로 복사합니다.\n` +
-    `- questions.xlsx만 단독으로 옮기면 그림·영상·오디오는 함께 복원되지 않습니다.\n\n` +
-    `3. 새 컴퓨터에서 복원\n` +
-    `- 위 주소로 BibleBell을 엽니다.\n` +
-    `- 관리자 모드 > 데이터 불러오기를 누릅니다.\n` +
-    `- 가져온 BibleBell_Data 폴더를 선택합니다.\n` +
-    `- 브라우저가 폴더 읽기/쓰기 권한을 물으면 허용합니다.\n\n` +
-    `4. 저장 위치\n` +
-    `- 처음에는 원하는 위치를 직접 선택합니다.\n` +
-    `- 프로그램이 그 위치 안에 BibleBell_Data 폴더를 자동으로 만듭니다.\n` +
-    `- 바깥 폴더 이름과 위치는 자유롭게 정해도 됩니다.\n\n` +
-    `5. 작업 후 백업\n` +
-    `- 관리자 모드 > 데이터 보내기를 누르면 questions.xlsx, questions.json, manifest.json과 media 폴더가 최신 상태로 정리됩니다.\n` +
-    `- 같은 컴퓨터의 같은 브라우저에서는 수정 내용이 브라우저에도 저장됩니다.\n\n` +
-    `폴더 내부의 파일명과 media 하위 구조는 BibleBell이 자동 관리하므로 임의로 바꾸지 않는 것을 권장합니다.\n`
+    `BibleBell 프로그램 틀은 웹/PWA에서 실행되고, 내가 만든 문제와 미디어는 내 컴퓨터에 보관할 수 있습니다.\n` +
+    `다른 컴퓨터로 옮길 때는 BibleBell 웹주소와 이 BibleBell_Data 폴더 전체를 함께 가져가세요.\n\n` +
+    `■ 처음 사용할 때\n` +
+    `1. BibleBell 실행: ${appUrl}\n` +
+    `2. 홈 화면의 “앱 설치”를 사용하면 지원되는 브라우저에서 BibleBell을 앱처럼 설치할 수 있습니다.\n` +
+    `3. 관리자 모드에서 “저장 위치 지정”을 누르고 원하는 위치를 선택합니다.\n` +
+    `4. 프로그램이 선택한 위치 안에 BibleBell_Data 폴더를 자동으로 만들고 관리합니다.\n\n` +
+    `■ 평소 작업\n` +
+    `- 문제·정답·보기·힌트 등의 수정 내용은 같은 컴퓨터의 같은 브라우저에도 저장됩니다.\n` +
+    `- 저장 폴더의 쓰기 권한이 유지되면 questions.json도 자동 동기화됩니다.\n` +
+    `- 그림·영상·오디오는 문제 ID 기준의 일정한 파일명으로 정리됩니다.\n` +
+    `- 기존 미디어는 먼저 제거하지 않아도 새 파일을 선택해 바로 교체할 수 있습니다.\n\n` +
+    `■ 작업을 마친 뒤\n` +
+    `- 관리자 모드의 “데이터 보내기”를 누르세요.\n` +
+    `- questions.xlsx, questions.json, manifest.json, media 폴더와 이 안내 파일이 최신 상태로 정리됩니다.\n` +
+    `- Excel만 따로 옮기면 문제 글자는 복원할 수 있지만 그림·영상·오디오는 함께 복원되지 않습니다.\n\n` +
+    `■ 다른 컴퓨터에서 이어서 사용\n` +
+    `1. BibleBell_Data 폴더 전체를 USB·외장하드·클라우드 등으로 복사합니다.\n` +
+    `2. 새 컴퓨터에서 BibleBell 웹주소를 엽니다.\n` +
+    `3. 관리자 모드 → “데이터 불러오기”를 누릅니다.\n` +
+    `4. 가져온 BibleBell_Data 폴더 자체 또는 그 바로 위 폴더를 선택합니다.\n` +
+    `5. 폴더 권한을 물으면 허용합니다. 문제와 미디어가 같은 구성으로 복원됩니다.\n\n` +
+    `■ 꼭 기억하세요\n` +
+    `- BibleBell_Data 바깥의 부모 폴더 이름과 저장 위치는 자유롭게 정해도 됩니다.\n` +
+    `- BibleBell_Data 내부의 파일명과 media 하위 구조는 프로그램이 관리하므로 임의로 바꾸지 않는 것을 권장합니다.\n` +
+    `- 브라우저가 폴더 권한을 다시 물으면 같은 BibleBell_Data 폴더를 다시 허용하면 됩니다.\n` +
+    `- 데이터 보내기 중 일부 미디어를 읽지 못하더라도 기존 media 폴더 전체를 자동 삭제하지 않습니다.\n\n` +
+    `Windows 바로가기: BibleBell_실행.url\n` +
+    `Mac 웹주소 바로가기: BibleBell_실행.webloc\n`
 }
 
 async function writePortableGuideFiles(folder: AnyDirectoryHandle) {
@@ -404,12 +414,12 @@ async function writeQuestionSnapshot(folder: AnyDirectoryHandle, questions: Quiz
     assetMeta: loadAssetMeta(),
   }
 
-  await Promise.all([
-    writeFileAt(folder, 'questions.xlsx', createQuestionsExcelBlob(normalizedQuestions)),
-    writeTextFile(folder, 'questions.json', JSON.stringify(normalizedQuestions, null, 2), 'application/json;charset=utf-8'),
-    writeTextFile(folder, 'manifest.json', JSON.stringify(manifest, null, 2), 'application/json;charset=utf-8'),
-    writePortableGuideFiles(folder),
-  ])
+  // 핵심 데이터부터 순서대로 기록하고 manifest는 마지막에 갱신합니다.
+  // 중간에 쓰기 오류가 나도 완료 시각만 먼저 바뀌어 버리는 상태를 피합니다.
+  await writeFileAt(folder, 'questions.xlsx', createQuestionsExcelBlob(normalizedQuestions))
+  await writeTextFile(folder, 'questions.json', JSON.stringify(normalizedQuestions, null, 2), 'application/json;charset=utf-8')
+  await writePortableGuideFiles(folder)
+  await writeTextFile(folder, 'manifest.json', JSON.stringify(manifest, null, 2), 'application/json;charset=utf-8')
 }
 
 
@@ -424,10 +434,8 @@ async function writeQuestionAutosave(folder: AnyDirectoryHandle, questions: Quiz
     assetMeta: loadAssetMeta(),
   }
 
-  await Promise.all([
-    writeTextFile(folder, 'questions.json', JSON.stringify(normalizedQuestions, null, 2), 'application/json;charset=utf-8'),
-    writeTextFile(folder, 'manifest.json', JSON.stringify(manifest, null, 2), 'application/json;charset=utf-8'),
-  ])
+  await writeTextFile(folder, 'questions.json', JSON.stringify(normalizedQuestions, null, 2), 'application/json;charset=utf-8')
+  await writeTextFile(folder, 'manifest.json', JSON.stringify(manifest, null, 2), 'application/json;charset=utf-8')
 }
 
 async function chooseNewDataFolder(): Promise<AnyDirectoryHandle> {

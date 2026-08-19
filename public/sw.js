@@ -1,4 +1,4 @@
-const CACHE_NAME = 'biblebell-shell-v3'
+const CACHE_NAME = 'biblebell-shell-v4-final'
 const BASE = '/BibleBell/'
 const PRECACHE = [
   BASE,

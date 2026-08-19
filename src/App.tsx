@@ -13,7 +13,7 @@ import {
   selectPortableDataLocation,
   supportsPortableFolder,
 } from './utils/portableData'
-import { requestPwaInstall } from './utils/pwaInstall'
+import { getPwaInstallHelp, requestPwaInstall } from './utils/pwaInstall'
 
 const PLAYED_STORAGE_KEY = 'biblebell-played-question-ids'
 const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, '')
@@ -224,15 +224,22 @@ export default function App() {
 
   const installBibleBellApp = async () => {
     const result = await requestPwaInstall()
+
     if (result === 'installed') {
-      window.alert('BibleBell 앱 설치를 시작했습니다. 설치된 앱은 독립 창으로 열립니다. 바탕화면 아이콘 위치는 운영체제와 브라우저에 따라 다를 수 있습니다.')
-    } else if (result === 'already-installed') {
-      window.alert('BibleBell이 이미 앱으로 실행 중입니다.')
-    } else if (result === 'dismissed') {
+      window.alert('브라우저의 BibleBell 앱 설치를 승인했습니다. 설치가 완료되면 브라우저 탭과 별개의 앱 창/앱 목록에서 BibleBell 아이콘으로 실행할 수 있습니다.')
       return
-    } else {
-      window.alert('설치 창이 바로 뜨지 않으면 주소창의 설치 아이콘 또는 브라우저 메뉴의 “앱 설치”를 사용해 주세요. 이미 설치된 경우에도 이 안내가 보일 수 있습니다.')
     }
+
+    if (result === 'already-installed') {
+      window.alert('현재 BibleBell이 설치된 앱 창으로 실행 중입니다.')
+      return
+    }
+
+    if (result === 'dismissed') return
+
+    window.alert(
+      `BibleBell 앱 설치 안내\n\n${getPwaInstallHelp()}\n\nBibleBell은 .exe나 .dmg를 설치하는 프로그램이 아니라 브라우저의 공식 웹앱(PWA) 설치 기능을 사용합니다.`,
+    )
   }
 
   const chooseDataFolder = async (): Promise<boolean> => {
