@@ -6,6 +6,33 @@ import {
 } from 'react'
 import type { CSSProperties } from 'react'
 import type { QuizQuestion } from '../types'
+import { resolvePortableAssetUrl } from '../utils/portableData'
+
+
+function useResolvedPortableUrl(source?: string) {
+  const [resolved, setResolved] = useState(source)
+
+  useEffect(() => {
+    let active = true
+    let objectUrl = ''
+    setResolved(source)
+
+    if (!source) return () => undefined
+
+    void resolvePortableAssetUrl(source).then((value) => {
+      if (!active || !value) return
+      if (value.startsWith('blob:')) objectUrl = value
+      setResolved(value)
+    })
+
+    return () => {
+      active = false
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
+  }, [source])
+
+  return resolved
+}
 
 interface QuestionPageProps {
   question: QuizQuestion
@@ -858,6 +885,18 @@ export function QuestionPage({
   const isHiddenPicture = type === 'hidden'
   const isOx = type === 'ox'
 
+  const questionImage =
+    question.questionImageUrl ??
+    ((type === 'image' || type === 'person' || type === 'hidden')
+      ? question.mediaUrl
+      : undefined)
+
+  const rawVisibleImage = showAnswer
+    ? question.answerImageUrl ?? questionImage
+    : questionImage
+  const visibleImage = useResolvedPortableUrl(rawVisibleImage)
+  const resolvedMediaUrl = useResolvedPortableUrl(question.mediaUrl)
+
   if (isOx) {
     return (
       <OxQuestionView
@@ -868,16 +907,6 @@ export function QuestionPage({
       />
     )
   }
-
-  const questionImage =
-    question.questionImageUrl ??
-    ((type === 'image' || type === 'person' || type === 'hidden')
-      ? question.mediaUrl
-      : undefined)
-
-  const visibleImage = showAnswer
-    ? question.answerImageUrl ?? questionImage
-    : questionImage
 
   const visibleText = showAnswer
     ? question.answer
@@ -1011,9 +1040,9 @@ export function QuestionPage({
                 }}
               >
                 {hasVideoMedia &&
-                  question.mediaUrl && (
+                  resolvedMediaUrl && (
                     <video
-                      src={question.mediaUrl}
+                      src={resolvedMediaUrl}
                       controls
                       preload="metadata"
                       style={{

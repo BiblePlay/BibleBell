@@ -26,6 +26,12 @@ import { categories } from '../data/categories'
 import { exportQuestionsToExcel } from '../utils/excelExport'
 import { importQuestionsFromExcel } from '../utils/excelImport'
 import { uploadProjectAsset } from '../utils/questionStorage'
+import {
+  exportPortableDataFolder,
+  importPortableDataFolder,
+  resolvePortableAssetUrl,
+  supportsPortableFolder,
+} from '../utils/portableData'
 
 import type {
   AnswerType,
@@ -1004,6 +1010,22 @@ function AdaptiveImagePreview({
   ] = useState<boolean | null>(
     null,
   )
+  const [resolvedSrc, setResolvedSrc] = useState(src)
+
+  useEffect(() => {
+    let active = true
+    let objectUrl = ''
+    setResolvedSrc(src)
+    void resolvePortableAssetUrl(src).then((value) => {
+      if (!active || !value) return
+      if (value.startsWith('blob:')) objectUrl = value
+      setResolvedSrc(value)
+    })
+    return () => {
+      active = false
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
+  }, [src])
 
   useEffect(() => {
     let active = true
@@ -1134,12 +1156,12 @@ function AdaptiveImagePreview({
       }
     }
 
-    image.src = src
+    image.src = resolvedSrc
 
     return () => {
       active = false
     }
-  }, [src])
+  }, [resolvedSrc])
 
   return (
     <img
@@ -1151,7 +1173,7 @@ function AdaptiveImagePreview({
           ? styles.mediaPreviewContain
           : styles.mediaPreviewCover),
       }}
-      src={src}
+      src={resolvedSrc}
       alt={alt}
     />
   )
@@ -1633,10 +1655,11 @@ const [excelLoading, setExcelLoading] =
           } else if (
             videoIsLinked
           ) {
-            setVideoPreviewUrl(
-              selectedQuestion
-                ?.mediaUrl ?? '',
+            const resolvedVideo = await resolvePortableAssetUrl(
+              selectedQuestion?.mediaUrl,
             )
+            if (resolvedVideo?.startsWith('blob:')) videoObjectUrl = resolvedVideo
+            setVideoPreviewUrl(resolvedVideo ?? selectedQuestion?.mediaUrl ?? '')
           } else {
             setVideoPreviewUrl('')
           }
@@ -1657,11 +1680,9 @@ const [excelLoading, setExcelLoading] =
             setAudioPreviewUrl('')
           }
         } catch {
-          setVideoPreviewUrl(
-            selectedQuestion
-              ?.mediaUrl ?? '',
-          )
-
+          const resolvedVideo = await resolvePortableAssetUrl(selectedQuestion?.mediaUrl)
+          if (resolvedVideo?.startsWith('blob:')) videoObjectUrl = resolvedVideo
+          setVideoPreviewUrl(resolvedVideo ?? selectedQuestion?.mediaUrl ?? '')
           setAudioPreviewUrl('')
         } finally {
           window.setTimeout(() => {
@@ -1986,7 +2007,8 @@ const saveCurrentQuestion = (
         file.name,
       )
 
-      setVideoPreviewUrl(savedUrl)
+      const resolvedVideo = await resolvePortableAssetUrl(savedUrl)
+      setVideoPreviewUrl(resolvedVideo ?? savedUrl)
 
       updateMeta({
         ...assetMeta,
@@ -2077,6 +2099,46 @@ const saveCurrentQuestion = (
     setMessage(
       '현재 문제와 오디오의 연결을 해제했습니다.',
     )
+  }
+
+  const savePortableFolder = async () => {
+    try {
+      if (!supportsPortableFolder()) {
+        setMessage('이 브라우저는 데이터 폴더 기능을 지원하지 않습니다. Chrome, Edge, Whale 데스크톱 브라우저를 사용해 주세요.')
+        return
+      }
+      const currentQuestion = buildQuestion()
+      const snapshot = [
+        ...questions.filter((item) => !(item.categoryId === categoryId && item.number === selectedNumber)),
+        currentQuestion,
+      ].sort((a, b) => a.categoryId.localeCompare(b.categoryId) || a.number - b.number)
+      onSave(snapshot)
+      const result = await exportPortableDataFolder(snapshot)
+      setMessage(`BibleBell_Data 폴더에 문제 100개와 미디어 ${result.mediaCount}개를 저장했습니다.`)
+    } catch (error) {
+      if ((error as DOMException)?.name === 'AbortError') return
+      console.error(error)
+      setMessage(error instanceof Error ? error.message : '전체 데이터 저장에 실패했습니다.')
+    }
+  }
+
+  const loadPortableFolder = async () => {
+    try {
+      if (!supportsPortableFolder()) {
+        setMessage('이 브라우저는 데이터 폴더 기능을 지원하지 않습니다. Chrome, Edge, Whale 데스크톱 브라우저를 사용해 주세요.')
+        return
+      }
+      setExcelLoading(true)
+      const imported = await importPortableDataFolder()
+      onSave(imported)
+      setMessage(`BibleBell_Data 폴더에서 ${imported.length}문제와 미디어 연결을 복원했습니다.`)
+    } catch (error) {
+      if ((error as DOMException)?.name === 'AbortError') return
+      console.error(error)
+      setMessage(error instanceof Error ? error.message : '전체 데이터 불러오기에 실패했습니다.')
+    } finally {
+      setExcelLoading(false)
+    }
   }
 
   const submit = (
@@ -2255,6 +2317,23 @@ onClick={() => {
 >
   엑셀 가져오기
 </button>
+            <button
+              type="button"
+              className="admin-secondary-button"
+              onClick={() => void loadPortableFolder()}
+              disabled={excelLoading}
+              title="다른 컴퓨터에서 가져온 BibleBell_Data 폴더를 한 번에 불러옵니다."
+            >
+              내 데이터 불러오기
+            </button>
+            <button
+              type="button"
+              className="admin-secondary-button"
+              onClick={() => void savePortableFolder()}
+              title="문제·Excel·그림·영상·오디오를 BibleBell_Data 폴더에 함께 저장합니다."
+            >
+              내 데이터 저장
+            </button>
           </div>
         </header>
 

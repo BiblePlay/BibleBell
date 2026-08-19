@@ -1,8 +1,8 @@
 import * as XLSX from 'xlsx'
 import type { QuizQuestion } from '../types'
 
-export function exportQuestionsToExcel(questions: QuizQuestion[]) {
-  const rows = questions.map((q) => ({
+function createRows(questions: QuizQuestion[]) {
+  return questions.map((q) => ({
     번호: q.number,
     카테고리: q.categoryId,
     문제유형: q.type ?? 'general',
@@ -21,7 +21,10 @@ export function exportQuestionsToExcel(questions: QuizQuestion[]) {
     미디어: q.mediaUrl ?? '',
     숨은그림텍스트표시: q.hiddenShowText ? 'TRUE' : 'FALSE',
   }))
+}
 
+export function createQuestionsWorkbook(questions: QuizQuestion[]) {
+  const rows = createRows(questions)
   const worksheet = XLSX.utils.json_to_sheet(rows)
 
   // Excel에서 바로 필터/정렬할 수 있도록 헤더에 AutoFilter를 넣습니다.
@@ -36,5 +39,16 @@ export function exportQuestionsToExcel(questions: QuizQuestion[]) {
 
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, worksheet, '문제목록')
+  return workbook
+}
+
+export function createQuestionsExcelBlob(questions: QuizQuestion[]): Blob {
+  const workbook = createQuestionsWorkbook(questions)
+  const data = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+  return new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+}
+
+export function exportQuestionsToExcel(questions: QuizQuestion[]) {
+  const workbook = createQuestionsWorkbook(questions)
   XLSX.writeFile(workbook, '도전바이블골든벨_문제목록.xlsx')
 }
