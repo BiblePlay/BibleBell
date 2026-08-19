@@ -1,0 +1,45 @@
+BibleBell PUBLIC PORTABLE + PWA 최종 점검 기록
+
+기준
+- 외장하드 FINAL 원본은 수정하지 않음
+- PUBLIC 배포본만 수정
+- 기존 게임 엔진/점수판/10×10 문제판을 재작성하지 않음
+
+최종 구조
+- GitHub/PWA: 프로그램 틀
+- 브라우저 localStorage: 100문제 지속 저장
+- IndexedDB: 웹에서 등록한 미디어 저장
+- BibleBell_Data: 다른 컴퓨터로 옮기는 실제 휴대용 데이터 폴더
+
+BibleBell_Data
+- questions.json: 편집 중 자동 동기화되는 최신 문제 스냅샷
+- questions.xlsx: 데이터 보내기 때 최신화되는 사람이 관리하기 좋은 Excel
+- manifest.json: 복원 정보
+- media/: 그림/영상/오디오
+- BibleBell_사용안내.txt
+- BibleBell_웹주소.txt
+- BibleBell_실행.url (Windows)
+- BibleBell_실행.webloc (Mac)
+
+데이터 안전 원칙
+- 데이터 보내기 때 media 폴더 전체를 먼저 삭제하지 않음
+- 현재 파일은 같은 상대경로에 덮어씀
+- 사용자가 명시적으로 제거/교체한 개별 미디어만 정리
+- 데이터 불러오기는 자동 저장된 questions.json을 우선하고 Excel을 복구 경로로 사용
+- GitHub에서 사용자가 문제를 저장한 뒤에는 공개 샘플이 개인 데이터를 덮어쓰지 않음
+
+검증
+- 문제 100개
+- 10개 카테고리 × 각 10문제
+- 카테고리+번호 고유 위치 100개
+- 현재 샘플 객관식 29개, 모두 보기 데이터 존재
+- 점수 패턴 10,10,20,20,30,30,40,40,50,50 유지
+- TypeScript/TSX 18개 구문 검사: 오류 0
+- 외부 패키지 타입을 스텁한 전체 TypeScript 의미 검사: 오류 0
+- PWA manifest JSON/아이콘 크기 확인
+- 공개 JSON의 존재하지 않는 미디어 경로 정리
+- PUBLIC 관리용 Excel을 현재 100문제와 일치하도록 재생성
+
+주의
+- 이 검사 환경은 npm registry 외부 다운로드가 차단되어 실제 npm ci / Vite 전체 빌드는 완료할 수 없었음.
+- GitHub Actions의 npm ci → npm run build 성공(초록색)이 최종 실제 빌드 확인 단계임.

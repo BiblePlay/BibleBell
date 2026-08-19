@@ -7,7 +7,13 @@ import { HomePage } from './pages/HomePage'
 import { QuestionPage } from './pages/QuestionPage'
 import type { QuizQuestion, Screen, TeamScore } from './types'
 import { loadQuestions, loadQuestionsFromProject, saveQuestions } from './utils/questionStorage'
-import { requestPersistentBrowserStorage } from './utils/portableData'
+import {
+  getPortableDataFolderInfo,
+  requestPersistentBrowserStorage,
+  selectPortableDataLocation,
+  supportsPortableFolder,
+} from './utils/portableData'
+import { requestPwaInstall } from './utils/pwaInstall'
 
 const PLAYED_STORAGE_KEY = 'biblebell-played-question-ids'
 const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, '')
@@ -68,6 +74,14 @@ export default function App() {
     loadPlayedQuestionIds,
   )
 
+  const [dataFolderLinked, setDataFolderLinked] =
+    useState<boolean | null>(null)
+
+  const refreshDataFolderLink = async () => {
+    const info = await getPortableDataFolderInfo()
+    setDataFolderLinked(info.linked)
+  }
+
   const selectedQuestion = useMemo(() => {
     if (screen.name !== 'question') {
       return null
@@ -83,6 +97,7 @@ export default function App() {
 
   useEffect(() => {
     void requestPersistentBrowserStorage()
+    void refreshDataFolderLink()
   }, [])
 
   useEffect(() => {
@@ -207,6 +222,37 @@ export default function App() {
     saveQuestions(nextQuestions)
   }
 
+  const installBibleBellApp = async () => {
+    const result = await requestPwaInstall()
+    if (result === 'installed') {
+      window.alert('BibleBell 앱 설치를 시작했습니다. 설치된 앱은 독립 창으로 열립니다. 바탕화면 아이콘 위치는 운영체제와 브라우저에 따라 다를 수 있습니다.')
+    } else if (result === 'already-installed') {
+      window.alert('BibleBell이 이미 앱으로 실행 중입니다.')
+    } else if (result === 'dismissed') {
+      return
+    } else {
+      window.alert('설치 창이 바로 뜨지 않으면 주소창의 설치 아이콘 또는 브라우저 메뉴의 “앱 설치”를 사용해 주세요. 이미 설치된 경우에도 이 안내가 보일 수 있습니다.')
+    }
+  }
+
+  const chooseDataFolder = async (): Promise<boolean> => {
+    if (!supportsPortableFolder()) {
+      window.alert('이 브라우저는 폴더 저장 기능을 지원하지 않습니다. Chrome, Edge, Whale 같은 Chromium 계열 데스크톱 브라우저에서 사용해 주세요.')
+      return false
+    }
+    try {
+      const result = await selectPortableDataLocation(quizQuestions)
+      setDataFolderLinked(true)
+      window.alert(`${result.folderName} 저장 위치가 준비되었습니다. 문제와 미디어를 다른 컴퓨터로 옮길 때는 관리자 모드의 “데이터 보내기”를 눌러 이 폴더 전체를 가져가세요.`)
+      return true
+    } catch (error) {
+      if ((error as DOMException)?.name === 'AbortError') return false
+      console.error(error)
+      window.alert(error instanceof Error ? error.message : '저장 위치 지정에 실패했습니다.')
+      return false
+    }
+  }
+
   if (screen.name === 'home') {
     return (
       <HomePage
@@ -219,6 +265,9 @@ export default function App() {
         onScore={changeScore}
         onAdmin={goAdmin}
         onReset={resetGame}
+        onInstallApp={() => void installBibleBellApp()}
+        onChooseDataFolder={chooseDataFolder}
+        dataFolderLinked={dataFolderLinked}
       />
     )
   }

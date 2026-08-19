@@ -56,7 +56,7 @@ export function loadQuestions(): QuizQuestion[] {
 }
 
 export async function loadQuestionsFromProject(): Promise<QuizQuestion[]> {
-  // GitHub 공개웹에서 사용자가 자기 문제를 저장한 뒤에는
+  // GitHub 공개웹에서 사용자가 한 번이라도 자기 문제를 저장한 뒤에는
   // 새 배포가 올라와도 개인 데이터를 공개 샘플 100문제로 덮어쓰지 않습니다.
   if (isStaticHostedMode() && window.localStorage.getItem(USER_DATA_KEY) === '1') {
     try {
@@ -69,11 +69,13 @@ export async function loadQuestionsFromProject(): Promise<QuizQuestion[]> {
 
   let parsed: unknown = null
 
-  try {
-    const apiResponse = await fetch('/BibleBell/api/questions', { cache: 'no-store' })
-    if (apiResponse.ok) parsed = await apiResponse.json()
-  } catch {
-    // GitHub Pages에서는 API가 없으므로 정적 공개 데이터를 사용합니다.
+  if (!isStaticHostedMode()) {
+    try {
+      const apiResponse = await fetch('/BibleBell/api/questions', { cache: 'no-store' })
+      if (apiResponse.ok) parsed = await apiResponse.json()
+    } catch {
+      // 로컬 API를 읽지 못하면 아래의 정적 공개 데이터로 복구합니다.
+    }
   }
 
   if (!Array.isArray(parsed) || parsed.length !== EXPECTED_QUESTION_COUNT) {
@@ -97,8 +99,10 @@ export function saveQuestions(questions: QuizQuestion[]): void {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized))
   if (isStaticHostedMode()) window.localStorage.setItem(USER_DATA_KEY, '1')
   // 한 번 연결된 BibleBell_Data 폴더가 있고 쓰기 권한이 유지된 경우
-  // Excel/JSON도 자동 갱신합니다. 권한창은 자동으로 띄우지 않습니다.
+  // questions.json/manifest.json을 자동 갱신합니다. Excel은 데이터 보내기 때 최신화합니다.
   void syncPortableQuestionsIfLinked(normalized)
+
+  if (isStaticHostedMode()) return
 
   void fetch('/BibleBell/api/questions', {
     method: 'POST',
@@ -123,31 +127,33 @@ export function saveQuestions(questions: QuizQuestion[]): void {
 export async function uploadProjectAsset(questionId: string, kind: 'questionImage'|'answerImage'|'video'|'audio', file: Blob, filename: string): Promise<string> {
   let savedUrl = canonicalMediaUrl(questionId, kind, filename, file.type)
 
-  try {
-    const response = await fetch('/BibleBell/api/media', {
-      method: 'POST',
-      headers: {
-        'Content-Type': file.type || 'application/octet-stream',
-        'X-Question-Id': questionId,
-        'X-Asset-Kind': kind,
-        'X-File-Name': encodeURIComponent(filename),
-      },
-      body: file,
-    })
+  if (!isStaticHostedMode()) {
+    try {
+      const response = await fetch('/BibleBell/api/media', {
+        method: 'POST',
+        headers: {
+          'Content-Type': file.type || 'application/octet-stream',
+          'X-Question-Id': questionId,
+          'X-Asset-Kind': kind,
+          'X-File-Name': encodeURIComponent(filename),
+        },
+        body: file,
+      })
 
-    if (response.ok) {
-      const result = await response.json()
-      if (result.url) savedUrl = result.url
-    } else if (!isStaticHostedMode()) {
-      let message = '미디어 저장 실패'
-      try {
+      if (response.ok) {
         const result = await response.json()
-        message = result.message ?? message
-      } catch { /* ignore */ }
-      throw new Error(message)
+        if (result.url) savedUrl = result.url
+      } else {
+        let message = '미디어 저장 실패'
+        try {
+          const result = await response.json()
+          message = result.message ?? message
+        } catch { /* ignore */ }
+        throw new Error(message)
+      }
+    } catch (error) {
+      throw error
     }
-  } catch (error) {
-    if (!isStaticHostedMode()) throw error
   }
 
   // 웹 배포에서는 실제 파일을 브라우저 저장소에 보관하고,

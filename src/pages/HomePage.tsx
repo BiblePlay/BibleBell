@@ -1,8 +1,11 @@
 import {
+  Download,
+  FolderOpen,
   Maximize2,
   RotateCcw,
   Settings,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Scoreboard } from '../components/Scoreboard'
 import { categories } from '../data/categories'
 import masterLogo from '../assets/master-logo.png'
@@ -21,6 +24,9 @@ interface HomePageProps {
   onScore: (teamId: number, delta: number) => void
   onAdmin: () => void
   onReset: () => void
+  onInstallApp: () => void
+  onChooseDataFolder: () => Promise<boolean>
+  dataFolderLinked: boolean | null
 }
 
 const SLOT_NUMBERS = Array.from(
@@ -36,7 +42,18 @@ export function HomePage({
   onScore,
   onAdmin,
   onReset,
+  onInstallApp,
+  onChooseDataFolder,
+  dataFolderLinked,
 }: HomePageProps) {
+  const [showSetupGuide, setShowSetupGuide] = useState(false)
+
+  useEffect(() => {
+    if (dataFolderLinked === false && window.sessionStorage.getItem('biblebell-setup-guide-dismissed') !== '1') {
+      setShowSetupGuide(true)
+    }
+    if (dataFolderLinked === true) setShowSetupGuide(false)
+  }, [dataFolderLinked])
   const toggleFullscreen = async () => {
     if (!document.fullscreenElement) {
       await document.documentElement.requestFullscreen()
@@ -48,6 +65,45 @@ export function HomePage({
 
   return (
     <main className="master-screen">
+      {showSetupGuide && (
+        <div className="master-setup-overlay" role="dialog" aria-modal="true" aria-label="BibleBell 처음 사용 안내">
+          <section className="master-setup-card">
+            <div className="master-setup-icon"><FolderOpen size={30} /></div>
+            <div>
+              <span className="master-setup-kicker">처음 사용 안내</span>
+              <h2>내 BibleBell 저장 위치를 정해 주세요.</h2>
+              <p>
+                문제 수정 내용은 브라우저에도 저장됩니다. 하지만 그림·동영상까지 다른 컴퓨터로 옮기려면
+                <b> BibleBell_Data</b> 폴더가 필요합니다. 원하는 위치만 선택하면 BibleBell이 그 안에 폴더를 자동으로 만듭니다.
+              </p>
+              <p className="master-setup-note">
+                나중에 관리자 모드에서 저장 위치를 바꿀 수 있고, 작업 후 <b>데이터 보내기</b>를 누르면 Excel과 미디어가 함께 정리됩니다.
+              </p>
+            </div>
+            <div className="master-setup-actions">
+              <button
+                className="master-setup-primary"
+                onClick={async () => {
+                  const ok = await onChooseDataFolder()
+                  if (ok) setShowSetupGuide(false)
+                }}
+              >
+                저장 폴더 지정
+              </button>
+              <button
+                className="master-setup-secondary"
+                onClick={() => {
+                  window.sessionStorage.setItem('biblebell-setup-guide-dismissed', '1')
+                  setShowSetupGuide(false)
+                }}
+              >
+                나중에
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
       <section className="master-board-panel">
         <header className="master-board-titlebar">
           <div className="master-board-title">
@@ -55,13 +111,24 @@ export function HomePage({
             <strong>골든벨</strong>
           </div>
 
-          <button
-            className="master-admin-button"
-            onClick={onAdmin}
-          >
-            <Settings size={18} />
-            관리자 모드
-          </button>
+          <div className="master-title-actions">
+            <button
+              className="master-admin-button master-install-button"
+              onClick={onInstallApp}
+              title="BibleBell을 컴퓨터에 앱처럼 설치"
+            >
+              <Download size={18} />
+              앱 설치
+            </button>
+
+            <button
+              className="master-admin-button"
+              onClick={onAdmin}
+            >
+              <Settings size={18} />
+              관리자 모드
+            </button>
+          </div>
         </header>
 
         <div className="master-board-grid">

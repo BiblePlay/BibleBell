@@ -19,6 +19,7 @@ import {
   Play,
   RefreshCw,
   Save,
+  HelpCircle,
   Trash2,
   UploadCloud,
 } from 'lucide-react'
@@ -26,11 +27,13 @@ import { categories } from '../data/categories'
 import { exportQuestionsToExcel } from '../utils/excelExport'
 import { importQuestionsFromExcel } from '../utils/excelImport'
 import { uploadProjectAsset } from '../utils/questionStorage'
-import { requestPwaInstall } from '../utils/pwaInstall'
 import {
   exportPortableDataFolder,
+  getPortableDataFolderInfo,
   importPortableDataFolder,
+  removePortableAsset,
   resolvePortableAssetUrl,
+  selectPortableDataLocation,
   supportsPortableFolder,
 } from '../utils/portableData'
 
@@ -1012,8 +1015,10 @@ function AdaptiveImagePreview({
     null,
   )
   const [resolvedSrc, setResolvedSrc] = useState(src)
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
+    setLoadError(false)
     let active = true
     let objectUrl = ''
     setResolvedSrc(src)
@@ -1151,9 +1156,8 @@ function AdaptiveImagePreview({
 
     image.onerror = () => {
       if (active) {
-        setHasTransparency(
-          false,
-        )
+        setHasTransparency(false)
+        setLoadError(true)
       }
     }
 
@@ -1163,6 +1167,33 @@ function AdaptiveImagePreview({
       active = false
     }
   }, [resolvedSrc])
+
+  if (loadError) {
+    return (
+      <div
+        style={{
+          ...(baseStyle ?? styles.mediaPreviewImage),
+          display: 'grid',
+          placeItems: 'center',
+          padding: 16,
+          boxSizing: 'border-box',
+          color: '#7b3f2a',
+          background: '#fff7f2',
+          border: '1px dashed #e1a78c',
+          borderRadius: 10,
+          textAlign: 'center',
+          fontSize: 13,
+          fontWeight: 800,
+          lineHeight: 1.55,
+        }}
+      >
+        <span>
+          이미지를 불러올 수 없습니다.<br />
+          이 영역을 클릭해 새 이미지로 바로 교체해 주세요.
+        </span>
+      </div>
+    )
+  }
 
   return (
     <img
@@ -1176,6 +1207,7 @@ function AdaptiveImagePreview({
       }}
       src={resolvedSrc}
       alt={alt}
+      onError={() => setLoadError(true)}
     />
   )
 }
@@ -1363,13 +1395,20 @@ function DropMediaCard({
             styles.unifiedMediaFooter
           }
         >
-          <div
-            style={styles.mediaName}
-            title={fileName}
-          >
-            {hasFile && fileName
-              ? fileName
-              : '등록된 파일 없음'}
+          <div>
+            <div
+              style={styles.mediaName}
+              title={fileName}
+            >
+              {hasFile && fileName
+                ? fileName
+                : '등록된 파일 없음'}
+            </div>
+            <small style={{ display: 'block', marginTop: 4, color: '#6b7788', fontSize: 11 }}>
+              {hasFile
+                ? '이미지/미디어 영역을 클릭하거나 교체를 눌러 새 파일로 바로 바꿀 수 있습니다.'
+                : '영역을 클릭하거나 파일을 끌어 놓아 등록하세요.'}
+            </small>
           </div>
 
           <div style={styles.mediaActions}>
@@ -1391,7 +1430,20 @@ function DropMediaCard({
               </button>
             )}
 
-
+            <label
+              style={{
+                ...styles.mediaActionButton,
+                gap: 6,
+                padding: '0 10px',
+                cursor: 'pointer',
+              }}
+              title={hasFile ? '새 파일로 바로 교체' : '파일 선택'}
+              aria-label={hasFile ? '새 파일로 바로 교체' : '파일 선택'}
+            >
+              <RefreshCw size={16} />
+              <span>{hasFile ? '교체' : '선택'}</span>
+              {fileInput}
+            </label>
           </div>
         </div>
       ) : (
@@ -1429,11 +1481,14 @@ function DropMediaCard({
               ...(!hasFile
                 ? styles.disabledButton
                 : {}),
+              gap: 6,
+              padding: '0 10px',
             }}
-            title="변경"
-            aria-label="변경"
+            title="새 파일로 바로 교체"
+            aria-label="새 파일로 바로 교체"
           >
             <RefreshCw size={16} />
+            <span>교체</span>
             {hasFile && fileInput}
           </label>
 
@@ -1489,8 +1544,18 @@ export function AdminPage({
 
   const [message, setMessage] =
     useState('')
-const [excelLoading, setExcelLoading] =
-  useState(false)
+  const [excelLoading, setExcelLoading] =
+    useState(false)
+  const [portableFolderInfo, setPortableFolderInfo] =
+    useState<{ linked: boolean; folderName?: string; permission?: 'granted' | 'prompt' | 'denied' }>({ linked: false })
+
+  const refreshPortableFolderInfo = async () => {
+    setPortableFolderInfo(await getPortableDataFolderInfo())
+  }
+
+  useEffect(() => {
+    void refreshPortableFolderInfo()
+  }, [])
 
   const [
     autosaveState,
@@ -1923,6 +1988,7 @@ const saveCurrentQuestion = (
     file?: File,
   ) => {
     if (!file) return
+    const previousUrl = form[field]
 
     try {
       const blob =
@@ -1946,6 +2012,10 @@ const saveCurrentQuestion = (
         ...current,
         [field]: value,
       }))
+
+      if (previousUrl && previousUrl !== value) {
+        void removePortableAsset(previousUrl)
+      }
 
       updateMeta({
         ...assetMeta,
@@ -1974,6 +2044,7 @@ const saveCurrentQuestion = (
   const removeImage = (
     field: ImageField,
   ) => {
+    if (form[field]) void removePortableAsset(form[field])
     setForm((current) => ({
       ...current,
       [field]: '',
@@ -1999,6 +2070,7 @@ const saveCurrentQuestion = (
     file?: File,
   ) => {
     if (!file) return
+    const previousUrl = form.mediaUrl
 
     try {
       const savedUrl = await uploadProjectAsset(
@@ -2022,6 +2094,10 @@ const saveCurrentQuestion = (
         mediaUrl: savedUrl,
       }))
 
+      if (previousUrl && previousUrl !== savedUrl) {
+        void removePortableAsset(previousUrl)
+      }
+
       setMessage(
         '동영상을 불러왔습니다.',
       )
@@ -2033,6 +2109,7 @@ const saveCurrentQuestion = (
   }
 
   const removeVideo = async () => {
+    if (form.mediaUrl) await removePortableAsset(form.mediaUrl)
     setVideoPreviewUrl('')
 
     setForm((current) => ({
@@ -2068,7 +2145,10 @@ const saveCurrentQuestion = (
         file,
       )
 
-      setAudioPreviewUrl(savedUrl)
+      setAudioPreviewUrl((current) => {
+        if (current.startsWith('blob:')) URL.revokeObjectURL(current)
+        return URL.createObjectURL(file)
+      })
 
       updateMeta({
         ...assetMeta,
@@ -2090,15 +2170,28 @@ const saveCurrentQuestion = (
   }
 
   const removeAudio = async () => {
+    if (audioPreviewUrl.startsWith('blob:')) URL.revokeObjectURL(audioPreviewUrl)
     setAudioPreviewUrl('')
 
-    updateMeta({
+    try {
+      await deleteAsset(getAssetKey(questionId, 'audio'))
+      const extension = assetMeta.audioName?.toLowerCase().match(/(\.[a-z0-9]{1,8})$/)?.[1]
+      if (extension) {
+        await removePortableAsset(`/BibleBell/content/media/audio/${questionId}-audio${extension}`)
+      }
+    } catch {
+      // 화면의 연결 해제는 계속 진행하고, 남은 파일은 다음 교체 시 같은 이름 규칙으로 덮어씁니다.
+    }
+
+    const nextMeta = {
       ...assetMeta,
       audioLinked: false,
-    })
+    }
+    delete nextMeta.audioName
+    updateMeta(nextMeta)
 
     setMessage(
-      '현재 문제와 오디오의 연결을 해제했습니다.',
+      '현재 문제와 오디오를 제거했습니다.',
     )
   }
 
@@ -2114,8 +2207,12 @@ const saveCurrentQuestion = (
         currentQuestion,
       ].sort((a, b) => a.categoryId.localeCompare(b.categoryId) || a.number - b.number)
       onSave(snapshot)
+      if (!portableFolderInfo.linked) {
+        await selectPortableDataLocation(snapshot)
+      }
       const result = await exportPortableDataFolder(snapshot)
-      setMessage(`BibleBell_Data 폴더에 문제 100개와 미디어 ${result.mediaCount}개를 저장했습니다.`)
+      await refreshPortableFolderInfo()
+      setMessage(`${result.folderName}에 문제 100개와 미디어 ${result.mediaCount}개를 저장했습니다. 이 폴더 전체를 옮기면 다른 컴퓨터에서 복원할 수 있습니다.`)
     } catch (error) {
       if ((error as DOMException)?.name === 'AbortError') return
       console.error(error)
@@ -2132,7 +2229,8 @@ const saveCurrentQuestion = (
       setExcelLoading(true)
       const imported = await importPortableDataFolder()
       onSave(imported)
-      setMessage(`BibleBell_Data 폴더에서 ${imported.length}문제와 미디어 연결을 복원했습니다.`)
+      await refreshPortableFolderInfo()
+      setMessage(`BibleBell_Data에서 ${imported.length}문제와 미디어 연결을 복원했습니다. 이제 이 컴퓨터에서 그대로 이어서 사용할 수 있습니다.`)
     } catch (error) {
       if ((error as DOMException)?.name === 'AbortError') return
       console.error(error)
@@ -2142,16 +2240,25 @@ const saveCurrentQuestion = (
     }
   }
 
-  const installBibleBellApp = async () => {
-    const result = await requestPwaInstall()
-    if (result === 'installed') {
-      setMessage('BibleBell 앱 설치를 시작했습니다.')
-    } else if (result === 'already-installed') {
-      setMessage('이미 앱으로 실행 중입니다.')
-    } else if (result === 'dismissed') {
-      setMessage('앱 설치를 취소했습니다.')
-    } else {
-      setMessage('주소창의 설치 아이콘 또는 브라우저 메뉴의 “앱 설치”를 사용해 주세요.')
+  const changePortableFolder = async () => {
+    try {
+      if (!supportsPortableFolder()) {
+        setMessage('이 브라우저는 데이터 폴더 기능을 지원하지 않습니다. Chrome, Edge, Whale 데스크톱 브라우저를 사용해 주세요.')
+        return
+      }
+      const currentQuestion = buildQuestion()
+      const snapshot = [
+        ...questions.filter((item) => !(item.categoryId === categoryId && item.number === selectedNumber)),
+        currentQuestion,
+      ].sort((a, b) => a.categoryId.localeCompare(b.categoryId) || a.number - b.number)
+      onSave(snapshot)
+      const result = await selectPortableDataLocation(snapshot)
+      await refreshPortableFolderInfo()
+      setMessage(`${result.folderName} 저장 위치를 연결했습니다. 이후 데이터 보내기로 Excel과 미디어를 함께 최신 상태로 보관할 수 있습니다.`)
+    } catch (error) {
+      if ((error as DOMException)?.name === 'AbortError') return
+      console.error(error)
+      setMessage(error instanceof Error ? error.message : '저장 위치 지정에 실패했습니다.')
     }
   }
 
@@ -2334,19 +2441,11 @@ onClick={() => {
             <button
               type="button"
               className="admin-secondary-button"
-              onClick={() => void installBibleBellApp()}
-              title="BibleBell을 컴퓨터에 웹앱(PWA)으로 설치합니다."
-            >
-              앱 설치
-            </button>
-            <button
-              type="button"
-              className="admin-secondary-button"
               onClick={() => void loadPortableFolder()}
               disabled={excelLoading}
               title="다른 컴퓨터에서 가져온 BibleBell_Data 폴더를 한 번에 불러옵니다."
             >
-              내 데이터 불러오기
+              데이터 불러오기
             </button>
             <button
               type="button"
@@ -2354,10 +2453,71 @@ onClick={() => {
               onClick={() => void savePortableFolder()}
               title="문제·Excel·그림·영상·오디오를 BibleBell_Data 폴더에 함께 저장합니다."
             >
-              내 데이터 저장
+              데이터 보내기
             </button>
           </div>
         </header>
+
+        <section className="admin-portable-guide">
+          <div className="admin-portable-guide-main">
+            <div>
+              <strong>내 BibleBell 데이터 보관 · 이동</strong>
+              <p>
+                설정에서 저장한 문제는 브라우저에도 보관됩니다. 다른 컴퓨터에서도 같은 문제·그림·동영상을 사용하려면
+                <b> 데이터 보내기</b>로 <b>BibleBell_Data</b> 폴더를 최신 상태로 만든 뒤 그 폴더 전체를 옮기세요.
+                새 컴퓨터에서는 BibleBell을 열고 <b>데이터 불러오기</b>에서 가져온 BibleBell_Data 폴더를 선택하면 됩니다.
+              </p>
+            </div>
+            <div className="admin-portable-status">
+              <span className={portableFolderInfo.linked ? 'is-linked' : 'is-unlinked'}>
+                {portableFolderInfo.linked
+                  ? `저장 위치 연결됨: ${portableFolderInfo.folderName ?? 'BibleBell_Data'}`
+                  : '저장 위치가 아직 지정되지 않았습니다.'}
+              </span>
+              <button
+                type="button"
+                className="admin-secondary-button"
+                onClick={() => void changePortableFolder()}
+              >
+                {portableFolderInfo.linked ? '저장 위치 변경' : '저장 위치 지정'}
+              </button>
+            </div>
+          </div>
+
+          <details className="admin-help-details">
+            <summary><HelpCircle size={17} /> 사용설명서 보기</summary>
+            <div className="admin-help-content">
+              <section>
+                <h3>1. 처음 사용할 때</h3>
+                <p>홈 화면의 <b>앱 설치</b>로 BibleBell을 웹앱처럼 설치할 수 있습니다. 처음 편집을 시작할 때는 <b>저장 위치 지정</b>을 눌러 원하는 위치를 선택하세요. 프로그램이 그 위치 안에 BibleBell_Data 폴더를 자동으로 만듭니다.</p>
+              </section>
+              <section>
+                <h3>2. 문제 만들기와 문제 유형 변경</h3>
+                <p>카테고리와 번호는 문제의 자리입니다. 그 자리 안에서 일반, OX, 그림, 인물, 영상, 숨은그림 문제와 단답형·객관식 답변 방식을 자유롭게 바꿀 수 있습니다. 객관식은 보기 1~4까지 함께 저장됩니다.</p>
+              </section>
+              <section>
+                <h3>3. 그림·동영상·오디오 교체</h3>
+                <p>기존 파일을 먼저 제거할 필요가 없습니다. 미디어 영역을 클릭하거나 <b>교체</b>를 누른 뒤 새 파일을 고르면 같은 문제 자리의 새 미디어로 바뀝니다. BibleBell이 문제 ID 기준의 이름으로 저장하고 Excel에는 다시 찾을 수 있는 경로를 기록합니다.</p>
+              </section>
+              <section>
+                <h3>4. Excel만 관리할 때</h3>
+                <p><b>엑셀 다운로드</b>는 현재 100문제의 문제유형, 답변유형, 문제, 정답, 보기, 힌트와 미디어 경로를 표로 내보냅니다. Excel을 정렬해도 카테고리+번호를 기준으로 다시 제자리로 들어옵니다. 미디어까지 다른 컴퓨터로 옮길 때는 Excel만 보내지 말고 데이터 보내기를 사용하세요.</p>
+              </section>
+              <section>
+                <h3>5. 다른 컴퓨터로 옮기기</h3>
+                <p><b>BibleBell_Data 폴더 전체</b>를 USB·외장하드·클라우드 등으로 복사합니다. 새 컴퓨터에서 BibleBell 링크를 열고 관리자 모드 → <b>데이터 불러오기</b> → 가져온 BibleBell_Data 폴더를 선택하세요. 프로그램은 자동 저장된 최신 questions.json을 우선 복원하고, Excel은 관리·복구용으로 함께 보관합니다. media 폴더까지 함께 있으면 문제와 미디어가 같은 구성으로 복원됩니다.</p>
+              </section>
+              <section>
+                <h3>6. 컴퓨터를 껐다가 다시 켤 때</h3>
+                <p>같은 컴퓨터·같은 브라우저에서는 수정 내용이 브라우저 저장소에 유지됩니다. 폴더 권한을 다시 묻는 경우에는 같은 BibleBell_Data를 다시 허용하면 됩니다. 안전한 이동·백업을 위해 작업을 마친 뒤 <b>데이터 보내기</b>를 눌러 두는 것을 권장합니다.</p>
+              </section>
+              <section>
+                <h3>7. 앱 아이콘 위치</h3>
+                <p>PWA 설치가 완료되면 BibleBell은 독립 창으로 실행됩니다. 설치된 아이콘이 바탕화면에 자동으로 생기는지는 운영체제와 브라우저가 결정합니다. 바탕화면에 바로 보이지 않으면 응용 프로그램·앱 목록에서 BibleBell 아이콘을 찾아 Dock/작업표시줄 또는 바탕화면 바로가기로 추가하세요. 데이터 보내기를 하면 BibleBell_Data 안에 Windows용 <b>BibleBell_실행.url</b>과 Mac용 <b>BibleBell_실행.webloc</b>도 만들어져 웹주소 바로가기로 사용할 수 있습니다.</p>
+              </section>
+            </div>
+          </details>
+        </section>
 
         <div className="admin-layout">
           <aside className="admin-nav">

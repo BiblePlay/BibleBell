@@ -7,9 +7,7 @@
     "answerType": "short",
     "question": "의와 공의가 주의 □□의 기초라 인자함과 진실함이 주 앞에 있나이다 (시편 89편 13절)",
     "answer": "",
-    "score": 10,
-    "questionImageUrl": "/BibleBell/content/media/images/Q081-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q081-answer.png"
+    "score": 10
   },
   {
     "id": "Q082",
@@ -19,8 +17,7 @@
     "answerType": "short",
     "question": "예수님에게는 참사람이신 모습과 참하나님이신 모습이 함께 있습니다. 이 두 성품을 각각 무엇이라고 하나요?",
     "answer": "인성과 신성",
-    "score": 10,
-    "answerImageUrl": "/BibleBell/content/media/images/Q082-answer.png"
+    "score": 10
   },
   {
     "id": "Q083",
@@ -30,8 +27,7 @@
     "answerType": "short",
     "question": "설교 시작 전에 함께 부르는 말씀송 가사 문제입니다. 첫 시작에서 “말씀이 □□하기를\"",
     "answer": "",
-    "score": 20,
-    "answerImageUrl": "/BibleBell/content/media/images/Q083-answer.png"
+    "score": 20
   },
   {
     "id": "Q084",
@@ -41,9 +37,7 @@
     "answerType": "short",
     "question": "하도 오해를 해서 하나님이 직접 자기를 □□하신 말씀입니다. 빈칸을 채워보세요. (다 맞추면 X2)",
     "answer": "자기소개서, 자비, 은혜, 노",
-    "score": 20,
-    "questionImageUrl": "/BibleBell/content/media/images/Q084-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q084-answer.png"
+    "score": 20
   },
   {
     "id": "Q085",
@@ -53,9 +47,7 @@
     "answerType": "short",
     "question": "설교 시작 전에 함께 부르는 말씀송 가사 문제입니다. 첫 시작에서 “말씀이 역사하기를” 다음에 나오는 “ 말씀이 □□있기를",
     "answer": "",
-    "score": 30,
-    "questionImageUrl": "/BibleBell/content/media/images/Q085-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q085-answer.png"
+    "score": 30
   },
   {
     "id": "Q086",
@@ -65,9 +57,7 @@
     "answerType": "short",
     "question": "온유한 사람을 하나님나라 모드에 넣었더니“□을 유업으로 받는다 (물려받는다)” 라고 합니다",
     "answer": "땅",
-    "score": 30,
-    "questionImageUrl": "/BibleBell/content/media/images/Q086-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q086-answer.png"
+    "score": 30
   },
   {
     "id": "Q087",
@@ -77,9 +67,7 @@
     "answerType": "short",
     "question": "마태복음 5장에 나오는 ‘복이 있는 사람’에 대한 여덟 가지 선언을 무엇이라고 부르나요?",
     "answer": "",
-    "score": 40,
-    "questionImageUrl": "/BibleBell/content/media/images/Q087-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q087-answer.png"
+    "score": 40
   },
   {
     "id": "Q088",
@@ -89,9 +77,7 @@
     "answerType": "short",
     "question": "애통하는 자는 복이 있나니",
     "answer": "\"애통하는 자는 복이 있나니 그들이 위로를 받을 것임이요.\" (마태복음 5장 4절)",
-    "score": 40,
-    "questionImageUrl": "/BibleBell/content/media/images/Q088-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q088-answer.png"
+    "score": 40
   },
   {
     "id": "Q089",
@@ -111,9 +97,7 @@
     "answerType": "short",
     "question": "",
     "answer": "작, 작, 큰",
-    "score": 50,
-    "questionImageUrl": "/BibleBell/content/media/images/Q090-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q090-answer.jpg"
+    "score": 50
   },
   {
     "id": "Q061",
@@ -129,9 +113,7 @@
       "사자가 왕이 된 집 (파괴적 맹수)",
       "회복된 조련사 (상처 입은 치유자)"
     ],
-    "score": 10,
-    "questionImageUrl": "/BibleBell/content/media/images/Q061-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q061-answer.png"
+    "score": 10
   },
   {
     "id": "Q062",
@@ -151,9 +133,7 @@
     "answerType": "short",
     "question": "이 그림 안에는 총 몇명일까요?(5초)",
     "answer": "42명",
-    "score": 20,
-    "questionImageUrl": "/BibleBell/content/media/images/Q063-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q063-answer.png"
+    "score": 20
   },
   {
     "id": "Q064",
@@ -163,9 +143,7 @@
     "answerType": "short",
     "question": "캐릭터로 되어 있으신 선생님들 성함을 적어주세요.",
     "answer": "이해진 선생님, 김수영 선생님, 정은숙 선생님, 박희성 선생님",
-    "score": 20,
-    "questionImageUrl": "/BibleBell/content/media/images/Q064-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q064-answer.jpg"
+    "score": 20
   },
   {
     "id": "Q065",
@@ -186,8 +164,7 @@
     "answerType": "short",
     "question": "요셉의 친동생이며 다른 형들보다 다섯 배의 음식을 받은 사람은 누구인가요?",
     "answer": "베냐민",
-    "score": 30,
-    "answerImageUrl": "/BibleBell/content/media/images/Q066-answer.png"
+    "score": 30
   },
   {
     "id": "Q067",
@@ -197,9 +174,7 @@
     "answerType": "short",
     "question": "캐릭터로 되어 있는 인물을 맞추세요.",
     "answer": "이신명 선생님, 이해순 선생님, 신은식 선생님, 이도경 학생",
-    "score": 40,
-    "questionImageUrl": "/BibleBell/content/media/images/Q067-question.jpg",
-    "answerImageUrl": "/BibleBell/content/media/images/Q067-answer.jpg"
+    "score": 40
   },
   {
     "id": "Q068",
@@ -220,9 +195,7 @@
     "answerType": "short",
     "question": "나비의 번데기처럼 (녹아내리는) 고통과 인내를 통과하여 위대한 리더가 된 세명의 이름을 적어주세요.",
     "answer": "",
-    "score": 50,
-    "questionImageUrl": "/BibleBell/content/media/images/Q069-question.jpg",
-    "answerImageUrl": "/BibleBell/content/media/images/Q069-answer.jpg"
+    "score": 50
   },
   {
     "id": "Q070",
@@ -256,9 +229,7 @@
     "question": "요셉 만화책과 비교해 보세요. 뭐가 바뀌었나요?",
     "answer": "소->말, 관료중 남자-> 여자, 아이들로",
     "score": 10,
-    "hint": "그림 속 인물의 표정, 손, 물건과 배경을 차례로 살펴보세요.",
-    "questionImageUrl": "/BibleBell/content/media/images/Q002-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q002-answer.png"
+    "hint": "그림 속 인물의 표정, 손, 물건과 배경을 차례로 살펴보세요."
   },
   {
     "id": "Q003",
@@ -268,9 +239,7 @@
     "answerType": "short",
     "question": "숨은 그림을 찾아보세요.",
     "answer": "나비",
-    "score": 20,
-    "questionImageUrl": "/BibleBell/content/media/images/Q003-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q003-answer.png"
+    "score": 20
   },
   {
     "id": "Q004",
@@ -280,9 +249,7 @@
     "answerType": "short",
     "question": "숨은 그림을 찾아보세요.",
     "answer": "개(일명 걸레 개 : 걸레인줄 알았다는 개)",
-    "score": 20,
-    "questionImageUrl": "/BibleBell/content/media/images/Q004-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q004-answer.png"
+    "score": 20
   },
   {
     "id": "Q005",
@@ -292,9 +259,7 @@
     "answerType": "short",
     "question": "숨은 그림을 찾아보세요.",
     "answer": "물고기 (스톤 피쉬)",
-    "score": 30,
-    "questionImageUrl": "/BibleBell/content/media/images/Q005-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q005-answer.png"
+    "score": 30
   },
   {
     "id": "Q006",
@@ -305,9 +270,7 @@
     "question": "덥석 퀴즈 : 왼쪽에 미끼입니다. 우측에는 이것을 덥석 무는 누군가입니다.",
     "answer": "원숭이",
     "score": 30,
-    "hint": "그림 속 인물의 표정, 손, 물건과 배경을 차례로 살펴보세요.",
-    "questionImageUrl": "/BibleBell/content/media/images/Q006-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q006-answer.png"
+    "hint": "그림 속 인물의 표정, 손, 물건과 배경을 차례로 살펴보세요."
   },
   {
     "id": "Q007",
@@ -317,9 +280,7 @@
     "answerType": "short",
     "question": "왼쪽에 미끼입니다. 우측에는 이것을 덥석 무는 누군가입니다.",
     "answer": "사람들",
-    "score": 40,
-    "questionImageUrl": "/BibleBell/content/media/images/Q007-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q007-answer.png"
+    "score": 40
   },
   {
     "id": "Q008",
@@ -329,9 +290,7 @@
     "answerType": "short",
     "question": "왼쪽에 미끼입니다. 우측에는 이것을 덥석 무는 누군가입니다.",
     "answer": "여러분",
-    "score": 40,
-    "questionImageUrl": "/BibleBell/content/media/images/Q008-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q008-answer.png"
+    "score": 40
   },
   {
     "id": "Q009",
@@ -341,9 +300,7 @@
     "answerType": "short",
     "question": "숨은 그림을 찾아 보세요.",
     "answer": "",
-    "score": 50,
-    "questionImageUrl": "/BibleBell/content/media/images/Q009-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q009-answer.png"
+    "score": 50
   },
   {
     "id": "Q010",
@@ -353,9 +310,7 @@
     "answerType": "short",
     "question": "",
     "answer": "숨은 그림을 찾아 보세요.",
-    "score": 50,
-    "questionImageUrl": "/BibleBell/content/media/images/Q010-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q010-answer.png"
+    "score": 50
   },
   {
     "id": "Q071",
@@ -415,8 +370,7 @@
     "answerType": "short",
     "question": "초성 ‘ㅇㅂㅇㅇ’ : 보리떡 다섯 개와 물고기 두 마리로 많은 사람을 먹이신 사건은 무엇인가요?",
     "answer": "오병이어",
-    "score": 30,
-    "answerImageUrl": "/BibleBell/content/media/images/Q076-answer.png"
+    "score": 30
   },
   {
     "id": "Q077",
@@ -426,8 +380,7 @@
     "answerType": "short",
     "question": "제네시스는 한국말로 구약의 첫번째 : 초성 'ㅊㅅㄱ' 입니다.",
     "answer": "창세기",
-    "score": 40,
-    "answerImageUrl": "/BibleBell/content/media/images/Q077-answer.png"
+    "score": 40
   },
   {
     "id": "Q078",
@@ -473,8 +426,7 @@
       "나이키",
       "갑옷"
     ],
-    "score": 10,
-    "answerImageUrl": "/BibleBell/content/media/images/Q051-answer.png"
+    "score": 10
   },
   {
     "id": "Q052",
@@ -484,8 +436,7 @@
     "answerType": "short",
     "question": "요셉의 꿈에서 요셉의 볏단을 향해 절을 한 형들의 볏단은 모두 몇 개였나요?",
     "answer": "11개",
-    "score": 10,
-    "answerImageUrl": "/BibleBell/content/media/images/Q052-answer.png"
+    "score": 10
   },
   {
     "id": "Q053",
@@ -517,8 +468,7 @@
       "아니야",
       "원망했지"
     ],
-    "score": 20,
-    "answerImageUrl": "/BibleBell/content/media/images/Q054-answer.png"
+    "score": 20
   },
   {
     "id": "Q055",
@@ -615,8 +565,7 @@
       "베냐민"
     ],
     "score": 50,
-    "hint": "아버지에게 베냐민을 책임지겠다고 약속한 형입니다.",
-    "answerImageUrl": "/BibleBell/content/media/images/Q060-answer.png"
+    "hint": "아버지에게 베냐민을 책임지겠다고 약속한 형입니다."
   },
   {
     "id": "Q011",
@@ -876,9 +825,7 @@
     "answerType": "short",
     "question": "여기에 물을 부으면 어려운 문제가 해결되는 것 처럼 여러분의 OO제목에 손을 얹고 많은 분들이 OO와 사랑을 부어 주셨죠.",
     "answer": "기도",
-    "score": 10,
-    "mediaUrl": "/BibleBell/content/media/videos/Q031-video.mp4",
-    "answerImageUrl": "/BibleBell/content/media/images/Q031-answer.png"
+    "score": 10
   },
   {
     "id": "Q032",
@@ -888,9 +835,7 @@
     "answerType": "short",
     "question": "세상나라는 힘있는 소수가 다수를 힘으로 누르는 삼각형구조라면 하나님의 나라는 O삼각형 구조입니다.",
     "answer": "역삼각형",
-    "score": 10,
-    "questionImageUrl": "/BibleBell/content/media/images/Q032-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q032-answer.png"
+    "score": 10
   },
   {
     "id": "Q033",
@@ -901,9 +846,7 @@
     "question": "그림을 잘 보세요?",
     "answer": "나침반과 지도(하나님의 설계도 대로 하나님의 형상이 무엇인지 나침반이 되어주셨죠)",
     "score": 20,
-    "hint": "없어진 것이 무엇인가요?",
-    "mediaUrl": "/BibleBell/content/media/videos/Q033-video.mp4",
-    "answerImageUrl": "/BibleBell/content/media/images/Q033-answer.png"
+    "hint": "없어진 것이 무엇인가요?"
   },
   {
     "id": "Q034",
@@ -920,9 +863,7 @@
       "5000 명"
     ],
     "score": 20,
-    "hint": "옛날에는 군대나갈 수 있는 남자 숫자로 셌어요. 아이들과 여자와 어르신들도 합치면 훨씬 많아요.",
-    "questionImageUrl": "/BibleBell/content/media/images/Q034-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q034-answer.png"
+    "hint": "옛날에는 군대나갈 수 있는 남자 숫자로 셌어요. 아이들과 여자와 어르신들도 합치면 훨씬 많아요."
   },
   {
     "id": "Q035",
@@ -932,9 +873,7 @@
     "answerType": "short",
     "question": "창세기 2장 18절: 초성 'ㅎㅈ'",
     "answer": "",
-    "score": 30,
-    "questionImageUrl": "/BibleBell/content/media/images/Q035-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q035-answer.png"
+    "score": 30
   },
   {
     "id": "Q036",
@@ -950,8 +889,7 @@
       "세 번째",
       "네 번째"
     ],
-    "score": 30,
-    "answerImageUrl": "/BibleBell/content/media/images/Q036-answer.png"
+    "score": 30
   },
   {
     "id": "Q037",
@@ -961,9 +899,7 @@
     "answerType": "short",
     "question": "전쟁과 같은 위기 상황 속에서도 우리의 큰 도움이 되시는 하나님의 이름을 뜻하는 히브리어 단어는 무엇인가요?",
     "answer": "에제르",
-    "score": 40,
-    "questionImageUrl": "/BibleBell/content/media/images/Q037-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q037-answer.png"
+    "score": 40
   },
   {
     "id": "Q038",
@@ -973,8 +909,7 @@
     "answerType": "short",
     "question": "\"나를 한발짝 뒤에서 바라보는 능력\"(사자를 다스릴 수 있는 힘)",
     "answer": "",
-    "score": 40,
-    "answerImageUrl": "/BibleBell/content/media/images/Q038-answer.png"
+    "score": 40
   },
   {
     "id": "Q039",
@@ -990,8 +925,7 @@
       "세 번째",
       "네 번째"
     ],
-    "score": 50,
-    "answerImageUrl": "/BibleBell/content/media/images/Q039-answer.png"
+    "score": 50
   },
   {
     "id": "Q040",
@@ -1007,8 +941,7 @@
       "성공한 개척자",
       "게으른 지휘관"
     ],
-    "score": 50,
-    "answerImageUrl": "/BibleBell/content/media/images/Q040-answer.png"
+    "score": 50
   },
   {
     "id": "Q041",
@@ -1018,9 +951,7 @@
     "answerType": "short",
     "question": "숨은 그림 찾기?",
     "answer": "도마뱀",
-    "score": 10,
-    "questionImageUrl": "/BibleBell/content/media/images/Q041-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q041-answer.png"
+    "score": 10
   },
   {
     "id": "Q042",
@@ -1040,9 +971,7 @@
     "answerType": "short",
     "question": "제네시스 차가 다양한 로보트의 기본인 것 처럼, OOO는 성경 전체흐르는 하나님과 사람, 세상, 죄, 구원회복 프로젝트 등 모든 것의 기본이 되어 모든 성경권마다 그 주제가 흐릅니다.",
     "answer": "창세기",
-    "score": 20,
-    "mediaUrl": "/BibleBell/content/media/videos/Q043-video.mp4",
-    "answerImageUrl": "/BibleBell/content/media/images/Q043-answer.png"
+    "score": 20
   },
   {
     "id": "Q044",
@@ -1058,9 +987,7 @@
       "5년도 넘은 마른 풀이 물을 접하고 얼마 안되서 살아난다",
       "조개가 날라다닌다"
     ],
-    "score": 20,
-    "questionImageUrl": "/BibleBell/content/media/images/Q044-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q044-answer.png"
+    "score": 20
   },
   {
     "id": "Q045",
@@ -1070,9 +997,7 @@
     "answerType": "short",
     "question": "마법의 상자에 코끼리에게 풀을 많이 먹였더니 무엇이 나왔을까요?",
     "answer": "",
-    "score": 30,
-    "questionImageUrl": "/BibleBell/content/media/images/Q045-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q045-answer.png"
+    "score": 30
   },
   {
     "id": "Q046",
@@ -1082,9 +1007,7 @@
     "answerType": "short",
     "question": "휴대폰을 넣었습니다. 엄마가 봤어요. 엄마가 뭐라고 했어요. 여러분에게서 입에서 무슨말이 나왔을까요?",
     "answer": "\"5분만 더\"(시간 순삭)",
-    "score": 30,
-    "questionImageUrl": "/BibleBell/content/media/images/Q046-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q046-answer.png"
+    "score": 30
   },
   {
     "id": "Q047",
@@ -1094,9 +1017,7 @@
     "answerType": "short",
     "question": "세로로 서서 주로 사냥하는 물고기?",
     "answer": "갈치",
-    "score": 40,
-    "mediaUrl": "/BibleBell/content/media/videos/Q047-video.mp4",
-    "answerImageUrl": "/BibleBell/content/media/images/Q047-answer.png"
+    "score": 40
   },
   {
     "id": "Q048",
@@ -1112,9 +1033,7 @@
       "여우",
       "개"
     ],
-    "score": 40,
-    "mediaUrl": "/BibleBell/content/media/videos/Q048-video.mp4",
-    "answerImageUrl": "/BibleBell/content/media/images/Q048-answer.png"
+    "score": 40
   },
   {
     "id": "Q049",
@@ -1141,9 +1060,7 @@
     "answerType": "short",
     "question": "여기에 들어갈 글자를 적어주세요.",
     "answer": "끌려갈, 길들일",
-    "score": 50,
-    "questionImageUrl": "/BibleBell/content/media/images/Q050-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q050-answer.png"
+    "score": 50
   },
   {
     "id": "Q091",
@@ -1153,8 +1070,7 @@
     "answerType": "short",
     "question": "표지(page1)를 포함해서 이 페이지는 몇페이지에 있었을까요?",
     "answer": "8 페이지",
-    "score": 10,
-    "questionImageUrl": "/BibleBell/content/media/images/Q091-question.png"
+    "score": 10
   },
   {
     "id": "Q092",
@@ -1164,8 +1080,7 @@
     "answerType": "short",
     "question": "야곱의 12 아들 중 6명의 이름을 말해주세요.",
     "answer": "르우벤, 시므온, 레위, 유다, 단, 납달리, 갓, 아셀, 잇사갈, 스불론, 요셉, 베냐민",
-    "score": 10,
-    "answerImageUrl": "/BibleBell/content/media/images/Q092-answer.png"
+    "score": 10
   },
   {
     "id": "Q093",
@@ -1185,9 +1100,7 @@
     "answerType": "short",
     "question": "BABY 들이 크면 뭐가 될지 맞춰 보는 문제 였습니다. 기억하시나요? 이 씨앗은 커서 무엇이 되었나요?",
     "answer": "바오밥 나무",
-    "score": 20,
-    "questionImageUrl": "/BibleBell/content/media/images/Q094-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q094-answer.png"
+    "score": 20
   },
   {
     "id": "Q095",
@@ -1197,9 +1110,7 @@
     "answerType": "short",
     "question": "BABY 들 문제입니다. 이것은 크면 뭐가 될지 맞춰 보세요.",
     "answer": "개복치",
-    "score": 30,
-    "questionImageUrl": "/BibleBell/content/media/images/Q095-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q095-answer.png"
+    "score": 30
   },
   {
     "id": "Q096",
@@ -1209,9 +1120,7 @@
     "answerType": "short",
     "question": "나비의 번데기입니다. 버둥거리며 나오기 힘들어 하는 번데기를 까주면 어떻게 될까요?",
     "answer": "",
-    "score": 30,
-    "questionImageUrl": "/BibleBell/content/media/images/Q096-question.jpg",
-    "answerImageUrl": "/BibleBell/content/media/images/Q096-answer.jpg"
+    "score": 30
   },
   {
     "id": "Q097",
@@ -1267,8 +1176,6 @@
     "question": "성경암송 3개를 한 자도 틀리지 않고 다 하실 수 있는 첫번째 선생님께 선물을 드립니다.\r\n\r\n학생 중에도 제일 처음 3개 다 성공한 사람 선물을 드리겠습니다 (선생님들 하실 동안 외워보세요~)",
     "answer": "",
     "score": 50,
-    "hint": "심사는 칼날 같은 섬세함을 가지신 송선미 부장님께서",
-    "questionImageUrl": "/BibleBell/content/media/images/Q100-question.png",
-    "answerImageUrl": "/BibleBell/content/media/images/Q100-answer.png"
+    "hint": "심사는 칼날 같은 섬세함을 가지신 송선미 부장님께서"
   }
 ]

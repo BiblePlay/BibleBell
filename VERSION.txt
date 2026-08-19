@@ -1,0 +1,4 @@
+BibleBell PUBLIC Portable + PWA FINAL
+Version date: 2026-08-19
+Purpose: GitHub Pages public distribution / local user data / portable BibleBell_Data / PWA install
+Supersedes: BibleBell_PUBLIC_100_PORTABLE_PWA_FINAL.zip

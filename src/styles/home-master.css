@@ -483,3 +483,111 @@ font-size: 64px;
     font-size: 18px;
   }
 }
+
+.master-title-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.master-install-button {
+  border-color: rgba(255, 144, 0, 0.65);
+  color: var(--master-orange);
+}
+
+.master-install-button:hover {
+  border-color: var(--master-orange-hover);
+  color: var(--master-orange-hover);
+}
+
+.master-setup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(2, 8, 17, 0.76);
+  backdrop-filter: blur(4px);
+}
+
+.master-setup-card {
+  width: min(640px, calc(100vw - 48px));
+  padding: 28px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px 20px;
+  color: #142033;
+  background: #fff;
+  border: 1px solid #d8e2ee;
+  border-radius: 18px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+}
+
+.master-setup-icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--master-orange);
+  border-radius: 16px;
+}
+
+.master-setup-kicker {
+  display: block;
+  margin-bottom: 4px;
+  color: #b55e00;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.master-setup-card h2 {
+  margin: 0 0 10px;
+  color: #10243d;
+  font-size: 24px;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+}
+
+.master-setup-card p {
+  margin: 0;
+  color: #4c5d72;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.master-setup-note {
+  margin-top: 8px !important;
+  color: #69788a !important;
+  font-size: 12px !important;
+}
+
+.master-setup-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.master-setup-actions button {
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.master-setup-primary {
+  color: #fff;
+  border: 1px solid var(--master-orange);
+  background: var(--master-orange);
+}
+
+.master-setup-secondary {
+  color: #536173;
+  border: 1px solid #d5dce6;
+  background: #fff;
+}
