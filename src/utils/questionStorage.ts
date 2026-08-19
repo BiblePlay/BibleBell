@@ -1,6 +1,6 @@
 import { questions as seedQuestions } from '../data/questions'
 import type { QuizQuestion } from '../types'
-import { storePortableAsset, writePortableAssetToLinkedFolder } from './portableData'
+import { storePortableAsset, syncPortableQuestionsIfLinked, writePortableAssetToLinkedFolder } from './portableData'
 
 const STORAGE_KEY = 'biblebell-questions-json'
 const USER_DATA_KEY = 'biblebell-user-data-active'
@@ -96,6 +96,9 @@ export function saveQuestions(questions: QuizQuestion[]): void {
   const normalized = questions.map(normalizeQuestion)
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized))
   if (isStaticHostedMode()) window.localStorage.setItem(USER_DATA_KEY, '1')
+  // 한 번 연결된 BibleBell_Data 폴더가 있고 쓰기 권한이 유지된 경우
+  // Excel/JSON도 자동 갱신합니다. 권한창은 자동으로 띄우지 않습니다.
+  void syncPortableQuestionsIfLinked(normalized)
 
   void fetch('/BibleBell/api/questions', {
     method: 'POST',

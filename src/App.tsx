@@ -7,8 +7,10 @@ import { HomePage } from './pages/HomePage'
 import { QuestionPage } from './pages/QuestionPage'
 import type { QuizQuestion, Screen, TeamScore } from './types'
 import { loadQuestions, loadQuestionsFromProject, saveQuestions } from './utils/questionStorage'
+import { requestPersistentBrowserStorage } from './utils/portableData'
 
 const PLAYED_STORAGE_KEY = 'biblebell-played-question-ids'
+const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, '')
 
 const initialTeams: TeamScore[] = [
   { id: 1, name: '1조', score: 0 },
@@ -18,7 +20,8 @@ const initialTeams: TeamScore[] = [
 ]
 
 function getInitialScreen(): Screen {
-  return window.location.pathname === '/admin'
+  const pathname = window.location.pathname
+  return pathname === `${BASE_PATH}/admin` || pathname === '/admin'
     ? { name: 'admin' }
     : { name: 'home' }
 }
@@ -79,6 +82,10 @@ export default function App() {
   }, [quizQuestions, screen])
 
   useEffect(() => {
+    void requestPersistentBrowserStorage()
+  }, [])
+
+  useEffect(() => {
     let active = true
     void loadQuestionsFromProject()
       .then((items) => {
@@ -121,7 +128,7 @@ export default function App() {
     window.history.pushState(
       {},
       '',
-      '/',
+      `${BASE_PATH}/`,
     )
 
     setScreen({ name: 'home' })
@@ -132,7 +139,7 @@ export default function App() {
     window.history.pushState(
       {},
       '',
-      '/admin',
+      `${BASE_PATH}/admin`,
     )
 
     setScreen({ name: 'admin' })

@@ -260,20 +260,52 @@ async function getWritableDataFolder(): Promise<AnyDirectoryHandle> {
   return chooseNewDataFolder()
 }
 
+
+export async function requestPersistentBrowserStorage(): Promise<boolean> {
+  try {
+    if (!navigator.storage?.persist) return false
+    if (await navigator.storage.persisted?.()) return true
+    return await navigator.storage.persist()
+  } catch {
+    return false
+  }
+}
+
+async function getLinkedFolderWithoutPrompt(mode: 'read' | 'readwrite' = 'readwrite'): Promise<AnyDirectoryHandle | null> {
+  const handle = await getSavedDataHandle()
+  if (!handle) return null
+  try {
+    return (await handle.queryPermission?.({ mode })) === 'granted' ? handle : null
+  } catch {
+    return null
+  }
+}
+
+async function writeQuestionSnapshot(folder: AnyDirectoryHandle, questions: QuizQuestion[]): Promise<void> {
+  await writeQuestionSnapshot(folder, questions)
+}
+
+/**
+ * 사용자가 한 번 BibleBell_Data 폴더를 지정한 뒤에는 문제 수정 내용을
+ * 같은 폴더의 questions.xlsx / questions.json에도 자동 반영합니다.
+ * 브라우저가 재시작되어 권한이 'prompt'로 돌아간 경우에는 자동으로
+ * 권한창을 띄우지 않고 브라우저 저장소만 유지합니다. 사용자가
+ * '내 데이터 저장'을 한 번 누르면 같은 폴더 권한을 다시 승인할 수 있습니다.
+ */
+export async function syncPortableQuestionsIfLinked(questions: QuizQuestion[]): Promise<boolean> {
+  const folder = await getLinkedFolderWithoutPrompt('readwrite')
+  if (!folder) return false
+  try {
+    await writeQuestionSnapshot(folder, questions)
+    return true
+  } catch {
+    return false
+  }
+}
+
 export async function exportPortableDataFolder(questions: QuizQuestion[]): Promise<{ mediaCount: number }> {
   const folder = await getWritableDataFolder()
-  const excelBlob = createQuestionsExcelBlob(questions)
-  await writeFileAt(folder, 'questions.xlsx', excelBlob)
-  await writeFileAt(folder, 'questions.json', new Blob([JSON.stringify(questions, null, 2)], { type: 'application/json' }))
-
-  const manifest: PortableManifest = {
-    format: 'BibleBell_Data',
-    version: 1,
-    exportedAt: new Date().toISOString(),
-    questionCount: questions.length,
-    assetMeta: loadAssetMeta(),
-  }
-  await writeFileAt(folder, 'manifest.json', new Blob([JSON.stringify(manifest, null, 2)], { type: 'application/json' }))
+  await writeQuestionSnapshot(folder, questions)
 
   const written = new Set<string>()
   const storedAssets = await idbEntries(FILE_STORE)

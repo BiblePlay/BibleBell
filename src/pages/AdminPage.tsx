@@ -26,6 +26,7 @@ import { categories } from '../data/categories'
 import { exportQuestionsToExcel } from '../utils/excelExport'
 import { importQuestionsFromExcel } from '../utils/excelImport'
 import { uploadProjectAsset } from '../utils/questionStorage'
+import { requestPwaInstall } from '../utils/pwaInstall'
 import {
   exportPortableDataFolder,
   importPortableDataFolder,
@@ -2141,6 +2142,19 @@ const saveCurrentQuestion = (
     }
   }
 
+  const installBibleBellApp = async () => {
+    const result = await requestPwaInstall()
+    if (result === 'installed') {
+      setMessage('BibleBell 앱 설치를 시작했습니다.')
+    } else if (result === 'already-installed') {
+      setMessage('이미 앱으로 실행 중입니다.')
+    } else if (result === 'dismissed') {
+      setMessage('앱 설치를 취소했습니다.')
+    } else {
+      setMessage('주소창의 설치 아이콘 또는 브라우저 메뉴의 “앱 설치”를 사용해 주세요.')
+    }
+  }
+
   const submit = (
     event:
       FormEvent<HTMLFormElement>,
@@ -2317,6 +2331,14 @@ onClick={() => {
 >
   엑셀 가져오기
 </button>
+            <button
+              type="button"
+              className="admin-secondary-button"
+              onClick={() => void installBibleBellApp()}
+              title="BibleBell을 컴퓨터에 웹앱(PWA)으로 설치합니다."
+            >
+              앱 설치
+            </button>
             <button
               type="button"
               className="admin-secondary-button"
