@@ -1,5 +1,4 @@
 BibleBell PUBLIC FINAL
 Version date: 2026-08-20
-Purpose: GitHub Pages public distribution / PWA / persistent browser data / portable BibleBell_Data
-Status: FINAL FROZEN after export/media/PWA/cache re-audit
-Baseline: BibleBell_PUBLIC_FINAL + final data-export reliability fixes
+Purpose: GitHub Pages public distribution / persistent browser data / portable BibleBell_Data / BibleGoldenBell desktop shortcut
+Status: FINAL FROZEN after data-folder reuse, export, media-replace and shortcut audit

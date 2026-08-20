@@ -1,4 +1,4 @@
-const CACHE_NAME = 'biblebell-shell-v7-final'
+const CACHE_NAME = 'biblebell-shell-v8-final'
 const BASE = '/BibleBell/'
 const PRECACHE = [
   BASE,
@@ -6,6 +6,7 @@ const PRECACHE = [
   `${BASE}content/questions.json`,
   `${BASE}icons/biblebell-192.png`,
   `${BASE}icons/biblebell-512.png`,
+  `${BASE}icons/biblebell.ico`,
 ]
 
 self.addEventListener('install', (event) => {

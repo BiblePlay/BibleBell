@@ -15,6 +15,7 @@ const DATA_FOLDER_NAME = 'BibleBell_Data'
 const PUBLIC_APP_URL = 'https://bibleplay.github.io/BibleBell/'
 
 type AnyDirectoryHandle = any
+let cachedDataHandle: AnyDirectoryHandle | null | undefined
 
 type PortableManifest = {
   format: 'BibleBell_Data'
@@ -285,14 +286,17 @@ export async function resolvePortableAssetUrl(source?: string): Promise<string |
 }
 
 async function getSavedDataHandle(): Promise<AnyDirectoryHandle | null> {
+  if (cachedDataHandle !== undefined) return cachedDataHandle
   try {
-    return (await idbGet(HANDLE_STORE, DATA_HANDLE_KEY)) ?? null
+    cachedDataHandle = (await idbGet(HANDLE_STORE, DATA_HANDLE_KEY)) ?? null
   } catch {
-    return null
+    cachedDataHandle = null
   }
+  return cachedDataHandle
 }
 
 async function saveDataHandle(handle: AnyDirectoryHandle): Promise<void> {
+  cachedDataHandle = handle
   await idbPut(HANDLE_STORE, DATA_HANDLE_KEY, handle)
 }
 
@@ -385,7 +389,7 @@ function portableGuideText(): string {
     `다른 컴퓨터로 옮길 때는 BibleBell 웹주소와 이 BibleBell_Data 폴더 전체를 함께 가져가세요.\n\n` +
     `■ 처음 사용할 때\n` +
     `1. BibleBell 실행: ${appUrl}\n` +
-    `2. 홈 화면의 “앱 설치”를 사용하면 지원되는 브라우저에서 BibleBell을 앱처럼 설치할 수 있습니다.\n` +
+    `2. 홈 화면의 “바로가기 만들기”를 누르면 BibleGoldenBell 바로가기를 내려받을 수 있습니다.\n` +
     `3. 관리자 모드에서 “저장 위치 지정”을 누르고 원하는 위치를 선택합니다.\n` +
     `4. 프로그램이 선택한 위치 안에 BibleBell_Data 폴더를 자동으로 만들고 관리합니다.\n\n` +
     `■ 평소 작업\n` +
@@ -394,22 +398,22 @@ function portableGuideText(): string {
     `- 그림·영상·오디오는 문제 ID 기준의 일정한 파일명으로 정리됩니다.\n` +
     `- 기존 미디어는 먼저 제거하지 않아도 미리보기/안내 영역에서 새 파일을 선택해 바로 교체할 수 있습니다.\n\n` +
     `■ 작업을 마친 뒤\n` +
-    `- 관리자 모드의 “데이터 보내기”를 누르세요.\n` +
+    `- 관리자 모드의 “전체 데이터 저장”을 누르세요.\n` +
     `- questions.xlsx, questions.json, manifest.json, media 폴더와 이 안내 파일이 최신 상태로 정리됩니다.\n` +
     `- Excel만 따로 옮기면 문제 글자는 복원할 수 있지만 그림·영상·오디오는 함께 복원되지 않습니다.\n\n` +
     `■ 다른 컴퓨터에서 이어서 사용\n` +
     `1. BibleBell_Data 폴더 전체를 USB·외장하드·클라우드 등으로 복사합니다.\n` +
     `2. 새 컴퓨터에서 BibleBell 웹주소를 엽니다.\n` +
-    `3. 관리자 모드 → “데이터 불러오기”를 누릅니다.\n` +
+    `3. 관리자 모드 → “전체 데이터 불러오기”를 누릅니다.\n` +
     `4. 가져온 BibleBell_Data 폴더 자체 또는 그 바로 위 폴더를 선택합니다.\n` +
     `5. 폴더 권한을 물으면 허용합니다. questions.json과 questions.xlsx 중 더 최근에 수정된 문제 데이터를 먼저 읽고, 미디어까지 같은 구성으로 복원합니다.\n\n` +
     `■ 꼭 기억하세요\n` +
     `- BibleBell_Data 바깥의 부모 폴더 이름과 저장 위치는 자유롭게 정해도 됩니다.\n` +
     `- BibleBell_Data 내부의 파일명과 media 하위 구조는 프로그램이 관리하므로 임의로 바꾸지 않는 것을 권장합니다.\n` +
     `- 브라우저가 폴더 권한을 다시 물으면 같은 BibleBell_Data 폴더를 다시 허용하면 됩니다.\n` +
-    `- 데이터 보내기 중 일부 미디어를 읽지 못하더라도 기존 media 폴더 전체를 자동 삭제하지 않습니다.\n\n` +
+    `- 전체 데이터 저장 중 일부 미디어를 읽지 못하더라도 기존 media 폴더 전체를 자동 삭제하지 않습니다.\n\n` +
     `웹주소는 APP_URL.txt에서 확인할 수 있습니다.\n` +
-    `앱 설치는 BibleBell 홈 화면의 “앱 설치” 버튼을 사용하세요.\n`
+    `홈의 “바로가기 만들기”를 누르면 Mac/Windows용 BibleGoldenBell 바로가기를 내려받을 수 있습니다.\n`
 }
 
 async function writePortableGuideFiles(folder: AnyDirectoryHandle): Promise<string[]> {
@@ -503,7 +507,7 @@ async function writeQuestionSnapshot(folder: AnyDirectoryHandle, questions: Quiz
 async function writeQuestionAutosave(folder: AnyDirectoryHandle, questions: QuizQuestion[]): Promise<void> {
   const normalizedQuestions = normalizeImportedQuestionPaths(questions)
   // 평소 자동 저장은 최신 문제 본문만 questions.json에 반영합니다.
-  // manifest.json은 데이터 보내기/초기 연결/복원처럼 패키지 단위 작업이 완료될 때 갱신하여
+  // manifest.json은 전체 데이터 저장/초기 연결/복원처럼 패키지 단위 작업이 완료될 때 갱신하여
   // 명시적 내보내기와 자동 저장이 서로 덮어쓰는 경쟁을 피합니다.
   await writeTextFile(folder, 'questions.json', JSON.stringify(normalizedQuestions, null, 2), 'application/json;charset=utf-8')
 }
@@ -533,14 +537,28 @@ export async function preparePortableExportLocation(): Promise<AnyDirectoryHandl
 
   if (saved) {
     try {
-      if ((await saved.queryPermission?.({ mode: 'readwrite' })) === 'granted') return saved
-    } catch {
-      // 아래에서 사용자가 같은 위치 또는 새 위치를 직접 선택합니다.
+      const current = await saved.queryPermission?.({ mode: 'readwrite' })
+      if (current === 'granted') return saved
+
+      // 이전에 선택한 폴더 핸들은 IndexedDB에 기억합니다.
+      // 권한이 prompt로 돌아온 경우 새 폴더 선택창을 열지 않고,
+      // 사용자가 이미 연결한 같은 BibleBell_Data에 대한 권한만 다시 요청합니다.
+      if (current === 'prompt') {
+        const granted = await requestHandlePermission(saved, 'readwrite')
+        if (granted) return saved
+        throw new Error('이전에 연결한 BibleBell_Data 폴더의 쓰기 권한이 허용되지 않았습니다. “저장 위치 변경”에서 같은 폴더를 다시 연결하거나 새 위치를 지정해 주세요.')
+      }
+
+      if (current === 'denied') {
+        throw new Error('이전에 연결한 BibleBell_Data 폴더 접근이 차단되어 있습니다. “저장 위치 변경”에서 같은 폴더를 다시 연결하거나 새 위치를 지정해 주세요.')
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('BibleBell_Data')) throw error
+      throw new Error('이전에 연결한 BibleBell_Data 폴더를 사용할 수 없습니다. “저장 위치 변경”에서 같은 폴더를 다시 연결하거나 새 위치를 지정해 주세요.')
     }
   }
 
-  // 브라우저마다 requestPermission 재호출 동작이 달라서, 권한이 유지되지 않은 경우에는
-  // "데이터 보내기" 클릭 흐름에서 showDirectoryPicker를 한 번만 직접 엽니다.
+  // 저장 위치를 아직 한 번도 정하지 않은 경우에만 최초 폴더 선택창을 엽니다.
   return chooseNewDataFolder()
 }
 
@@ -577,7 +595,7 @@ async function getLinkedFolderWithoutPrompt(mode: 'read' | 'readwrite' = 'readwr
 
 /**
  * 연결된 BibleBell_Data 폴더에 쓰기 권한이 유지된 동안에는
- * 문제 수정 내용을 questions.json에 자동 동기화합니다. Excel과 manifest는 “데이터 보내기” 때 최신 상태로 만듭니다.
+ * 문제 수정 내용을 questions.json에 자동 동기화합니다. Excel과 manifest는 “전체 데이터 저장” 때 최신 상태로 만듭니다.
  * 권한이 끊긴 경우 자동 권한창을 띄우지 않고 브라우저 저장소만 유지합니다.
  */
 export async function syncPortableQuestionsIfLinked(questions: QuizQuestion[]): Promise<boolean> {

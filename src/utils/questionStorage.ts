@@ -99,7 +99,7 @@ export function saveQuestions(questions: QuizQuestion[]): void {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized))
   if (isStaticHostedMode()) window.localStorage.setItem(USER_DATA_KEY, '1')
   // 한 번 연결된 BibleBell_Data 폴더가 있고 쓰기 권한이 유지된 경우
-  // questions.json/manifest.json을 자동 갱신합니다. Excel은 데이터 보내기 때 최신화합니다.
+  // questions.json/manifest.json을 자동 갱신합니다. Excel은 전체 데이터 저장 때 최신화합니다.
   void syncPortableQuestionsIfLinked(normalized)
 
   if (isStaticHostedMode()) return

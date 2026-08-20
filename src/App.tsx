@@ -13,7 +13,7 @@ import {
   selectPortableDataLocation,
   supportsPortableFolder,
 } from './utils/portableData'
-import { getPwaInstallHelp, requestPwaInstall } from './utils/pwaInstall'
+import { createDesktopShortcut } from './utils/desktopShortcut'
 
 const PLAYED_STORAGE_KEY = 'biblebell-played-question-ids'
 const BASE_PATH = import.meta.env.BASE_URL.replace(/\/$/, '')
@@ -77,7 +77,7 @@ export default function App() {
   const [dataFolderLinked, setDataFolderLinked] =
     useState<boolean | null>(null)
 
-  const [installHelpText, setInstallHelpText] = useState('')
+  const [shortcutHelpText, setShortcutHelpText] = useState('')
 
   const refreshDataFolderLink = async () => {
     const info = await getPortableDataFolderInfo()
@@ -229,17 +229,18 @@ export default function App() {
     saveQuestions(nextQuestions)
   }
 
-  const installBibleBellApp = async () => {
-    const result = await requestPwaInstall()
-
-    if (result === 'installed' || result === 'dismissed') return
-
-    if (result === 'already-installed') {
-      setInstallHelpText('현재 BibleBell이 이미 앱 창으로 실행 중입니다.')
-      return
+  const makeBibleBellShortcut = () => {
+    try {
+      const result = createDesktopShortcut()
+      setShortcutHelpText(
+        result.platform === 'mac'
+          ? `${result.fileName} 파일을 만들었습니다. 다운로드된 BibleGoldenBell을 데스크탑으로 옮겨 두면 더블클릭으로 BibleBell을 바로 열 수 있습니다.`
+          : `${result.fileName} 파일을 만들었습니다. 다운로드된 BibleGoldenBell을 바탕화면으로 옮겨 두면 더블클릭으로 BibleBell을 바로 열 수 있습니다.`,
+      )
+    } catch (error) {
+      console.error(error)
+      setShortcutHelpText('바로가기 파일을 만들지 못했습니다. 브라우저의 다운로드 허용 상태를 확인한 뒤 다시 눌러 주세요.')
     }
-
-    setInstallHelpText(getPwaInstallHelp())
   }
 
   const chooseDataFolder = async (): Promise<boolean> => {
@@ -250,7 +251,7 @@ export default function App() {
     try {
       const result = await selectPortableDataLocation(quizQuestions)
       setDataFolderLinked(true)
-      window.alert(`${result.folderName} 저장 위치가 준비되었습니다. 문제와 미디어를 다른 컴퓨터로 옮길 때는 관리자 모드의 “데이터 보내기”를 눌러 이 폴더 전체를 가져가세요.`)
+      window.alert(`${result.folderName} 저장 위치가 준비되었습니다. 문제와 미디어를 다른 컴퓨터로 옮길 때는 관리자 모드의 “전체 데이터 저장”을 눌러 이 폴더 전체를 가져가세요.`)
       return true
     } catch (error) {
       if ((error as DOMException)?.name === 'AbortError') return false
@@ -272,9 +273,9 @@ export default function App() {
         onScore={changeScore}
         onAdmin={goAdmin}
         onReset={resetGame}
-        onInstallApp={() => void installBibleBellApp()}
-        installHelpText={installHelpText}
-        onCloseInstallHelp={() => setInstallHelpText('')}
+        onCreateShortcut={makeBibleBellShortcut}
+        shortcutHelpText={shortcutHelpText}
+        onCloseShortcutHelp={() => setShortcutHelpText('')}
         onChooseDataFolder={chooseDataFolder}
         dataFolderLinked={dataFolderLinked}
       />

@@ -2094,7 +2094,7 @@ const saveCurrentQuestion = (
         return
       }
 
-      // 폴더 선택/권한 확인은 반드시 "데이터 보내기" 버튼의 사용자 클릭 직후 가장 먼저 실행합니다.
+      // 저장된 폴더 권한 확인은 반드시 "전체 데이터 저장" 버튼의 사용자 클릭 직후 가장 먼저 실행합니다.
       // 이 순서가 Chromium/Whale의 File System Access 사용자 제스처 제한에 가장 안전합니다.
       const preparedFolder = await preparePortableExportLocation()
 
@@ -2122,7 +2122,7 @@ const saveCurrentQuestion = (
       )
     } catch (error) {
       if ((error as DOMException)?.name === 'AbortError') {
-        setMessage('데이터 보내기를 취소했습니다. 기존 데이터는 변경하지 않았습니다.')
+        setMessage('전체 데이터 저장을 취소했습니다. 기존 데이터는 변경하지 않았습니다.')
         return
       }
       console.error(error)
@@ -2167,7 +2167,7 @@ const saveCurrentQuestion = (
       onSave(snapshot)
       const result = await selectPortableDataLocation(snapshot)
       await refreshPortableFolderInfo()
-      setMessage(`${result.folderName} 저장 위치를 연결했습니다. 이후 데이터 보내기로 Excel과 미디어를 함께 최신 상태로 보관할 수 있습니다.`)
+      setMessage(`${result.folderName} 저장 위치를 연결했습니다. 이후 전체 데이터 저장으로 Excel과 미디어를 함께 최신 상태로 보관할 수 있습니다.`)
     } catch (error) {
       if ((error as DOMException)?.name === 'AbortError') return
       console.error(error)
@@ -2358,7 +2358,7 @@ onClick={() => {
               disabled={excelLoading}
               title="다른 컴퓨터에서 가져온 BibleBell_Data 폴더를 한 번에 불러옵니다."
             >
-              데이터 불러오기
+              전체 데이터 불러오기
             </button>
             <button
               type="button"
@@ -2367,7 +2367,7 @@ onClick={() => {
               disabled={portableSaving}
               title="문제·Excel·그림·영상·오디오를 BibleBell_Data 폴더에 함께 저장합니다."
             >
-              {portableSaving ? '데이터 저장 중...' : '데이터 보내기'}
+              {portableSaving ? '전체 데이터 저장 중...' : '전체 데이터 저장'}
             </button>
           </div>
         </header>
@@ -2378,14 +2378,14 @@ onClick={() => {
               <strong>내 BibleBell 데이터 보관 · 이동</strong>
               <p>
                 설정에서 저장한 문제는 브라우저에도 보관됩니다. 다른 컴퓨터에서도 같은 문제·그림·동영상을 사용하려면
-                <b> 데이터 보내기</b>로 <b>BibleBell_Data</b> 폴더를 최신 상태로 만든 뒤 그 폴더 전체를 옮기세요.
-                새 컴퓨터에서는 BibleBell을 열고 <b>데이터 불러오기</b>에서 가져온 BibleBell_Data 폴더를 선택하면 됩니다.
+                <b> 전체 데이터 저장</b>으로 <b>BibleBell_Data</b> 폴더를 최신 상태로 만든 뒤 그 폴더 전체를 옮기세요.
+                새 컴퓨터에서는 BibleBell을 열고 <b>전체 데이터 불러오기</b>에서 가져온 BibleBell_Data 폴더를 선택하면 됩니다.
               </p>
             </div>
             <div className="admin-portable-status">
               <span className={portableFolderInfo.linked ? 'is-linked' : 'is-unlinked'}>
                 {portableFolderInfo.linked
-                  ? `저장 위치 연결됨: ${portableFolderInfo.folderName ?? 'BibleBell_Data'}`
+                  ? `저장 위치 연결됨: ${portableFolderInfo.folderName ?? 'BibleBell_Data'}${portableFolderInfo.permission === 'prompt' ? ' · 저장 시 권한 확인' : portableFolderInfo.permission === 'denied' ? ' · 접근 권한 확인 필요' : ''}`
                   : '저장 위치가 아직 지정되지 않았습니다.'}
               </span>
               <button
@@ -2403,11 +2403,11 @@ onClick={() => {
             <div className="admin-help-content">
               <section>
                 <h3>1. 처음 시작하기</h3>
-                <p>홈 화면에서 BibleBell을 실행한 뒤 필요하면 <b>앱 설치</b>를 사용하세요. 문제를 직접 수정하거나 미디어를 넣어 사용할 사람은 관리자 모드에서 먼저 <b>저장 위치 지정</b>을 눌러 원하는 위치를 선택하는 것을 권장합니다. BibleBell이 선택한 위치 안에 <b>BibleBell_Data</b> 폴더를 자동으로 만듭니다.</p>
+                <p>홈 화면의 <b>바로가기 만들기</b>를 누르면 Mac/Windows용 BibleGoldenBell 바로가기를 내려받을 수 있습니다. 문제를 직접 수정하거나 미디어를 넣어 사용할 사람은 관리자 모드에서 먼저 <b>저장 위치 지정</b>을 눌러 원하는 위치를 선택하는 것을 권장합니다. BibleBell이 선택한 위치 안에 <b>BibleBell_Data</b> 폴더를 자동으로 만듭니다.</p>
               </section>
               <section>
-                <h3>2. 앱처럼 설치하기</h3>
-                <p>Chrome·Edge·Whale에서 브라우저가 설치창을 허용하면 홈의 <b>앱 설치</b> 버튼을 눌렀을 때 공식 PWA 설치창이 바로 뜹니다. 설치창이 뜨지 않으면 버튼이 현재 브라우저에 맞는 설치 방법을 안내합니다. Mac Safari는 <b>파일 → Dock에 추가</b>를 사용합니다. 설치된 앱은 브라우저 탭과 별개의 창으로 실행할 수 있습니다.</p>
+                <h3>2. 바탕화면 바로가기 만들기</h3>
+                <p>홈의 <b>바로가기 만들기</b>를 누르면 Mac은 <b>BibleGoldenBell.webloc</b>, Windows는 <b>BibleGoldenBell.url</b> 파일을 내려받습니다. 다운로드된 BibleGoldenBell 파일을 바탕화면에 옮겨 두고 더블클릭하면 같은 BibleBell 웹을 바로 열 수 있습니다. 별도 프로그램 설치가 아니므로 PWA 설치 여부와 관계없이 사용할 수 있습니다.</p>
               </section>
               <section>
                 <h3>3. 저장 위치 지정하기</h3>
@@ -2443,27 +2443,27 @@ onClick={() => {
               </section>
               <section>
                 <h3>11. 전체 데이터를 다른 컴퓨터로 옮기기</h3>
-                <p>현재 컴퓨터에서 작업을 마친 뒤 <b>데이터 보내기</b>를 눌러 BibleBell_Data를 최신 상태로 만드세요. 그 폴더 전체를 USB·외장하드·클라우드 등으로 복사합니다. Excel만 단독으로 보내면 문제 글자는 옮길 수 있지만 그림·영상·오디오는 함께 옮겨지지 않습니다.</p>
+                <p>현재 컴퓨터에서 작업을 마친 뒤 <b>전체 데이터 저장</b>을 눌러 BibleBell_Data를 최신 상태로 만드세요. 그 폴더 전체를 USB·외장하드·클라우드 등으로 복사합니다. Excel만 단독으로 보내면 문제 글자는 옮길 수 있지만 그림·영상·오디오는 함께 옮겨지지 않습니다.</p>
               </section>
               <section>
                 <h3>12. 새 컴퓨터에서 복원하기</h3>
-                <p>새 컴퓨터에서 BibleBell 웹을 열고 관리자 모드 → <b>데이터 불러오기</b>를 누른 뒤 가져온 BibleBell_Data 폴더 자체 또는 그 바로 위 폴더를 선택하세요. questions.json과 questions.xlsx가 모두 있으면 더 최근에 수정된 쪽을 먼저 읽고, 문제가 있으면 다른 파일로 복구합니다. media 폴더가 함께 있으면 미디어도 같은 문제에 다시 연결됩니다.</p>
+                <p>새 컴퓨터에서 BibleBell 웹을 열고 관리자 모드 → <b>전체 데이터 불러오기</b>를 누른 뒤 가져온 BibleBell_Data 폴더 자체 또는 그 바로 위 폴더를 선택하세요. questions.json과 questions.xlsx가 모두 있으면 더 최근에 수정된 쪽을 먼저 읽고, 문제가 있으면 다른 파일로 복구합니다. media 폴더가 함께 있으면 미디어도 같은 문제에 다시 연결됩니다.</p>
               </section>
               <section>
                 <h3>13. 백업 방법</h3>
-                <p>같은 컴퓨터에서는 브라우저 저장소가 평소 작업을 유지하지만, 안전한 백업은 <b>BibleBell_Data 폴더 전체</b>입니다. 중요한 수정이나 미디어 등록을 마친 뒤 데이터 보내기를 눌러 두세요. BibleBell은 내보내기 중 한 미디어를 읽지 못했다는 이유로 기존 media 폴더 전체를 자동 삭제하지 않습니다.</p>
+                <p>같은 컴퓨터에서는 브라우저 저장소가 평소 작업을 유지하지만, 안전한 백업은 <b>BibleBell_Data 폴더 전체</b>입니다. 중요한 수정이나 미디어 등록을 마친 뒤 전체 데이터 저장을 눌러 두세요. BibleBell은 내보내기 중 한 미디어를 읽지 못했다는 이유로 기존 media 폴더 전체를 자동 삭제하지 않습니다.</p>
               </section>
               <section>
                 <h3>14. 이미지가 안 보일 때</h3>
-                <p>미디어 경로에 실제 파일이 없거나 브라우저 저장소에서 파일을 찾지 못하면 이미지가 표시되지 않을 수 있습니다. 깨진 이미지 안내 영역을 클릭하면 기존 항목을 먼저 삭제하지 않고 새 이미지로 바로 교체할 수 있습니다. 다른 컴퓨터에서 옮겨온 경우에는 먼저 BibleBell_Data 전체를 데이터 불러오기로 복원했는지 확인하세요.</p>
+                <p>미디어 경로에 실제 파일이 없거나 브라우저 저장소에서 파일을 찾지 못하면 이미지가 표시되지 않을 수 있습니다. 깨진 이미지 안내 영역을 클릭하면 기존 항목을 먼저 삭제하지 않고 새 이미지로 바로 교체할 수 있습니다. 다른 컴퓨터에서 옮겨온 경우에는 먼저 BibleBell_Data 전체를 전체 데이터 불러오기로 복원했는지 확인하세요.</p>
               </section>
               <section>
                 <h3>15. 브라우저 저장소와 BibleBell_Data의 차이</h3>
                 <p><b>브라우저 저장소</b>는 같은 컴퓨터·같은 브라우저에서 빠르게 이어 쓰기 위한 저장 공간입니다. 컴퓨터를 껐다 켜도 일반적으로 유지되지만 사이트 데이터를 지우거나 다른 브라우저/컴퓨터를 사용하면 공유되지 않습니다. <b>BibleBell_Data</b>는 백업과 컴퓨터 이동을 위한 실제 폴더입니다. 폴더 권한을 다시 물으면 같은 폴더를 다시 허용하면 됩니다.</p>
               </section>
               <section>
-                <h3>16. Mac / Windows 설치 방법</h3>
-                <p><b>Mac:</b> Chrome·Whale에서는 홈의 앱 설치 버튼이 가능한 경우 공식 설치창을 띄웁니다. Safari는 파일 → Dock에 추가를 사용합니다. <b>Windows:</b> Chrome·Edge·Whale에서 공식 웹앱 설치 기능을 사용합니다. <b>BibleBell_Data 폴더 저장·이동 기능은 Mac/Windows 모두 Chrome·Edge·Whale 같은 Chromium 계열 데스크톱 브라우저 사용을 권장합니다.</b> BibleBell은 별도의 .exe/.dmg를 배포하는 방식이 아닙니다.</p>
+                <h3>16. Mac / Windows 바로가기와 선택적 앱 설치</h3>
+                <p><b>Mac/Windows 공통:</b> 홈의 <b>바로가기 만들기</b>를 사용하면 BibleGoldenBell 바로가기를 내려받을 수 있습니다. 바탕화면에 옮겨 더블클릭하면 BibleBell이 기본 브라우저에서 열립니다. PWA 앱 설치는 원하는 사용자만 브라우저의 공식 설치 기능을 선택적으로 사용할 수 있습니다. <b>BibleBell_Data 폴더 저장·이동 기능은 Mac/Windows 모두 Chrome·Edge·Whale 같은 Chromium 계열 데스크톱 브라우저 사용을 권장합니다.</b></p>
               </section>
             </div>
           </details>

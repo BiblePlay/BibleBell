@@ -1,64 +1,78 @@
 BibleBell PUBLIC FINAL - 최종 점검 기록
 검토일: 2026-08-20
 
-[최종 해결 사항]
-1. 데이터 보내기
-- 폴더 권한/선택은 데이터 보내기 클릭 직후 가장 먼저 처리합니다.
-- questions.json을 먼저 저장하고 questions.xlsx를 다음에 저장합니다.
-- 안내 파일은 README_BibleBell.txt / APP_URL.txt의 안전한 ASCII 파일명만 사용합니다.
-- 안내 파일 생성 실패는 핵심 데이터 내보내기를 중단시키지 않습니다.
-- 미디어 한 개 저장 실패로 기존 media 폴더 전체를 삭제하지 않습니다.
-- manifest.json은 문제/Excel/미디어 저장 시도가 끝난 마지막 단계에 기록합니다.
-- 권한이 유지되지 않으면 같은 BibleBell_Data 또는 원하는 부모 위치를 다시 선택할 수 있습니다.
+[이번 최종 동결에서 해결한 핵심]
+1. 저장 위치 기억 / 전체 데이터 저장
+- 저장 위치 지정은 최초 한 번 또는 사용자가 명시적으로 위치를 바꿀 때만 폴더 선택창을 엽니다.
+- 선택한 BibleBell_Data FileSystemDirectoryHandle은 IndexedDB에 저장하고 실행 중에는 메모리 캐시도 사용합니다.
+- 전체 데이터 저장 시 기존 핸들의 쓰기 권한이 granted이면 폴더 선택창 없이 같은 BibleBell_Data에 바로 저장합니다.
+- 권한이 prompt로 돌아온 경우 새 폴더를 선택시키지 않고 기존에 연결한 같은 BibleBell_Data의 권한만 다시 요청합니다.
+- denied/손상된 연결일 때만 관리자 '저장 위치 변경'에서 사용자가 명시적으로 다시 연결하도록 안내합니다.
+- questions.json -> questions.xlsx -> 미디어 저장 시도 -> manifest.json 마지막 기록 순서를 유지합니다.
+- 일부 미디어 또는 선택적 안내 파일 실패 때문에 기존 media 폴더 전체를 삭제하지 않습니다.
 
-2. 이미지/영상/오디오 교체
-- 기존 미디어를 휴지통으로 먼저 지울 필요가 없습니다.
-- 이미지 미리보기/깨진 이미지 안내 영역을 클릭하면 바로 새 이미지로 교체됩니다.
-- 영상·오디오는 파일명/안내 영역 또는 드래그앤드롭으로 바로 교체됩니다.
-- 별도의 선택/교체 버튼은 추가하지 않았고 휴지통은 완전 삭제 용도로만 남겼습니다.
-- 동일한 Qxxx-question / Qxxx-answer 파일명으로 교체해도 revision/브라우저 저장소를 통해 새 미리보기가 갱신됩니다.
+2. 버튼 이름/역할
+- '데이터 보내기' -> '전체 데이터 저장'
+- '데이터 불러오기' -> '전체 데이터 불러오기'
+- '저장 위치 지정/변경'은 루트 BibleBell_Data 연결 전용입니다.
+- Excel 가져오기/엑셀 다운로드는 기존 기능 그대로 유지합니다.
 
-3. BibleBell_Data 이동/복원
-- 프로그램은 웹/PWA, 사용자 데이터는 브라우저 + BibleBell_Data로 분리합니다.
-- 다른 컴퓨터에서는 BibleBell 웹 + BibleBell_Data 폴더로 복원합니다.
-- questions.json / questions.xlsx 중 더 최근에 수정된 정상 파일을 우선 읽고 다른 파일을 복구 경로로 사용합니다.
-- 절대경로 대신 /BibleBell/content/media/... 규칙을 사용합니다.
+3. 미디어 즉시 교체
+- 기존 이미지가 있어도 휴지통으로 먼저 삭제하지 않습니다.
+- 이미지 미리보기 또는 깨진 이미지 안내 영역 클릭 -> 새 파일 선택 -> 즉시 교체합니다.
+- 영상/오디오는 안내/파일명 영역 클릭 또는 drag & drop으로 교체합니다.
+- 새 파일을 브라우저/연결 폴더에 먼저 저장한 뒤 같은 문제/용도의 이전 확장자 변형을 정리합니다.
+- 휴지통은 완전 삭제 용도로만 남겨 두었습니다.
+- 별도의 '선택/교체' 버튼은 추가하지 않았습니다.
 
-4. PWA
-- 홈의 앱 설치 버튼은 관리자 모드 바로 앞에 있습니다.
-- beforeinstallprompt가 있으면 브라우저 공식 설치창을 호출합니다.
-- 자동 설치창이 없는 환경에서만 브라우저별 안내를 표시합니다.
-- service worker는 v7-final 캐시로 갱신했고 HTML/JS/CSS는 온라인에서 네트워크 우선으로 읽어 이전 캐시가 새 수정본을 가리는 위험을 줄였습니다.
+4. 바탕화면 바로가기
+- 홈의 관리자 모드 앞 버튼은 '바로가기 만들기'입니다.
+- Mac: BibleGoldenBell.webloc 다운로드
+- Windows: BibleGoldenBell.url 다운로드
+- Windows .url에는 공개 BibleBell 아이콘 URL을 지정하며 사이트에도 favicon.ico를 포함했습니다.
+- 바로가기는 https://bibleplay.github.io/BibleBell/ 홈 주소만 엽니다. /admin 직접 링크로 고정하지 않습니다.
+- PWA는 필수 흐름에서 제거했으며 manifest/service worker는 원하는 사용자의 브라우저 공식 PWA 설치를 위해 그대로 유지합니다.
 
-[보존 확인]
-- src/data/questions.ts: 초기 PUBLIC 기준본과 SHA256 동일
-- src/data/categories.ts: 동일
-- src/components/Scoreboard.tsx: 동일
-- vite.config.mjs: 동일
-- Excel Import 로직: 동일
-- 10개 카테고리 × 10문제, 카테고리+번호 주소, 고정점수 10/10/20/20/30/30/40/40/50/50 유지
-- 점수 +/-와 문제 사용상태 로직을 재설계하지 않음
-- Home 문제판 자체는 앱 설치 버튼/첫 사용 안내 외에 재설계하지 않음
+5. 이동/복원
+- 같은 컴퓨터/같은 브라우저에서는 localStorage/IndexedDB가 평소 작업을 유지합니다.
+- 안전한 백업/이동 기준은 BibleBell_Data 전체입니다.
+- 다른 컴퓨터에서는 BibleBell 웹 -> 관리자 -> 전체 데이터 불러오기 -> 가져온 BibleBell_Data 선택으로 복원합니다.
+- questions.json/questions.xlsx가 모두 있으면 더 최신인 정상 파일을 우선 사용하고 손상 시 다른 파일을 복구 경로로 사용합니다.
+
+[절대 보존 확인]
+- src/data/questions.ts: 수정하지 않음
+- src/data/categories.ts: 수정하지 않음
+- src/components/Scoreboard.tsx: 수정하지 않음
+- src/utils/excelImport.ts / excelExport.ts: 수정하지 않음
+- vite.config.mjs: 수정하지 않음
+- 10개 카테고리 x 10문제 = 100문제 유지
+- 카테고리+번호 문제 위치 유지
+- 번호별 점수 10/10/20/20/30/30/40/40/50/50 유지
+- 점수 +/- / 문제 사용상태 / 문제판 로직 재설계 안 함
+- 단답/OX/사지선다/이미지/영상/오디오 및 보기1~4 구조 유지
+- Home 문제판 자체 디자인은 바로가기 버튼 명칭/동작과 첫 저장 안내 문구 외 재설계 안 함
 
 [데이터 검사]
+- content/questions.json과 public/content/questions.json 동일
 - 총 100문제
-- 10개 카테고리 각각 10문제
+- 각 카테고리 10문제
 - 카테고리+번호 중복 0
 - 고정 점수 오류 0
-- 실제 4지선다 보기 누락 0
-- OX O/X 보기 정상
-- content/questions.json = public/content/questions.json 동일
-- 확인한 실명/개인 절대경로 패턴 0
-- PUBLIC 미디어는 안전한 샘플만 유지
+- OX 10문제 O/X 보기 정상
+- 비-OX 객관식 19문제 모두 보기 4개 존재
+- 확인된 개인 실명/절대경로 패턴 0
+- PUBLIC 미디어 참조는 안전한 Q001 문제/정답 샘플 2개이며 실제 파일 존재
+- 관리 Excel 범위 A1:Q101, 수식 오류 검색 0
 
 [코드/파일 검사]
-- TS/TSX 18개 transpile 구문 오류 0
-- 상대 import 누락 0
+- TS/TSX 18개 TypeScript transpile 구문 오류 0
+- 외부 라이브러리 최소 스텁 기반 전체 TypeScript 의미 검사 오류 0
+- public/sw.js / vite.config.mjs JavaScript 구문 정상
 - manifest/questions JSON 구문 정상
-- sw.js / vite.config.mjs JavaScript 구문 정상
-- .git / node_modules / dist / 백업 / .DS_Store 제외
+- 상대 import 경로 누락 0
+- .git / node_modules / dist / 백업 / .DS_Store 최종 ZIP에서 제외
 
 [실제 환경에서 마지막 확인]
-- 이 환경에는 npm 패키지 캐시가 완전하지 않아 npm ci → npm run build 전체 실행은 완료하지 못함
-- GitHub Actions build/deploy 초록색이 실제 빌드 최종 확인
-- 배포 후 Whale/Chrome/Edge에서 데이터 보내기, 이미지 바로 교체, PWA 설치를 실제 클릭 확인
+- npm registry가 이 작업 환경에서 완전히 사용 가능하지 않아 npm ci -> npm run build 전체 실행은 완료하지 못함.
+- GitHub Actions build/deploy가 초록색이면 실제 의존성 포함 빌드 최종 확인.
+- 배포 후 실제 브라우저에서 확인할 항목: 바로가기 다운로드, 이미지 삭제 없이 교체, 저장 위치 최초 1회 지정, 전체 데이터 저장 시 같은 폴더 재사용, 종료/재접속 후 브라우저 데이터 유지, 다른 컴퓨터에서 BibleBell_Data 전체 복원.

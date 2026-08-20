@@ -24,9 +24,9 @@ interface HomePageProps {
   onScore: (teamId: number, delta: number) => void
   onAdmin: () => void
   onReset: () => void
-  onInstallApp: () => void
-  installHelpText: string
-  onCloseInstallHelp: () => void
+  onCreateShortcut: () => void
+  shortcutHelpText: string
+  onCloseShortcutHelp: () => void
   onChooseDataFolder: () => Promise<boolean>
   dataFolderLinked: boolean | null
 }
@@ -44,9 +44,9 @@ export function HomePage({
   onScore,
   onAdmin,
   onReset,
-  onInstallApp,
-  installHelpText,
-  onCloseInstallHelp,
+  onCreateShortcut,
+  shortcutHelpText,
+  onCloseShortcutHelp,
   onChooseDataFolder,
   dataFolderLinked,
 }: HomePageProps) {
@@ -69,18 +69,18 @@ export function HomePage({
 
   return (
     <main className="master-screen">
-      {installHelpText && (
-        <div className="master-setup-overlay" role="dialog" aria-modal="true" aria-label="BibleBell 앱 설치 안내">
+      {shortcutHelpText && (
+        <div className="master-setup-overlay" role="dialog" aria-modal="true" aria-label="BibleGoldenBell 바로가기 안내">
           <section className="master-setup-card">
             <div className="master-setup-icon"><Download size={30} /></div>
             <div>
-              <span className="master-setup-kicker">앱 설치</span>
-              <h2>BibleBell을 앱처럼 실행하세요.</h2>
-              <p>{installHelpText}</p>
-              <p className="master-setup-note">설치 가능한 브라우저에서는 앱 설치 버튼을 누르면 공식 설치창이 바로 열립니다. 브라우저가 자동 설치창을 제공하지 않을 때만 이 안내가 표시됩니다.</p>
+              <span className="master-setup-kicker">바로가기</span>
+              <h2>BibleGoldenBell 바로가기를 만들었습니다.</h2>
+              <p>{shortcutHelpText}</p>
+              <p className="master-setup-note">바로가기는 같은 BibleBell 웹주소를 엽니다. 같은 컴퓨터·같은 브라우저에서는 기존 작업을 그대로 이어서 사용할 수 있습니다.</p>
             </div>
             <div className="master-setup-actions">
-              <button className="master-setup-primary" onClick={onCloseInstallHelp}>확인</button>
+              <button className="master-setup-primary" onClick={onCloseShortcutHelp}>확인</button>
             </div>
           </section>
         </div>
@@ -98,7 +98,7 @@ export function HomePage({
                 <b> BibleBell_Data</b> 폴더가 필요합니다. 원하는 위치만 선택하면 BibleBell이 그 안에 폴더를 자동으로 만듭니다.
               </p>
               <p className="master-setup-note">
-                나중에 관리자 모드에서 저장 위치를 바꿀 수 있고, 작업 후 <b>데이터 보내기</b>를 누르면 Excel과 미디어가 함께 정리됩니다.
+                나중에 관리자 모드에서 저장 위치를 바꿀 수 있고, 작업 후 <b>전체 데이터 저장</b>을 누르면 Excel과 미디어가 함께 정리됩니다.
               </p>
             </div>
             <div className="master-setup-actions">
@@ -135,11 +135,11 @@ export function HomePage({
           <div className="master-title-actions">
             <button
               className="master-admin-button master-install-button"
-              onClick={onInstallApp}
-              title="BibleBell을 컴퓨터에 앱처럼 설치"
+              onClick={onCreateShortcut}
+              title="BibleGoldenBell 바탕화면 바로가기 만들기"
             >
               <Download size={18} />
-              앱 설치
+              바로가기 만들기
             </button>
 
             <button
