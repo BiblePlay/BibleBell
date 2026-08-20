@@ -513,6 +513,13 @@ async function writeQuestionAutosave(folder: AnyDirectoryHandle, questions: Quiz
 }
 
 
+async function ensurePortableFolderStructure(folder: AnyDirectoryHandle): Promise<void> {
+  const media = await folder.getDirectoryHandle('media', { create: true })
+  await media.getDirectoryHandle('images', { create: true })
+  await media.getDirectoryHandle('videos', { create: true })
+  await media.getDirectoryHandle('audio', { create: true })
+}
+
 async function chooseNewDataFolder(): Promise<AnyDirectoryHandle> {
   if (!supportsPortableFolder()) {
     throw new Error('이 브라우저는 폴더 저장 기능을 지원하지 않습니다. Chrome, Edge, Whale 같은 Chromium 계열 데스크톱 브라우저를 사용해 주세요.')
@@ -531,6 +538,10 @@ async function chooseNewDataFolder(): Promise<AnyDirectoryHandle> {
   const dataFolder = parent.name === DATA_FOLDER_NAME
     ? parent
     : await parent.getDirectoryHandle(DATA_FOLDER_NAME, { create: true })
+
+  // 위치를 선택한 즉시 고정 데이터 폴더와 media 기본 구조까지 만들어 둡니다.
+  // 사용자는 별도 폴더를 미리 만들 필요가 없습니다.
+  await ensurePortableFolderStructure(dataFolder)
   await saveDataHandle(dataFolder)
   return dataFolder
 }

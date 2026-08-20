@@ -95,7 +95,7 @@ export function HomePage({
               <h2>내 BibleBell 저장 위치를 정해 주세요.</h2>
               <p>
                 문제 수정 내용은 브라우저에도 저장됩니다. 하지만 그림·동영상까지 다른 컴퓨터로 옮기려면
-                <b> BibleBell_Data</b> 폴더가 필요합니다. 원하는 위치만 선택하면 BibleBell이 그 안에 폴더를 자동으로 만듭니다.
+                <b> BibleBell_Data</b> 폴더가 필요합니다. <b>폴더를 직접 만들 필요 없이</b> 바탕화면·문서·USB·외장하드 등 원하는 위치만 선택하면 BibleBell이 그 안에 자동으로 만듭니다.
               </p>
               <p className="master-setup-note">
                 나중에 관리자 모드에서 저장 위치를 바꿀 수 있고, 작업 후 <b>전체 데이터 저장</b>을 누르면 Excel과 미디어가 함께 정리됩니다.
@@ -109,7 +109,7 @@ export function HomePage({
                   if (ok) setShowSetupGuide(false)
                 }}
               >
-                저장 폴더 지정
+                저장 위치 선택
               </button>
               <button
                 className="master-setup-secondary"

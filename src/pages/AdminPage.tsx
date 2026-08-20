@@ -2377,7 +2377,7 @@ onClick={() => {
               className="admin-secondary-button"
               onClick={() => void savePortableFolder()}
               disabled={portableSaving}
-              title="문제·Excel·그림·영상·오디오를 BibleBell_Data 폴더에 함께 저장합니다."
+              title="처음에는 저장할 위치만 선택하세요. BibleBell_Data 폴더는 자동으로 만들어지고, 이후에는 같은 폴더에 바로 저장됩니다."
             >
               {portableSaving ? '전체 데이터 저장 중...' : '전체 데이터 저장'}
             </button>
@@ -2389,9 +2389,9 @@ onClick={() => {
             <div>
               <strong>내 BibleBell 데이터 보관 · 이동</strong>
               <p>
-                <b>처음 사용할 때는 전체 데이터 저장을 누르고 저장할 위치만 선택하세요.</b>
-                바탕화면·문서·USB·외장하드 등 원하는 위치를 고르면 그 안에 <b>BibleBell_Data</b> 폴더가 자동으로 만들어집니다.
-                이후 전체 데이터 저장은 같은 BibleBell_Data를 최신 상태로 갱신합니다.
+                <b>폴더를 직접 만들 필요가 없습니다.</b> 처음 <b>전체 데이터 저장</b>을 누른 뒤 바탕화면·문서·USB·외장하드처럼 <b>저장할 위치만 선택</b>하세요.
+                선택한 위치 안에 BibleBell이 <b>BibleBell_Data</b> 폴더와 media 기본 폴더를 자동으로 만들고, 문제 Excel·JSON·그림·영상·오디오를 그곳에 저장합니다.
+                이후 <b>전체 데이터 저장</b>은 같은 BibleBell_Data를 계속 최신 상태로 갱신합니다.
                 다른 컴퓨터로 이동하거나 다른 사람에게 전달할 때는 <b>BibleBell 웹주소와 BibleBell_Data 폴더 하나만</b> 가져가면 됩니다.
                 새 컴퓨터에서는 <b>전체 데이터 불러오기</b>를 누르고 <b>BibleBell_Data 폴더 자체</b>를 선택하세요.
               </p>
@@ -2400,7 +2400,7 @@ onClick={() => {
               <span className={portableFolderInfo.linked ? 'is-linked' : 'is-unlinked'}>
                 {portableFolderInfo.linked
                   ? `저장 폴더 연결됨: BibleBell_Data${portableFolderInfo.permission === 'prompt' ? ' · 저장 시 권한 확인' : portableFolderInfo.permission === 'denied' ? ' · 접근 권한 확인 필요' : ''}`
-                  : '아직 BibleBell_Data가 없습니다. 처음 전체 데이터 저장 시 저장할 위치를 한 번 선택하세요.'}
+                  : '아직 BibleBell_Data가 없습니다. 폴더를 직접 만들지 말고 전체 데이터 저장을 눌러 저장할 위치만 선택하세요.'}
               </span>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                 {portableFolderInfo.linked && (
@@ -2414,14 +2414,16 @@ onClick={() => {
                     저장 폴더 열기
                   </button>
                 )}
-                <button
-                  type="button"
-                  className="admin-secondary-button"
-                  onClick={() => void changePortableFolder()}
-                  title="저장 위치를 새로 지정합니다. 선택한 위치 안에 BibleBell_Data가 자동 생성됩니다."
-                >
-                  {portableFolderInfo.linked ? '저장 위치 변경' : '저장 위치 지정'}
-                </button>
+                {portableFolderInfo.linked && (
+                  <button
+                    type="button"
+                    className="admin-secondary-button"
+                    onClick={() => void changePortableFolder()}
+                    title="저장 위치를 바꿀 때만 사용합니다. 선택한 새 위치 안에 BibleBell_Data가 자동 생성됩니다."
+                  >
+                    저장 위치 변경
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -2439,7 +2441,7 @@ onClick={() => {
               </section>
               <section>
                 <h3>3. 저장 위치 지정하기</h3>
-                <p>처음 <b>전체 데이터 저장</b>을 누르거나 <b>저장 위치 지정</b>을 누르면 바탕화면, 문서, USB, 외장하드 등 <b>저장할 위치만</b> 선택합니다. 폴더 이름은 사용자가 만들 필요가 없습니다. BibleBell이 선택한 위치 안에 항상 <b>BibleBell_Data</b>라는 고정 이름의 폴더를 자동으로 만들고 내부 구조를 관리합니다. 연결 후에는 <b>저장 폴더 열기</b>에서 위치를 언제든 확인할 수 있습니다.</p>
+                <p>처음 <b>전체 데이터 저장</b>을 누르면 바탕화면, 문서, USB, 외장하드 등 <b>저장할 위치만</b> 선택합니다. <b>폴더를 미리 만들거나 이름을 정할 필요가 없습니다.</b> BibleBell이 선택한 위치 안에 항상 <b>BibleBell_Data</b>라는 고정 이름의 폴더와 media 기본 폴더를 자동으로 만들고 내부 구조를 관리합니다. 연결 후에는 <b>저장 폴더 열기</b>에서 위치를 언제든 확인할 수 있고, 위치를 바꿀 때만 <b>저장 위치 변경</b>을 사용합니다.</p>
               </section>
               <section>
                 <h3>4. 문제 수정하기</h3>

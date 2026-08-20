@@ -3,3 +3,4 @@ Date: 2026-08-20
 Data folder rule: user selects location only -> BibleBell_Data is auto-created
 Import rule: select BibleBell_Data folder itself
 Desktop shortcut: BibleGoldenBell
+Folder UX: 전체 데이터 저장 -> 위치만 선택 -> BibleBell_Data 자동 생성 -> 저장 폴더 열기로 위치 확인

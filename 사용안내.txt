@@ -15,8 +15,8 @@ BibleBell 프로그램은 웹에서 실행됩니다.
 2. 처음 전체 데이터 저장
 - 문제를 수정하거나 그림·영상·오디오를 넣은 뒤 '전체 데이터 저장'을 누릅니다.
 - 처음 한 번만 바탕화면, 문서, USB, 외장하드 등 저장할 위치를 선택합니다.
-- 사용자가 BibleBell_Data라는 폴더 이름을 만들 필요는 없습니다.
-- BibleBell이 선택한 위치 안에 항상 'BibleBell_Data' 폴더를 자동 생성합니다.
+- 폴더를 미리 만들거나 BibleBell_Data라는 이름을 직접 정할 필요는 없습니다.
+- BibleBell이 선택한 위치 안에 항상 'BibleBell_Data' 폴더와 media/images, media/videos, media/audio 기본 폴더를 자동 생성합니다.
 - 이후 전체 데이터 저장은 같은 BibleBell_Data 폴더를 계속 최신 상태로 갱신합니다.
 
 3. BibleBell_Data 안에 저장되는 것

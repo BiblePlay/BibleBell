@@ -59,3 +59,10 @@ npm run dev
 ```
 
 배포는 `.github/workflows/deploy.yml`의 GitHub Pages workflow를 사용합니다.
+
+
+## 저장 폴더 규칙
+- 사용자는 `전체 데이터 저장`을 누른 뒤 저장할 **위치만** 선택합니다.
+- `BibleBell_Data` 폴더를 직접 만들 필요가 없습니다. BibleBell이 선택한 위치 안에 자동 생성합니다.
+- 이후 `저장 폴더 열기`로 연결 위치를 확인하고, `저장 위치 변경`은 위치를 바꿀 때만 사용합니다.
+- 다른 컴퓨터에서는 `전체 데이터 불러오기`에서 `BibleBell_Data` 폴더 자체를 선택합니다.

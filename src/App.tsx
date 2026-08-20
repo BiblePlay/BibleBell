@@ -251,7 +251,7 @@ export default function App() {
     try {
       const result = await selectPortableDataLocation(quizQuestions)
       setDataFolderLinked(true)
-      window.alert(`${result.folderName} 저장 위치가 준비되었습니다. 문제와 미디어를 다른 컴퓨터로 옮길 때는 관리자 모드의 “전체 데이터 저장”을 눌러 이 폴더 전체를 가져가세요.`)
+      window.alert(`${result.folderName} 저장 위치가 준비되었습니다. 선택한 위치 안에 BibleBell_Data가 자동으로 만들어졌습니다. 이후 관리자 모드의 “전체 데이터 저장”으로 Excel과 미디어를 최신 상태로 보관하세요.`)
       return true
     } catch (error) {
       if ((error as DOMException)?.name === 'AbortError') return false
