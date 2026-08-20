@@ -25,6 +25,8 @@ interface HomePageProps {
   onAdmin: () => void
   onReset: () => void
   onInstallApp: () => void
+  installHelpText: string
+  onCloseInstallHelp: () => void
   onChooseDataFolder: () => Promise<boolean>
   dataFolderLinked: boolean | null
 }
@@ -43,6 +45,8 @@ export function HomePage({
   onAdmin,
   onReset,
   onInstallApp,
+  installHelpText,
+  onCloseInstallHelp,
   onChooseDataFolder,
   dataFolderLinked,
 }: HomePageProps) {
@@ -65,6 +69,23 @@ export function HomePage({
 
   return (
     <main className="master-screen">
+      {installHelpText && (
+        <div className="master-setup-overlay" role="dialog" aria-modal="true" aria-label="BibleBell 앱 설치 안내">
+          <section className="master-setup-card">
+            <div className="master-setup-icon"><Download size={30} /></div>
+            <div>
+              <span className="master-setup-kicker">앱 설치</span>
+              <h2>BibleBell을 앱처럼 실행하세요.</h2>
+              <p>{installHelpText}</p>
+              <p className="master-setup-note">설치 가능한 브라우저에서는 앱 설치 버튼을 누르면 공식 설치창이 바로 열립니다. 브라우저가 자동 설치창을 제공하지 않을 때만 이 안내가 표시됩니다.</p>
+            </div>
+            <div className="master-setup-actions">
+              <button className="master-setup-primary" onClick={onCloseInstallHelp}>확인</button>
+            </div>
+          </section>
+        </div>
+      )}
+
       {showSetupGuide && (
         <div className="master-setup-overlay" role="dialog" aria-modal="true" aria-label="BibleBell 처음 사용 안내">
           <section className="master-setup-card">

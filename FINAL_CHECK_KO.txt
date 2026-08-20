@@ -1,95 +1,64 @@
 BibleBell PUBLIC FINAL - 최종 점검 기록
-검토일: 2026-08-19
+검토일: 2026-08-20
 
-[기준]
-- 기준본: BibleBell_PUBLIC_100_PORTABLE_PWA_FINAL_2026-08-19.zip
-- 외장하드 행사 운영 FINAL 원본은 수정하지 않음
-- PUBLIC 배포본만 최종 정리
-- 기존 게임 엔진/점수판/QuestionPage/questionStorage/Excel Import·Export 구조를 재작성하지 않음
+[최종 해결 사항]
+1. 데이터 보내기
+- 폴더 권한/선택은 데이터 보내기 클릭 직후 가장 먼저 처리합니다.
+- questions.json을 먼저 저장하고 questions.xlsx를 다음에 저장합니다.
+- 안내 파일은 README_BibleBell.txt / APP_URL.txt의 안전한 ASCII 파일명만 사용합니다.
+- 안내 파일 생성 실패는 핵심 데이터 내보내기를 중단시키지 않습니다.
+- 미디어 한 개 저장 실패로 기존 media 폴더 전체를 삭제하지 않습니다.
+- manifest.json은 문제/Excel/미디어 저장 시도가 끝난 마지막 단계에 기록합니다.
+- 권한이 유지되지 않으면 같은 BibleBell_Data 또는 원하는 부모 위치를 다시 선택할 수 있습니다.
 
-[이번 최종 수정]
-1. PWA 설치 버튼
-- 기존 홈의 '앱 설치' 버튼 위치는 유지
-- beforeinstallprompt가 가능하면 브라우저 공식 설치창을 사용
-- 직접 설치창을 띄울 수 없을 때만 Mac/Windows/Chrome/Edge/Whale/Safari 환경에 맞는 안내 표시
-- 단순 브라우저 탭을 '설치됨'으로 표시하지 않음
+2. 이미지/영상/오디오 교체
+- 기존 미디어를 휴지통으로 먼저 지울 필요가 없습니다.
+- 이미지 미리보기/깨진 이미지 안내 영역을 클릭하면 바로 새 이미지로 교체됩니다.
+- 영상·오디오는 파일명/안내 영역 또는 드래그앤드롭으로 바로 교체됩니다.
+- 별도의 선택/교체 버튼은 추가하지 않았고 휴지통은 완전 삭제 용도로만 남겼습니다.
+- 동일한 Qxxx-question / Qxxx-answer 파일명으로 교체해도 revision/브라우저 저장소를 통해 새 미리보기가 갱신됩니다.
 
-2. BibleBell_Data
-- 사용자 지정 위치 안에 BibleBell_Data 생성
-- questions.xlsx / questions.json / manifest.json / media / 사용안내 관리
-- questions.json 자동 동기화는 기존 방식 유지
-- 전체 데이터 보내기 시 핵심 파일을 순서대로 기록하고 manifest를 마지막에 갱신하도록 안전성 보강
-- 데이터 보내기 중 한 미디어를 읽지 못해도 기존 media 폴더 전체를 삭제하지 않음
+3. BibleBell_Data 이동/복원
+- 프로그램은 웹/PWA, 사용자 데이터는 브라우저 + BibleBell_Data로 분리합니다.
+- 다른 컴퓨터에서는 BibleBell 웹 + BibleBell_Data 폴더로 복원합니다.
+- questions.json / questions.xlsx 중 더 최근에 수정된 정상 파일을 우선 읽고 다른 파일을 복구 경로로 사용합니다.
+- 절대경로 대신 /BibleBell/content/media/... 규칙을 사용합니다.
 
-3. 사용안내
-- 관리자 안의 사용설명서를 16개 항목으로 확장
-- 처음 시작, 앱 설치, 저장 위치, 문제 편집, 문제유형, 사지선다, 미디어 교체,
-  Excel 내보내기/불러오기, BibleBell_Data, 이동/복원, 백업, 이미지 오류,
-  브라우저 저장소 차이, Mac/Windows 설치 방법 포함
-- 루트 사용안내.txt 포함
-- BibleBell_Data 생성 시 BibleBell_사용안내.txt / 웹주소 / Windows·Mac 웹 바로가기 자동 생성
+4. PWA
+- 홈의 앱 설치 버튼은 관리자 모드 바로 앞에 있습니다.
+- beforeinstallprompt가 있으면 브라우저 공식 설치창을 호출합니다.
+- 자동 설치창이 없는 환경에서만 브라우저별 안내를 표시합니다.
+- service worker는 v7-final 캐시로 갱신했고 HTML/JS/CSS는 온라인에서 네트워크 우선으로 읽어 이전 캐시가 새 수정본을 가리는 위험을 줄였습니다.
 
-4. PUBLIC 개인정보/미디어 정리
-- 공개 데이터에 남아 있던 실제 교사/학생 이름을 일반 샘플 문구로 정리
-- 사용되지 않는 영상/오디오 샘플과 중복 public/BibleBell 미디어 폴더 제거
-- 실제로 참조되는 Q001 문제/정답 만화 샘플 2개만 유지
-- 오래된 questions 백업 파일 제거
+[보존 확인]
+- src/data/questions.ts: 초기 PUBLIC 기준본과 SHA256 동일
+- src/data/categories.ts: 동일
+- src/components/Scoreboard.tsx: 동일
+- vite.config.mjs: 동일
+- Excel Import 로직: 동일
+- 10개 카테고리 × 10문제, 카테고리+번호 주소, 고정점수 10/10/20/20/30/30/40/40/50/50 유지
+- 점수 +/-와 문제 사용상태 로직을 재설계하지 않음
+- Home 문제판 자체는 앱 설치 버튼/첫 사용 안내 외에 재설계하지 않음
 
-[절대 보존 확인]
-- Home 문제판 레이아웃: 이번 최종 작업에서 수정하지 않음
-- QuestionPage: 이번 최종 작업에서 수정하지 않음
-- questionStorage.ts: 이번 최종 작업에서 수정하지 않음
-- excelImport.ts / excelExport.ts: 이번 최종 작업에서 수정하지 않음
-- src/data/questions.ts: 수정하지 않음
-- vite.config.mjs: 수정하지 않음
-- 점수 +/- 로직: 수정하지 않음
-- 고정 점수 배열: 10,10,20,20,30,30,40,40,50,50 유지
+[데이터 검사]
+- 총 100문제
+- 10개 카테고리 각각 10문제
+- 카테고리+번호 중복 0
+- 고정 점수 오류 0
+- 실제 4지선다 보기 누락 0
+- OX O/X 보기 정상
+- content/questions.json = public/content/questions.json 동일
+- 확인한 실명/개인 절대경로 패턴 0
+- PUBLIC 미디어는 안전한 샘플만 유지
 
-[데이터 검증]
-- 총 문제: 100
-- 카테고리: 10개
-- 각 카테고리: 10문제
-- 카테고리+번호 고유 위치: 100
-- 문제 ID와 카테고리+번호 매핑 오류: 0
-- 고정 점수 패턴 오류: 0
-- 현재 샘플 객관식: 29문제
-- 객관식 보기 데이터 누락: 0
-- content/questions.json과 public/content/questions.json: 동일
-- 관리용 Excel: 100문제/100고유위치
-- 관리용 Excel과 JSON 내용 불일치: 0 (줄바꿈 형식 차이 정규화 후 비교)
-- 공개 JSON 미디어 참조: Q001 문제/정답 이미지 2개
-- 참조 미디어 실제 파일 존재: 모두 확인
+[코드/파일 검사]
+- TS/TSX 18개 transpile 구문 오류 0
+- 상대 import 누락 0
+- manifest/questions JSON 구문 정상
+- sw.js / vite.config.mjs JavaScript 구문 정상
+- .git / node_modules / dist / 백업 / .DS_Store 제외
 
-[소스/PWA 검증]
-- TypeScript/TSX 18개 파일 transpile 구문 오류: 0
-- 외부 라이브러리 최소 스텁을 사용한 전체 TypeScript 의미 검사: 오류 0
-- 상대 import 경로 누락: 0
-- vite.config.mjs node --check: 통과
-- public/sw.js node --check: 통과
-- manifest.webmanifest JSON 파싱: 통과
-- PWA id/start_url/scope: /BibleBell/
-- 192x192 아이콘: 확인
-- 512x512 아이콘: 확인
-- 512x512 maskable 아이콘: 확인
-- GitHub Pages deploy workflow: main push → npm ci → npm run build → dist 배포 구조 유지
-- .git / node_modules / .DS_Store / 오래된 backup 파일: 최종 폴더에 없음
-
-[실제 환경에서 마지막으로 확인할 항목]
-이 검사 환경에는 npm 패키지 전체 캐시가 없고 외부 npm registry 설치를 완료할 수 없어
-실제 npm ci → npm run build 전체 빌드는 이 환경에서 실행 완료하지 못했습니다.
-오프라인 npm ci는 yallist 패키지가 캐시에 없어 ENOTCACHED로 중단됨을 확인했습니다.
-
-따라서 GitHub에 업로드한 뒤 Actions에서:
-1. build 초록색
-2. deploy 초록색
-을 확인하면 실제 배포 빌드 검증이 완료됩니다.
-
-그 뒤 실제 웹에서 다음만 최종 클릭 확인:
-- 100문제
-- OX / 단답 / 사지선다 보기1~4
-- 점수 +/-
-- 관리자 문제 수정
-- 기존 미디어 바로 교체
-- 데이터 보내기 → BibleBell_Data 생성
-- 새 컴퓨터/다른 폴더에서 데이터 불러오기
-- 앱 설치 버튼의 공식 설치창 또는 환경별 안내
+[실제 환경에서 마지막 확인]
+- 이 환경에는 npm 패키지 캐시가 완전하지 않아 npm ci → npm run build 전체 실행은 완료하지 못함
+- GitHub Actions build/deploy 초록색이 실제 빌드 최종 확인
+- 배포 후 Whale/Chrome/Edge에서 데이터 보내기, 이미지 바로 교체, PWA 설치를 실제 클릭 확인

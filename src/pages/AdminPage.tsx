@@ -28,6 +28,7 @@ import { exportQuestionsToExcel } from '../utils/excelExport'
 import { importQuestionsFromExcel } from '../utils/excelImport'
 import { uploadProjectAsset } from '../utils/questionStorage'
 import {
+  preparePortableExportLocation,
   exportPortableDataFolder,
   getPortableDataFolderInfo,
   importPortableDataFolder,
@@ -1221,10 +1222,8 @@ function DropMediaCard({
   emptyText,
   emphasized,
   hasFile,
-  previewLabel,
   unifiedMediaPicker,
   emptyActionLabel,
-  onPreview,
   onSelect,
   onDelete,
 }: {
@@ -1243,128 +1242,97 @@ function DropMediaCard({
   onSelect: (file?: File) => void
   onDelete: () => void
 }) {
-  const [
-    dragging,
-    setDragging,
-  ] = useState(false)
+  const [dragging, setDragging] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const openPicker = () => fileInputRef.current?.click()
 
   const handleDrop = (
-    event:
-      DragEvent<HTMLLabelElement>,
+    event: DragEvent<HTMLDivElement>,
   ) => {
     event.preventDefault()
     setDragging(false)
-
-    onSelect(
-      event.dataTransfer
-        .files?.[0],
-    )
+    onSelect(event.dataTransfer.files?.[0])
   }
-
-  const fileInput = (
-    <input
-      style={styles.hiddenInput}
-      type="file"
-      accept={accept}
-      onChange={(event) => {
-        onSelect(
-          event.target
-            .files?.[0],
-        )
-
-        event.target.value = ''
-      }}
-    />
-  )
 
   return (
     <section
       style={{
         ...styles.mediaCard,
-        ...(emphasized
-          ? styles.mediaCardEmphasis
-          : {}),
+        ...(emphasized ? styles.mediaCardEmphasis : {}),
       }}
     >
       <div style={styles.mediaHeader}>
-        <span style={styles.mediaTitle}>
-          {title}
-        </span>
-
+        <span style={styles.mediaTitle}>{title}</span>
         {icon}
       </div>
 
       <div style={styles.mediaDropWrap}>
-        <label
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label={hasFile ? `${title} 교체` : `${title} 선택`}
           style={{
             ...styles.dropZone,
-          ...(unifiedMediaPicker
-            ? styles.unifiedMediaZone
-            : {}),
-          ...(dragging
-            ? styles.dropZoneActive
-            : {}),
-        }}
-        onDragEnter={(event) => {
-          event.preventDefault()
-          setDragging(true)
-        }}
-        onDragOver={(event) => {
-          event.preventDefault()
-          setDragging(true)
-        }}
-        onDragLeave={() =>
-          setDragging(false)
-        }
-        onDrop={handleDrop}
-      >
-        {preview || (
-          <span style={styles.mediaEmpty}>
-            {unifiedMediaPicker ? (
-              <FolderOpen size={28} />
-            ) : (
-              <UploadCloud size={28} />
-            )}
-
-            {unifiedMediaPicker
-              ? emptyActionLabel ??
-                emptyText
-              : emptyText}
-
-            <small>
-              드래그하거나 클릭해서 선택
-            </small>
-          </span>
-        )}
-
-        {unifiedMediaPicker &&
-          preview &&
-          dragging && (
-            <span
-              style={
-                styles.unifiedMediaHint
-              }
-            >
-              <span
-                style={
-                  styles.unifiedMediaHintBox
-                }
-              >
-                <FolderOpen size={22} />
-                새 파일을 놓으면 교체됩니다.
-              </span>
+            ...(unifiedMediaPicker ? styles.unifiedMediaZone : {}),
+            ...(dragging ? styles.dropZoneActive : {}),
+            cursor: 'pointer',
+          }}
+          onClick={(event) => {
+            const target = event.target as HTMLElement
+            if (target.closest('video, audio, button, input')) return
+            openPicker()
+          }}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              openPicker()
+            }
+          }}
+          onDragEnter={(event) => {
+            event.preventDefault()
+            setDragging(true)
+          }}
+          onDragOver={(event) => {
+            event.preventDefault()
+            setDragging(true)
+          }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={handleDrop}
+        >
+          {preview || (
+            <span style={styles.mediaEmpty}>
+              {unifiedMediaPicker ? <FolderOpen size={28} /> : <UploadCloud size={28} />}
+              {unifiedMediaPicker ? emptyActionLabel ?? emptyText : emptyText}
+              <small>드래그하거나 클릭해서 선택</small>
             </span>
           )}
 
-          {fileInput}
-        </label>
+          {unifiedMediaPicker && preview && dragging && (
+            <span style={styles.unifiedMediaHint}>
+              <span style={styles.unifiedMediaHintBox}>
+                <FolderOpen size={22} />
+                새 파일을 놓으면 바로 교체됩니다.
+              </span>
+            </span>
+          )}
+        </div>
+
+        <input
+          ref={fileInputRef}
+          style={styles.hiddenInput}
+          type="file"
+          accept={accept}
+          onChange={(event) => {
+            onSelect(event.target.files?.[0])
+            event.target.value = ''
+          }}
+        />
 
         {hasFile && (
           <button
             type="button"
-            style={
-              styles.mediaDeleteOverlay
-            }
+            style={styles.mediaDeleteOverlay}
             title="삭제"
             aria-label="삭제"
             onClick={(event) => {
@@ -1378,123 +1346,34 @@ function DropMediaCard({
         )}
       </div>
 
-      {!unifiedMediaPicker && (
-        <div
-          style={styles.mediaName}
-          title={fileName}
-        >
-          {hasFile && fileName
-            ? fileName
-            : '등록된 파일 없음'}
-        </div>
-      )}
-
-      {unifiedMediaPicker ? (
-        <div
-          style={
-            styles.unifiedMediaFooter
+      <div
+        style={{
+          ...(unifiedMediaPicker ? styles.unifiedMediaFooter : {}),
+          ...(unifiedMediaPicker ? { cursor: 'pointer' } : {}),
+        }}
+        role={unifiedMediaPicker ? 'button' : undefined}
+        tabIndex={unifiedMediaPicker ? 0 : undefined}
+        onClick={unifiedMediaPicker ? openPicker : undefined}
+        onKeyDown={unifiedMediaPicker ? (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            openPicker()
           }
-        >
-          <div>
-            <div
-              style={styles.mediaName}
-              title={fileName}
-            >
-              {hasFile && fileName
-                ? fileName
-                : '등록된 파일 없음'}
-            </div>
+        } : undefined}
+      >
+        <div>
+          <div style={styles.mediaName} title={fileName}>
+            {hasFile && fileName ? fileName : '등록된 파일 없음'}
+          </div>
+          {unifiedMediaPicker && (
             <small style={{ display: 'block', marginTop: 4, color: '#6b7788', fontSize: 11 }}>
               {hasFile
-                ? '이미지/미디어 영역을 클릭하거나 교체를 눌러 새 파일로 바로 바꿀 수 있습니다.'
+                ? '새 파일로 바꾸려면 미리보기(이미지) 또는 이 안내 영역을 클릭하세요.'
                 : '영역을 클릭하거나 파일을 끌어 놓아 등록하세요.'}
             </small>
-          </div>
-
-          <div style={styles.mediaActions}>
-            {previewLabel && (
-              <button
-                type="button"
-                style={{
-                  ...styles.mediaActionButton,
-                  ...(!hasFile
-                    ? styles.disabledButton
-                    : {}),
-                }}
-                title={previewLabel}
-                aria-label={previewLabel}
-                disabled={!hasFile}
-                onClick={onPreview}
-              >
-                <Play size={16} />
-              </button>
-            )}
-
-            <label
-              style={{
-                ...styles.mediaActionButton,
-                gap: 6,
-                padding: '0 10px',
-                cursor: 'pointer',
-              }}
-              title={hasFile ? '새 파일로 바로 교체' : '파일 선택'}
-              aria-label={hasFile ? '새 파일로 바로 교체' : '파일 선택'}
-            >
-              <RefreshCw size={16} />
-              <span>{hasFile ? '교체' : '선택'}</span>
-              {fileInput}
-            </label>
-          </div>
-        </div>
-      ) : (
-        <div style={styles.mediaActions}>
-          <label
-            style={styles.selectButton}
-            title="파일 선택"
-            aria-label="파일 선택"
-          >
-            <FolderOpen size={17} />
-            {fileInput}
-          </label>
-
-          {previewLabel && (
-            <button
-              type="button"
-              style={{
-                ...styles.mediaActionButton,
-                ...(!hasFile
-                  ? styles.disabledButton
-                  : {}),
-              }}
-              title={previewLabel}
-              aria-label={previewLabel}
-              disabled={!hasFile}
-              onClick={onPreview}
-            >
-              <Play size={16} />
-            </button>
           )}
-
-          <label
-            style={{
-              ...styles.mediaActionButton,
-              ...(!hasFile
-                ? styles.disabledButton
-                : {}),
-              gap: 6,
-              padding: '0 10px',
-            }}
-            title="새 파일로 바로 교체"
-            aria-label="새 파일로 바로 교체"
-          >
-            <RefreshCw size={16} />
-            <span>교체</span>
-            {hasFile && fileInput}
-          </label>
-
-
         </div>
-      )}
+      </div>
     </section>
   )
 }
@@ -1534,6 +1413,9 @@ export function AdminPage({
     setAudioPreviewUrl,
   ] = useState('')
 
+  const [questionImageRevision, setQuestionImageRevision] = useState(0)
+  const [answerImageRevision, setAnswerImageRevision] = useState(0)
+
   const [
     previewMode,
     setPreviewMode,
@@ -1545,6 +1427,8 @@ export function AdminPage({
   const [message, setMessage] =
     useState('')
   const [excelLoading, setExcelLoading] =
+    useState(false)
+  const [portableSaving, setPortableSaving] =
     useState(false)
   const [portableFolderInfo, setPortableFolderInfo] =
     useState<{ linked: boolean; folderName?: string; permission?: 'granted' | 'prompt' | 'denied' }>({ linked: false })
@@ -2013,6 +1897,12 @@ const saveCurrentQuestion = (
         [field]: value,
       }))
 
+      if (field === 'questionImageUrl') {
+        setQuestionImageRevision((value) => value + 1)
+      } else {
+        setAnswerImageRevision((value) => value + 1)
+      }
+
       if (previousUrl && previousUrl !== value) {
         void removePortableAsset(previousUrl)
       }
@@ -2196,29 +2086,52 @@ const saveCurrentQuestion = (
   }
 
   const savePortableFolder = async () => {
+    if (portableSaving) return
+
     try {
       if (!supportsPortableFolder()) {
         setMessage('이 브라우저는 데이터 폴더 기능을 지원하지 않습니다. Chrome, Edge, Whale 데스크톱 브라우저를 사용해 주세요.')
         return
       }
+
+      // 폴더 선택/권한 확인은 반드시 "데이터 보내기" 버튼의 사용자 클릭 직후 가장 먼저 실행합니다.
+      // 이 순서가 Chromium/Whale의 File System Access 사용자 제스처 제한에 가장 안전합니다.
+      const preparedFolder = await preparePortableExportLocation()
+
+      setPortableSaving(true)
+      setMessage('BibleBell_Data를 저장하고 있습니다...')
+
       const currentQuestion = buildQuestion()
       const snapshot = [
         ...questions.filter((item) => !(item.categoryId === categoryId && item.number === selectedNumber)),
         currentQuestion,
       ].sort((a, b) => a.categoryId.localeCompare(b.categoryId) || a.number - b.number)
       onSave(snapshot)
-      if (!portableFolderInfo.linked) {
-        await selectPortableDataLocation(snapshot)
-      }
-      const result = await exportPortableDataFolder(snapshot)
+
+      const result = await exportPortableDataFolder(snapshot, preparedFolder)
       await refreshPortableFolderInfo()
-      setMessage(`${result.folderName}에 문제 100개와 미디어 ${result.mediaCount}개를 저장했습니다. 이 폴더 전체를 옮기면 다른 컴퓨터에서 복원할 수 있습니다.`)
+
+      const guideNote = result.optionalGuideFailures.length > 0
+        ? ' 안내문 파일 일부는 브라우저가 생성을 허용하지 않아 생략했지만 문제·Excel·미디어 데이터는 저장되었습니다.'
+        : ''
+
+      setMessage(
+        result.skippedMediaCount > 0
+          ? `${result.folderName}에 문제 100개와 미디어 ${result.mediaCount}개를 저장했습니다. 미디어 ${result.skippedMediaCount}개는 원본을 찾지 못했거나 저장하지 못해 확인이 필요합니다. 기존 백업 파일은 자동 삭제하지 않았습니다.${guideNote}`
+          : `${result.folderName}에 문제 100개와 미디어 ${result.mediaCount}개를 저장했습니다. 이 폴더 전체를 옮기면 다른 컴퓨터에서 복원할 수 있습니다.${guideNote}`,
+      )
     } catch (error) {
-      if ((error as DOMException)?.name === 'AbortError') return
+      if ((error as DOMException)?.name === 'AbortError') {
+        setMessage('데이터 보내기를 취소했습니다. 기존 데이터는 변경하지 않았습니다.')
+        return
+      }
       console.error(error)
       setMessage(error instanceof Error ? error.message : '전체 데이터 저장에 실패했습니다.')
+    } finally {
+      setPortableSaving(false)
     }
   }
+
 
   const loadPortableFolder = async () => {
     try {
@@ -2451,9 +2364,10 @@ onClick={() => {
               type="button"
               className="admin-secondary-button"
               onClick={() => void savePortableFolder()}
+              disabled={portableSaving}
               title="문제·Excel·그림·영상·오디오를 BibleBell_Data 폴더에 함께 저장합니다."
             >
-              데이터 보내기
+              {portableSaving ? '데이터 저장 중...' : '데이터 보내기'}
             </button>
           </div>
         </header>
@@ -2513,7 +2427,7 @@ onClick={() => {
               </section>
               <section>
                 <h3>7. 이미지·영상·오디오 넣기 및 교체</h3>
-                <p>기존 파일을 먼저 제거할 필요가 없습니다. 미디어 영역을 클릭하거나 <b>교체</b>를 눌러 새 파일을 고르면 같은 문제 자리의 파일로 바뀝니다. BibleBell은 문제 ID 기준의 안정적인 파일명으로 저장하고 Excel/JSON에는 다시 찾을 수 있는 연결 경로를 기록합니다. 파일을 완전히 없애고 싶을 때만 제거 버튼을 사용하세요.</p>
+                <p>기존 파일을 먼저 제거할 필요가 없습니다. 이미지는 미리보기 자체를 클릭하면 바로 새 파일을 고를 수 있고, 영상·오디오는 미리보기 아래의 파일명/안내 영역을 클릭하면 삭제 없이 교체할 수 있습니다. 파일을 끌어 놓아도 바로 교체됩니다. BibleBell은 문제 ID 기준의 안정적인 파일명으로 저장하고 Excel/JSON에는 다시 찾을 수 있는 연결 경로를 기록합니다. 파일을 완전히 없애고 싶을 때만 휴지통을 사용하세요.</p>
               </section>
               <section>
                 <h3>8. Excel 내보내기</h3>
@@ -2533,7 +2447,7 @@ onClick={() => {
               </section>
               <section>
                 <h3>12. 새 컴퓨터에서 복원하기</h3>
-                <p>새 컴퓨터에서 BibleBell 웹을 열고 관리자 모드 → <b>데이터 불러오기</b>를 누른 뒤 가져온 BibleBell_Data 폴더 자체 또는 그 바로 위 폴더를 선택하세요. 프로그램은 최신 questions.json을 우선 복원하고, 문제가 있으면 questions.xlsx를 복구 경로로 사용합니다. media 폴더가 함께 있으면 미디어도 같은 문제에 다시 연결됩니다.</p>
+                <p>새 컴퓨터에서 BibleBell 웹을 열고 관리자 모드 → <b>데이터 불러오기</b>를 누른 뒤 가져온 BibleBell_Data 폴더 자체 또는 그 바로 위 폴더를 선택하세요. questions.json과 questions.xlsx가 모두 있으면 더 최근에 수정된 쪽을 먼저 읽고, 문제가 있으면 다른 파일로 복구합니다. media 폴더가 함께 있으면 미디어도 같은 문제에 다시 연결됩니다.</p>
               </section>
               <section>
                 <h3>13. 백업 방법</h3>
@@ -2541,7 +2455,7 @@ onClick={() => {
               </section>
               <section>
                 <h3>14. 이미지가 안 보일 때</h3>
-                <p>미디어 경로에 실제 파일이 없거나 브라우저 저장소에서 파일을 찾지 못하면 이미지가 표시되지 않을 수 있습니다. 관리자에서 해당 미디어 영역을 클릭해 새 파일로 바로 교체할 수 있습니다. 다른 컴퓨터에서 옮겨온 경우에는 먼저 BibleBell_Data 전체를 데이터 불러오기로 복원했는지 확인하세요.</p>
+                <p>미디어 경로에 실제 파일이 없거나 브라우저 저장소에서 파일을 찾지 못하면 이미지가 표시되지 않을 수 있습니다. 깨진 이미지 안내 영역을 클릭하면 기존 항목을 먼저 삭제하지 않고 새 이미지로 바로 교체할 수 있습니다. 다른 컴퓨터에서 옮겨온 경우에는 먼저 BibleBell_Data 전체를 데이터 불러오기로 복원했는지 확인하세요.</p>
               </section>
               <section>
                 <h3>15. 브라우저 저장소와 BibleBell_Data의 차이</h3>
@@ -2549,7 +2463,7 @@ onClick={() => {
               </section>
               <section>
                 <h3>16. Mac / Windows 설치 방법</h3>
-                <p><b>Mac:</b> Chrome·Whale에서는 홈의 앱 설치 버튼이 가능한 경우 공식 설치창을 띄웁니다. Safari는 파일 → Dock에 추가를 사용합니다. <b>Windows:</b> Chrome·Edge·Whale에서 공식 웹앱 설치 기능을 사용하며 설치 후 시작 메뉴/앱 목록에서 실행하고 필요하면 바탕화면 바로가기를 만들 수 있습니다. BibleBell은 별도의 .exe/.dmg를 배포하는 방식이 아닙니다.</p>
+                <p><b>Mac:</b> Chrome·Whale에서는 홈의 앱 설치 버튼이 가능한 경우 공식 설치창을 띄웁니다. Safari는 파일 → Dock에 추가를 사용합니다. <b>Windows:</b> Chrome·Edge·Whale에서 공식 웹앱 설치 기능을 사용합니다. <b>BibleBell_Data 폴더 저장·이동 기능은 Mac/Windows 모두 Chrome·Edge·Whale 같은 Chromium 계열 데스크톱 브라우저 사용을 권장합니다.</b> BibleBell은 별도의 .exe/.dmg를 배포하는 방식이 아닙니다.</p>
               </section>
             </div>
           </details>
@@ -2971,6 +2885,7 @@ onClick={() => {
                         preview={
                           form.questionImageUrl ? (
                             <AdaptiveImagePreview
+                              key={`${form.questionImageUrl}-${questionImageRevision}`}
                               src={
                                 form.questionImageUrl
                               }
@@ -3020,6 +2935,7 @@ onClick={() => {
                         preview={
                           form.answerImageUrl ? (
                             <AdaptiveImagePreview
+                              key={`${form.answerImageUrl}-${answerImageRevision}`}
                               src={
                                 form.answerImageUrl
                               }

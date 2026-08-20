@@ -23,6 +23,8 @@ type PortableManifest = {
   questionCount: number
   appUrl: string
   assetMeta: Record<string, unknown>
+  mediaCount?: number
+  skippedMediaCount?: number
 }
 
 export type PortableFolderInfo = {
@@ -141,15 +143,28 @@ async function getSubdirectory(root: AnyDirectoryHandle, parts: string[], create
   return current
 }
 
+function assertPortableFileName(filename: string, relativePath: string) {
+  if (!filename || filename === '.' || filename === '..' || /[\/\\]/.test(filename)) {
+    throw new Error(`저장할 파일명이 올바르지 않습니다: ${relativePath}`)
+  }
+}
+
 async function writeFileAt(root: AnyDirectoryHandle, relativePath: string, blob: Blob) {
   const parts = relativePath.split('/').filter(Boolean)
   const filename = parts.pop()
   if (!filename) throw new Error('저장할 파일명이 없습니다.')
+  assertPortableFileName(filename, relativePath)
   const dir = await getSubdirectory(root, parts, true)
-  const handle = await dir.getFileHandle(filename, { create: true })
-  const writable = await handle.createWritable()
-  await writable.write(blob)
-  await writable.close()
+
+  try {
+    const handle = await dir.getFileHandle(filename, { create: true })
+    const writable = await handle.createWritable()
+    await writable.write(blob)
+    await writable.close()
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error)
+    throw new Error(`BibleBell_Data 파일 저장 실패: ${relativePath} (${detail})`)
+  }
 }
 
 function pathStem(value: string): string {
@@ -230,12 +245,16 @@ export async function storePortableAsset(canonicalUrl: string, blob: Blob): Prom
   const key = normalizeMediaKey(canonicalUrl)
   const stem = pathStem(key)
   const existing = await idbEntries(FILE_STORE)
+
+  // 교체 중 새 파일 저장이 실패해도 기존 파일을 잃지 않도록
+  // 새 Blob을 먼저 안전하게 저장한 뒤 같은 문제/용도의 이전 확장자 파일을 정리합니다.
+  await idbPut(FILE_STORE, key, blob)
+
   for (const [existingKey] of existing) {
     if (existingKey !== key && pathStem(existingKey) === stem) {
       await idbDelete(FILE_STORE, existingKey)
     }
   }
-  await idbPut(FILE_STORE, key, blob)
 }
 
 export async function removePortableAsset(canonicalUrl?: string): Promise<void> {
@@ -304,8 +323,11 @@ export async function writePortableAssetToLinkedFolder(canonicalUrl: string, blo
   try {
     // 파일 업로드 중 자동 권한창을 띄우지 않습니다. 권한이 유지된 경우에만 동기화합니다.
     if ((await handle.queryPermission?.({ mode: 'readwrite' })) !== 'granted') return
-    await removeSiblingVariants(handle, relative)
+
+    // 새 파일을 먼저 기록한 뒤 이전 확장자 변형을 정리합니다.
+    // 이렇게 해야 교체 저장이 실패했을 때 기존 백업 파일이 먼저 사라지지 않습니다.
     await writeFileAt(handle, relative, blob)
+    await removeSiblingVariants(handle, relative)
   } catch {
     // 브라우저 권한이 끊겨도 IndexedDB 저장은 유지합니다.
   }
@@ -370,7 +392,7 @@ function portableGuideText(): string {
     `- 문제·정답·보기·힌트 등의 수정 내용은 같은 컴퓨터의 같은 브라우저에도 저장됩니다.\n` +
     `- 저장 폴더의 쓰기 권한이 유지되면 questions.json도 자동 동기화됩니다.\n` +
     `- 그림·영상·오디오는 문제 ID 기준의 일정한 파일명으로 정리됩니다.\n` +
-    `- 기존 미디어는 먼저 제거하지 않아도 새 파일을 선택해 바로 교체할 수 있습니다.\n\n` +
+    `- 기존 미디어는 먼저 제거하지 않아도 미리보기/안내 영역에서 새 파일을 선택해 바로 교체할 수 있습니다.\n\n` +
     `■ 작업을 마친 뒤\n` +
     `- 관리자 모드의 “데이터 보내기”를 누르세요.\n` +
     `- questions.xlsx, questions.json, manifest.json, media 폴더와 이 안내 파일이 최신 상태로 정리됩니다.\n` +
@@ -380,63 +402,112 @@ function portableGuideText(): string {
     `2. 새 컴퓨터에서 BibleBell 웹주소를 엽니다.\n` +
     `3. 관리자 모드 → “데이터 불러오기”를 누릅니다.\n` +
     `4. 가져온 BibleBell_Data 폴더 자체 또는 그 바로 위 폴더를 선택합니다.\n` +
-    `5. 폴더 권한을 물으면 허용합니다. 문제와 미디어가 같은 구성으로 복원됩니다.\n\n` +
+    `5. 폴더 권한을 물으면 허용합니다. questions.json과 questions.xlsx 중 더 최근에 수정된 문제 데이터를 먼저 읽고, 미디어까지 같은 구성으로 복원합니다.\n\n` +
     `■ 꼭 기억하세요\n` +
     `- BibleBell_Data 바깥의 부모 폴더 이름과 저장 위치는 자유롭게 정해도 됩니다.\n` +
     `- BibleBell_Data 내부의 파일명과 media 하위 구조는 프로그램이 관리하므로 임의로 바꾸지 않는 것을 권장합니다.\n` +
     `- 브라우저가 폴더 권한을 다시 물으면 같은 BibleBell_Data 폴더를 다시 허용하면 됩니다.\n` +
     `- 데이터 보내기 중 일부 미디어를 읽지 못하더라도 기존 media 폴더 전체를 자동 삭제하지 않습니다.\n\n` +
-    `Windows 바로가기: BibleBell_실행.url\n` +
-    `Mac 웹주소 바로가기: BibleBell_실행.webloc\n`
+    `웹주소는 APP_URL.txt에서 확인할 수 있습니다.\n` +
+    `앱 설치는 BibleBell 홈 화면의 “앱 설치” 버튼을 사용하세요.\n`
 }
 
-async function writePortableGuideFiles(folder: AnyDirectoryHandle) {
+async function writePortableGuideFiles(folder: AnyDirectoryHandle): Promise<string[]> {
   const appUrl = getPublicAppUrl()
-  const windowsShortcut = `[InternetShortcut]\r\nURL=${appUrl}\r\n`
-  const macShortcut = `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0"><dict><key>URL</key><string>${appUrl}</string></dict></plist>\n`
+  const warnings: string[] = []
 
-  await Promise.all([
-    writeTextFile(folder, 'BibleBell_사용안내.txt', portableGuideText()),
-    writeTextFile(folder, 'BibleBell_웹주소.txt', `${appUrl}\n`),
-    writeTextFile(folder, 'BibleBell_실행.url', windowsShortcut),
-    writeTextFile(folder, 'BibleBell_실행.webloc', macShortcut, 'application/xml;charset=utf-8'),
-  ])
+  // 안내 파일은 핵심 데이터가 아닙니다. 파일시스템이 특정 안내 파일명을 거부해도
+  // questions.xlsx · questions.json · media · manifest 저장 전체가 실패하지 않게 분리합니다.
+  // 브라우저 간 호환성을 높이기 위해 파일명은 안전한 ASCII 이름만 사용합니다.
+  const optionalFiles: Array<[string, string]> = [
+    ['README_BibleBell.txt', portableGuideText()],
+    ['APP_URL.txt', `${appUrl}
+`],
+  ]
+
+  for (const [name, text] of optionalFiles) {
+    try {
+      await writeTextFile(folder, name, text)
+    } catch (error) {
+      console.warn(`BibleBell optional guide write skipped: ${name}`, error)
+      warnings.push(name)
+    }
+  }
+
+  return warnings
+}
+
+function createPortableManifest(
+  questions: QuizQuestion[],
+  mediaCount?: number,
+  skippedMediaCount?: number,
+): PortableManifest {
+  return {
+    format: 'BibleBell_Data',
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    questionCount: questions.length,
+    appUrl: getPublicAppUrl(),
+    assetMeta: loadAssetMeta(),
+    ...(mediaCount === undefined ? {} : { mediaCount }),
+    ...(skippedMediaCount === undefined ? {} : { skippedMediaCount }),
+  }
+}
+
+async function writePortableManifest(
+  folder: AnyDirectoryHandle,
+  questions: QuizQuestion[],
+  mediaCount?: number,
+  skippedMediaCount?: number,
+) {
+  const normalizedQuestions = normalizeImportedQuestionPaths(questions)
+  const manifest = createPortableManifest(
+    normalizedQuestions,
+    mediaCount,
+    skippedMediaCount,
+  )
+  await writeTextFile(
+    folder,
+    'manifest.json',
+    JSON.stringify(manifest, null, 2),
+    'application/json;charset=utf-8',
+  )
+}
+
+async function writeQuestionFiles(
+  folder: AnyDirectoryHandle,
+  questions: QuizQuestion[],
+): Promise<{ questions: QuizQuestion[]; optionalGuideFailures: string[] }> {
+  const normalizedQuestions = normalizeImportedQuestionPaths(questions)
+
+  // 복구의 기준인 JSON을 먼저, 사람이 관리하는 Excel을 다음에 저장합니다.
+  // 핵심 파일 저장에 실패하더라도 이미 성공한 파일이나 기존 media를 자동 삭제하지 않습니다.
+  await writeTextFile(
+    folder,
+    'questions.json',
+    JSON.stringify(normalizedQuestions, null, 2),
+    'application/json;charset=utf-8',
+  )
+  await writeFileAt(folder, 'questions.xlsx', createQuestionsExcelBlob(normalizedQuestions))
+
+  const optionalGuideFailures = await writePortableGuideFiles(folder)
+  return { questions: normalizedQuestions, optionalGuideFailures }
 }
 
 async function writeQuestionSnapshot(folder: AnyDirectoryHandle, questions: QuizQuestion[]): Promise<void> {
-  const normalizedQuestions = normalizeImportedQuestionPaths(questions)
-  const manifest: PortableManifest = {
-    format: 'BibleBell_Data',
-    version: 2,
-    exportedAt: new Date().toISOString(),
-    questionCount: normalizedQuestions.length,
-    appUrl: getPublicAppUrl(),
-    assetMeta: loadAssetMeta(),
-  }
-
-  // 핵심 데이터부터 순서대로 기록하고 manifest는 마지막에 갱신합니다.
-  // 중간에 쓰기 오류가 나도 완료 시각만 먼저 바뀌어 버리는 상태를 피합니다.
-  await writeFileAt(folder, 'questions.xlsx', createQuestionsExcelBlob(normalizedQuestions))
-  await writeTextFile(folder, 'questions.json', JSON.stringify(normalizedQuestions, null, 2), 'application/json;charset=utf-8')
-  await writePortableGuideFiles(folder)
-  await writeTextFile(folder, 'manifest.json', JSON.stringify(manifest, null, 2), 'application/json;charset=utf-8')
+  const result = await writeQuestionFiles(folder, questions)
+  // snapshot 단독 저장에서는 핵심 파일이 모두 성공한 뒤 manifest를 마지막에 기록합니다.
+  await writePortableManifest(folder, result.questions)
 }
-
 
 async function writeQuestionAutosave(folder: AnyDirectoryHandle, questions: QuizQuestion[]): Promise<void> {
   const normalizedQuestions = normalizeImportedQuestionPaths(questions)
-  const manifest: PortableManifest = {
-    format: 'BibleBell_Data',
-    version: 2,
-    exportedAt: new Date().toISOString(),
-    questionCount: normalizedQuestions.length,
-    appUrl: getPublicAppUrl(),
-    assetMeta: loadAssetMeta(),
-  }
-
+  // 평소 자동 저장은 최신 문제 본문만 questions.json에 반영합니다.
+  // manifest.json은 데이터 보내기/초기 연결/복원처럼 패키지 단위 작업이 완료될 때 갱신하여
+  // 명시적 내보내기와 자동 저장이 서로 덮어쓰는 경쟁을 피합니다.
   await writeTextFile(folder, 'questions.json', JSON.stringify(normalizedQuestions, null, 2), 'application/json;charset=utf-8')
-  await writeTextFile(folder, 'manifest.json', JSON.stringify(manifest, null, 2), 'application/json;charset=utf-8')
 }
+
 
 async function chooseNewDataFolder(): Promise<AnyDirectoryHandle> {
   if (!supportsPortableFolder()) {
@@ -457,10 +528,25 @@ async function chooseNewDataFolder(): Promise<AnyDirectoryHandle> {
   return dataFolder
 }
 
-async function getWritableDataFolder(): Promise<AnyDirectoryHandle> {
+export async function preparePortableExportLocation(): Promise<AnyDirectoryHandle> {
   const saved = await getSavedDataHandle()
-  if (saved && await requestHandlePermission(saved, 'readwrite')) return saved
+
+  if (saved) {
+    try {
+      if ((await saved.queryPermission?.({ mode: 'readwrite' })) === 'granted') return saved
+    } catch {
+      // 아래에서 사용자가 같은 위치 또는 새 위치를 직접 선택합니다.
+    }
+  }
+
+  // 브라우저마다 requestPermission 재호출 동작이 달라서, 권한이 유지되지 않은 경우에는
+  // "데이터 보내기" 클릭 흐름에서 showDirectoryPicker를 한 번만 직접 엽니다.
   return chooseNewDataFolder()
+}
+
+export async function connectPortableDataLocation(): Promise<{ folderName: string }> {
+  const folder = await chooseNewDataFolder()
+  return { folderName: folder.name ?? DATA_FOLDER_NAME }
 }
 
 export async function selectPortableDataLocation(questions: QuizQuestion[]): Promise<{ folderName: string }> {
@@ -491,7 +577,7 @@ async function getLinkedFolderWithoutPrompt(mode: 'read' | 'readwrite' = 'readwr
 
 /**
  * 연결된 BibleBell_Data 폴더에 쓰기 권한이 유지된 동안에는
- * 문제 수정 내용을 questions.json과 manifest.json에 자동 동기화합니다. Excel은 “데이터 보내기” 때 최신 상태로 만듭니다.
+ * 문제 수정 내용을 questions.json에 자동 동기화합니다. Excel과 manifest는 “데이터 보내기” 때 최신 상태로 만듭니다.
  * 권한이 끊긴 경우 자동 권한창을 띄우지 않고 브라우저 저장소만 유지합니다.
  */
 export async function syncPortableQuestionsIfLinked(questions: QuizQuestion[]): Promise<boolean> {
@@ -505,12 +591,21 @@ export async function syncPortableQuestionsIfLinked(questions: QuizQuestion[]): 
   }
 }
 
-export async function exportPortableDataFolder(questions: QuizQuestion[]): Promise<{ mediaCount: number; folderName: string }> {
-  const folder = await getWritableDataFolder()
-  await writeQuestionSnapshot(folder, questions)
+export async function exportPortableDataFolder(
+  questions: QuizQuestion[],
+  preparedFolder?: AnyDirectoryHandle,
+): Promise<{
+  mediaCount: number
+  skippedMediaCount: number
+  folderName: string
+  optionalGuideFailures: string[]
+}> {
+  const folder = preparedFolder ?? await preparePortableExportLocation()
+  const questionFiles = await writeQuestionFiles(folder, questions)
+  const normalizedQuestions = questionFiles.questions
 
   const referenced = new Set<string>()
-  for (const q of questions) {
+  for (const q of normalizedQuestions) {
     for (const source of [q.questionImageUrl, q.answerImageUrl, q.mediaUrl]) {
       if (source) referenced.add(normalizeMediaKey(source))
     }
@@ -525,10 +620,10 @@ export async function exportPortableDataFolder(questions: QuizQuestion[]): Promi
 
   // 데이터 안전을 우선합니다. 기존 media 폴더를 통째로 지우지 않습니다.
   // 현재 연결된 파일은 같은 상대경로에 덮어쓰고, 사용자가 명시적으로 제거/교체한
-  // 개별 파일만 그 시점에 정리합니다. 이렇게 해야 오프라인 내보내기나 일시적인
-  // fetch 실패가 있어도 이전 백업 미디어가 통째로 사라지지 않습니다.
-
+  // 개별 파일만 그 시점에 정리합니다. 일부 미디어 저장이 실패해도 나머지 데이터는 계속 보관합니다.
   const written = new Set<string>()
+  const skipped = new Set<string>()
+
   const storedAssets = await idbEntries(FILE_STORE)
   for (const [key, value] of storedAssets) {
     if (!(value instanceof Blob)) continue
@@ -542,8 +637,13 @@ export async function exportPortableDataFolder(questions: QuizQuestion[]): Promi
       : referenced.has(normalizedKey)
     if (!shouldWrite) continue
 
-    await writeFileAt(folder, relative, value)
-    written.add(normalizedKey)
+    try {
+      await writeFileAt(folder, relative, value)
+      written.add(normalizedKey)
+    } catch (error) {
+      console.error(error)
+      skipped.add(normalizedKey)
+    }
   }
 
   for (const source of referenced) {
@@ -552,17 +652,31 @@ export async function exportPortableDataFolder(questions: QuizQuestion[]): Promi
     if (!relative) continue
     try {
       const response = await fetch(source)
-      if (!response.ok) continue
+      if (!response.ok) {
+        skipped.add(source)
+        continue
+      }
       const blob = await response.blob()
       await storePortableAsset(source, blob)
       await writeFileAt(folder, relative, blob)
       written.add(source)
-    } catch {
-      // 존재하지 않는 미디어는 건너뛰고 나머지 백업을 계속합니다.
+      skipped.delete(source)
+    } catch (error) {
+      console.error(error)
+      skipped.add(source)
     }
   }
 
-  return { mediaCount: written.size, folderName: folder.name ?? DATA_FOLDER_NAME }
+  // media 저장까지 모두 시도한 뒤 manifest를 마지막에 갱신합니다.
+  // 따라서 manifest의 완료 시각은 이번 내보내기 작업이 실제로 끝난 시점을 의미합니다.
+  await writePortableManifest(folder, normalizedQuestions, written.size, skipped.size)
+
+  return {
+    mediaCount: written.size,
+    skippedMediaCount: skipped.size,
+    folderName: folder.name ?? DATA_FOLDER_NAME,
+    optionalGuideFailures: questionFiles.optionalGuideFailures,
+  }
 }
 
 async function folderLooksLikeBibleBellData(folder: AnyDirectoryHandle): Promise<boolean> {
@@ -585,6 +699,27 @@ async function resolveImportFolder(selected: AnyDirectoryHandle): Promise<AnyDir
   throw new Error('선택한 위치에서 BibleBell_Data의 questions.xlsx 또는 questions.json을 찾지 못했습니다. BibleBell_Data 폴더 자체 또는 그 바로 위 폴더를 선택해 주세요.')
 }
 
+function isValidPortableQuestionSet(value: unknown): value is QuizQuestion[] {
+  if (!Array.isArray(value) || value.length !== 100) return false
+  const allowedCategories = new Set([
+    'hidden', 'memory', 'ox', 'sermon', 'surprise',
+    'joseph', 'character', 'initial', 'bible', 'teacher',
+  ])
+  const seen = new Set<string>()
+
+  for (const item of value) {
+    if (!item || typeof item !== 'object') return false
+    const question = item as Partial<QuizQuestion>
+    if (!question.categoryId || !allowedCategories.has(question.categoryId)) return false
+    if (!Number.isInteger(question.number) || (question.number ?? 0) < 1 || (question.number ?? 0) > 10) return false
+    const key = `${question.categoryId}:${question.number}`
+    if (seen.has(key)) return false
+    seen.add(key)
+  }
+
+  return seen.size === 100
+}
+
 export async function importPortableDataFolder(): Promise<QuizQuestion[]> {
   if (!supportsPortableFolder()) {
     throw new Error('이 브라우저는 폴더 불러오기 기능을 지원하지 않습니다. Chrome, Edge, Whale 같은 Chromium 계열 데스크톱 브라우저를 사용해 주세요.')
@@ -599,31 +734,60 @@ export async function importPortableDataFolder(): Promise<QuizQuestion[]> {
 
   let questions: QuizQuestion[] | null = null
 
-  // questions.json은 편집 중에도 자동 동기화되므로 폴더 복원에서는 가장 최신 스냅샷으로 우선합니다.
-  // questions.xlsx는 사람이 직접 관리하기 위한 파일이며, JSON이 없거나 손상된 경우 안전한 복구 경로로 사용합니다.
   const jsonFile = await readFileAt(folder, 'questions.json')
-  if (jsonFile) {
+  const excelFile = await readFileAt(folder, 'questions.xlsx')
+
+  // 평소 앱 편집은 questions.json이 자동 동기화되지만,
+  // 사용자가 내보낸 Excel을 나중에 직접 수정했다면 Excel의 수정 시간이 더 최신일 수 있습니다.
+  // 두 파일이 모두 있으면 실제로 더 최근에 수정된 파일을 먼저 읽고,
+  // 그 파일이 손상되었을 때만 다른 파일로 안전하게 복구합니다.
+  const preferExcel = Boolean(
+    excelFile && (!jsonFile || excelFile.lastModified > jsonFile.lastModified + 1000),
+  )
+
+  const tryJson = async () => {
+    if (!jsonFile || questions) return
     try {
       const parsed = JSON.parse(await jsonFile.text())
-      if (Array.isArray(parsed) && parsed.length === 100) questions = parsed as QuizQuestion[]
+      if (isValidPortableQuestionSet(parsed)) questions = parsed
     } catch {
-      // 아래 Excel 복구를 시도합니다.
+      // 다른 복구 경로를 시도합니다.
     }
   }
 
+  const tryExcel = async () => {
+    if (!excelFile || questions) return
+    try {
+      const imported = await importQuestionsFromExcel(excelFile)
+      if (isValidPortableQuestionSet(imported)) questions = imported
+    } catch {
+      // 다른 복구 경로를 시도합니다.
+    }
+  }
+
+  if (preferExcel) {
+    await tryExcel()
+    await tryJson()
+  } else {
+    await tryJson()
+    await tryExcel()
+  }
+
   if (!questions) {
-    const excel = await readFileAt(folder, 'questions.xlsx')
-    if (!excel) throw new Error('선택한 폴더에서 정상적인 questions.json 또는 questions.xlsx를 찾지 못했습니다.')
-    questions = await importQuestionsFromExcel(excel)
+    throw new Error('선택한 폴더에서 정상적인 questions.json 또는 questions.xlsx를 찾지 못했습니다.')
   }
 
   questions = normalizeImportedQuestionPaths(questions)
 
+  let importedAssetMeta: Record<string, any> = {}
   const manifestFile = await readFileAt(folder, 'manifest.json')
   if (manifestFile) {
     try {
       const manifest = JSON.parse(await manifestFile.text()) as Partial<PortableManifest>
-      if (manifest.assetMeta && typeof manifest.assetMeta === 'object') saveAssetMeta(manifest.assetMeta)
+      if (manifest.assetMeta && typeof manifest.assetMeta === 'object') {
+        importedAssetMeta = manifest.assetMeta as Record<string, any>
+        saveAssetMeta(importedAssetMeta)
+      }
     } catch {
       // 구형 폴더도 문제/미디어 복원은 계속합니다.
     }
@@ -632,11 +796,47 @@ export async function importPortableDataFolder(): Promise<QuizQuestion[]> {
   try {
     const mediaDir = await folder.getDirectoryHandle('media')
     const files = await walkDirectory(mediaDir)
+
+    const referencedMedia = new Set<string>()
+    for (const question of questions) {
+      for (const source of [question.questionImageUrl, question.answerImageUrl, question.mediaUrl]) {
+        if (source) referencedMedia.add(normalizeMediaKey(source))
+      }
+    }
+
+    const audioCandidates = new Map<string, Array<[string, File]>>()
+
     for (const [relative, file] of files) {
+      const audioMatch = file.name.match(/^([A-Za-z0-9_-]+)-audio\.[^.]+$/i)
+      if (audioMatch) {
+        const list = audioCandidates.get(audioMatch[1]) ?? []
+        list.push([relative, file])
+        audioCandidates.set(audioMatch[1], list)
+        continue
+      }
+
+      const canonical = normalizeMediaKey(`media/${relative}`)
+      // 예전 버전에서 남은 확장자 변형/고아 파일은 현재 문제 데이터가 실제로 가리킬 때만 복원합니다.
+      // 그래야 오래된 Qxxx-question.jpg가 최신 Qxxx-question.png를 덮어쓰지 않습니다.
+      if (!referencedMedia.has(canonical)) continue
+      await storePortableAsset(canonical, file)
+    }
+
+    for (const [questionId, candidates] of audioCandidates) {
+      const meta = importedAssetMeta[questionId] as { audioName?: string; audioLinked?: boolean } | undefined
+      if (meta?.audioLinked === false) continue
+
+      const expectedExt = meta?.audioName?.toLowerCase().match(/(\.[a-z0-9]{1,8})$/)?.[1]
+      const preferred = expectedExt
+        ? candidates.find(([, file]) => file.name.toLowerCase().endsWith(expectedExt))
+        : undefined
+      const selectedAudio = preferred ?? [...candidates].sort((a, b) => b[1].lastModified - a[1].lastModified)[0]
+      if (!selectedAudio) continue
+
+      const [relative, file] = selectedAudio
       const canonical = normalizeMediaKey(`media/${relative}`)
       await storePortableAsset(canonical, file)
-      const match = file.name.match(/^([A-Za-z0-9_-]+)-audio\.[^.]+$/i)
-      if (match) await putLegacyAudio(match[1], file)
+      await putLegacyAudio(questionId, file)
     }
   } catch {
     // 미디어가 없는 문제집도 정상적으로 복원합니다.

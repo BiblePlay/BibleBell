@@ -77,6 +77,8 @@ export default function App() {
   const [dataFolderLinked, setDataFolderLinked] =
     useState<boolean | null>(null)
 
+  const [installHelpText, setInstallHelpText] = useState('')
+
   const refreshDataFolderLink = async () => {
     const info = await getPortableDataFolderInfo()
     setDataFolderLinked(info.linked)
@@ -97,7 +99,11 @@ export default function App() {
 
   useEffect(() => {
     void requestPersistentBrowserStorage()
-    void refreshDataFolderLink()
+    if (supportsPortableFolder()) {
+      void refreshDataFolderLink()
+    } else {
+      setDataFolderLinked(null)
+    }
   }, [])
 
   useEffect(() => {
@@ -148,6 +154,7 @@ export default function App() {
 
     setScreen({ name: 'home' })
     setShowAnswer(false)
+    if (supportsPortableFolder()) void refreshDataFolderLink()
   }
 
   const goAdmin = () => {
@@ -225,21 +232,14 @@ export default function App() {
   const installBibleBellApp = async () => {
     const result = await requestPwaInstall()
 
-    if (result === 'installed') {
-      window.alert('브라우저의 BibleBell 앱 설치를 승인했습니다. 설치가 완료되면 브라우저 탭과 별개의 앱 창/앱 목록에서 BibleBell 아이콘으로 실행할 수 있습니다.')
-      return
-    }
+    if (result === 'installed' || result === 'dismissed') return
 
     if (result === 'already-installed') {
-      window.alert('현재 BibleBell이 설치된 앱 창으로 실행 중입니다.')
+      setInstallHelpText('현재 BibleBell이 이미 앱 창으로 실행 중입니다.')
       return
     }
 
-    if (result === 'dismissed') return
-
-    window.alert(
-      `BibleBell 앱 설치 안내\n\n${getPwaInstallHelp()}\n\nBibleBell은 .exe나 .dmg를 설치하는 프로그램이 아니라 브라우저의 공식 웹앱(PWA) 설치 기능을 사용합니다.`,
-    )
+    setInstallHelpText(getPwaInstallHelp())
   }
 
   const chooseDataFolder = async (): Promise<boolean> => {
@@ -273,6 +273,8 @@ export default function App() {
         onAdmin={goAdmin}
         onReset={resetGame}
         onInstallApp={() => void installBibleBellApp()}
+        installHelpText={installHelpText}
+        onCloseInstallHelp={() => setInstallHelpText('')}
         onChooseDataFolder={chooseDataFolder}
         dataFolderLinked={dataFolderLinked}
       />
