@@ -1,4 +1,5 @@
 BibleBell PUBLIC FINAL
-Version date: 2026-08-20
-Purpose: GitHub Pages public distribution / persistent browser data / portable BibleBell_Data / BibleGoldenBell desktop shortcut
-Status: FINAL FROZEN after data-folder reuse, export, media-replace and shortcut audit
+Date: 2026-08-20
+Data folder rule: user selects location only -> BibleBell_Data is auto-created
+Import rule: select BibleBell_Data folder itself
+Desktop shortcut: BibleGoldenBell

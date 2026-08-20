@@ -32,6 +32,7 @@ import {
   exportPortableDataFolder,
   getPortableDataFolderInfo,
   importPortableDataFolder,
+  openPortableDataLocation,
   removePortableAsset,
   resolvePortableAssetUrl,
   selectPortableDataLocation,
@@ -2175,6 +2176,17 @@ const saveCurrentQuestion = (
     }
   }
 
+  const openPortableFolder = async () => {
+    try {
+      const result = await openPortableDataLocation()
+      setMessage(`${result.folderName} 저장 폴더 위치를 열었습니다. 이 버튼은 저장 위치를 변경하지 않습니다.`)
+    } catch (error) {
+      if ((error as DOMException)?.name === 'AbortError') return
+      console.error(error)
+      setMessage(error instanceof Error ? error.message : '저장 폴더를 열 수 없습니다.')
+    }
+  }
+
   const submit = (
     event:
       FormEvent<HTMLFormElement>,
@@ -2377,24 +2389,40 @@ onClick={() => {
             <div>
               <strong>내 BibleBell 데이터 보관 · 이동</strong>
               <p>
-                설정에서 저장한 문제는 브라우저에도 보관됩니다. 다른 컴퓨터에서도 같은 문제·그림·동영상을 사용하려면
-                <b> 전체 데이터 저장</b>으로 <b>BibleBell_Data</b> 폴더를 최신 상태로 만든 뒤 그 폴더 전체를 옮기세요.
-                새 컴퓨터에서는 BibleBell을 열고 <b>전체 데이터 불러오기</b>에서 가져온 BibleBell_Data 폴더를 선택하면 됩니다.
+                <b>처음 사용할 때는 전체 데이터 저장을 누르고 저장할 위치만 선택하세요.</b>
+                바탕화면·문서·USB·외장하드 등 원하는 위치를 고르면 그 안에 <b>BibleBell_Data</b> 폴더가 자동으로 만들어집니다.
+                이후 전체 데이터 저장은 같은 BibleBell_Data를 최신 상태로 갱신합니다.
+                다른 컴퓨터로 이동하거나 다른 사람에게 전달할 때는 <b>BibleBell 웹주소와 BibleBell_Data 폴더 하나만</b> 가져가면 됩니다.
+                새 컴퓨터에서는 <b>전체 데이터 불러오기</b>를 누르고 <b>BibleBell_Data 폴더 자체</b>를 선택하세요.
               </p>
             </div>
             <div className="admin-portable-status">
               <span className={portableFolderInfo.linked ? 'is-linked' : 'is-unlinked'}>
                 {portableFolderInfo.linked
-                  ? `저장 위치 연결됨: ${portableFolderInfo.folderName ?? 'BibleBell_Data'}${portableFolderInfo.permission === 'prompt' ? ' · 저장 시 권한 확인' : portableFolderInfo.permission === 'denied' ? ' · 접근 권한 확인 필요' : ''}`
-                  : '저장 위치가 아직 지정되지 않았습니다.'}
+                  ? `저장 폴더 연결됨: BibleBell_Data${portableFolderInfo.permission === 'prompt' ? ' · 저장 시 권한 확인' : portableFolderInfo.permission === 'denied' ? ' · 접근 권한 확인 필요' : ''}`
+                  : '아직 BibleBell_Data가 없습니다. 처음 전체 데이터 저장 시 저장할 위치를 한 번 선택하세요.'}
               </span>
-              <button
-                type="button"
-                className="admin-secondary-button"
-                onClick={() => void changePortableFolder()}
-              >
-                {portableFolderInfo.linked ? '저장 위치 변경' : '저장 위치 지정'}
-              </button>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                {portableFolderInfo.linked && (
+                  <button
+                    type="button"
+                    className="admin-secondary-button"
+                    onClick={() => void openPortableFolder()}
+                    title="연결된 BibleBell_Data 위치를 시스템 폴더 창에서 확인합니다."
+                  >
+                    <FolderOpen size={16} />
+                    저장 폴더 열기
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="admin-secondary-button"
+                  onClick={() => void changePortableFolder()}
+                  title="저장 위치를 새로 지정합니다. 선택한 위치 안에 BibleBell_Data가 자동 생성됩니다."
+                >
+                  {portableFolderInfo.linked ? '저장 위치 변경' : '저장 위치 지정'}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -2403,7 +2431,7 @@ onClick={() => {
             <div className="admin-help-content">
               <section>
                 <h3>1. 처음 시작하기</h3>
-                <p>홈 화면의 <b>바로가기 만들기</b>를 누르면 Mac/Windows용 BibleGoldenBell 바로가기를 내려받을 수 있습니다. 문제를 직접 수정하거나 미디어를 넣어 사용할 사람은 관리자 모드에서 먼저 <b>저장 위치 지정</b>을 눌러 원하는 위치를 선택하는 것을 권장합니다. BibleBell이 선택한 위치 안에 <b>BibleBell_Data</b> 폴더를 자동으로 만듭니다.</p>
+                <p>홈 화면의 <b>바로가기 만들기</b>를 누르면 Mac/Windows용 BibleGoldenBell 바로가기를 내려받을 수 있습니다. 문제를 수정하거나 미디어를 넣은 뒤 처음 <b>전체 데이터 저장</b>을 누르면 저장할 위치를 한 번 선택합니다. BibleBell이 그 위치 안에 <b>BibleBell_Data</b> 폴더를 자동으로 만들고 이후 같은 폴더에 계속 저장합니다.</p>
               </section>
               <section>
                 <h3>2. 바탕화면 바로가기 만들기</h3>
@@ -2411,7 +2439,7 @@ onClick={() => {
               </section>
               <section>
                 <h3>3. 저장 위치 지정하기</h3>
-                <p><b>저장 위치 지정</b>에서 Documents, Desktop, USB, 외장하드 등 원하는 부모 폴더를 선택할 수 있습니다. 부모 폴더 이름은 자유입니다. BibleBell이 그 안에 <b>BibleBell_Data</b> 폴더를 만들고 내부 구조를 관리합니다. 다른 컴퓨터로 옮길 때는 이 BibleBell_Data 폴더 전체를 가져갑니다.</p>
+                <p>처음 <b>전체 데이터 저장</b>을 누르거나 <b>저장 위치 지정</b>을 누르면 바탕화면, 문서, USB, 외장하드 등 <b>저장할 위치만</b> 선택합니다. 폴더 이름은 사용자가 만들 필요가 없습니다. BibleBell이 선택한 위치 안에 항상 <b>BibleBell_Data</b>라는 고정 이름의 폴더를 자동으로 만들고 내부 구조를 관리합니다. 연결 후에는 <b>저장 폴더 열기</b>에서 위치를 언제든 확인할 수 있습니다.</p>
               </section>
               <section>
                 <h3>4. 문제 수정하기</h3>
@@ -2447,7 +2475,7 @@ onClick={() => {
               </section>
               <section>
                 <h3>12. 새 컴퓨터에서 복원하기</h3>
-                <p>새 컴퓨터에서 BibleBell 웹을 열고 관리자 모드 → <b>전체 데이터 불러오기</b>를 누른 뒤 가져온 BibleBell_Data 폴더 자체 또는 그 바로 위 폴더를 선택하세요. questions.json과 questions.xlsx가 모두 있으면 더 최근에 수정된 쪽을 먼저 읽고, 문제가 있으면 다른 파일로 복구합니다. media 폴더가 함께 있으면 미디어도 같은 문제에 다시 연결됩니다.</p>
+                <p>새 컴퓨터에서 BibleBell 웹을 열고 관리자 모드 → <b>전체 데이터 불러오기</b>를 누른 뒤 가져온 <b>BibleBell_Data 폴더 자체만</b> 선택하세요. 그 위 폴더나 media 하위 폴더를 선택하지 않습니다. questions.json과 questions.xlsx가 모두 있으면 더 최근에 수정된 쪽을 먼저 읽고, 문제가 있으면 다른 파일로 복구합니다. media 폴더가 함께 있으면 미디어도 같은 문제에 다시 연결됩니다.</p>
               </section>
               <section>
                 <h3>13. 백업 방법</h3>

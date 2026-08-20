@@ -390,8 +390,8 @@ function portableGuideText(): string {
     `■ 처음 사용할 때\n` +
     `1. BibleBell 실행: ${appUrl}\n` +
     `2. 홈 화면의 “바로가기 만들기”를 누르면 BibleGoldenBell 바로가기를 내려받을 수 있습니다.\n` +
-    `3. 관리자 모드에서 “저장 위치 지정”을 누르고 원하는 위치를 선택합니다.\n` +
-    `4. 프로그램이 선택한 위치 안에 BibleBell_Data 폴더를 자동으로 만들고 관리합니다.\n\n` +
+    `3. 관리자 모드에서 “전체 데이터 저장”을 누릅니다. 처음 한 번만 저장할 위치(바탕화면·문서·USB·외장하드 등)를 선택합니다.\n` +
+    `4. BibleBell이 선택한 위치 안에 고정 이름의 BibleBell_Data 폴더를 자동으로 만들고 관리합니다.\n\n` +
     `■ 평소 작업\n` +
     `- 문제·정답·보기·힌트 등의 수정 내용은 같은 컴퓨터의 같은 브라우저에도 저장됩니다.\n` +
     `- 저장 폴더의 쓰기 권한이 유지되면 questions.json도 자동 동기화됩니다.\n` +
@@ -405,10 +405,10 @@ function portableGuideText(): string {
     `1. BibleBell_Data 폴더 전체를 USB·외장하드·클라우드 등으로 복사합니다.\n` +
     `2. 새 컴퓨터에서 BibleBell 웹주소를 엽니다.\n` +
     `3. 관리자 모드 → “전체 데이터 불러오기”를 누릅니다.\n` +
-    `4. 가져온 BibleBell_Data 폴더 자체 또는 그 바로 위 폴더를 선택합니다.\n` +
+    `4. 가져온 BibleBell_Data 폴더 자체를 선택합니다. 그 위의 폴더나 media 하위 폴더를 선택하지 않습니다.\n` +
     `5. 폴더 권한을 물으면 허용합니다. questions.json과 questions.xlsx 중 더 최근에 수정된 문제 데이터를 먼저 읽고, 미디어까지 같은 구성으로 복원합니다.\n\n` +
     `■ 꼭 기억하세요\n` +
-    `- BibleBell_Data 바깥의 부모 폴더 이름과 저장 위치는 자유롭게 정해도 됩니다.\n` +
+    `- 사용자는 저장할 위치만 자유롭게 정하면 됩니다. 실제 데이터 폴더 이름은 항상 BibleBell_Data로 프로그램이 자동 생성합니다.\n` +
     `- BibleBell_Data 내부의 파일명과 media 하위 구조는 프로그램이 관리하므로 임의로 바꾸지 않는 것을 권장합니다.\n` +
     `- 브라우저가 폴더 권한을 다시 물으면 같은 BibleBell_Data 폴더를 다시 허용하면 됩니다.\n` +
     `- 전체 데이터 저장 중 일부 미디어를 읽지 못하더라도 기존 media 폴더 전체를 자동 삭제하지 않습니다.\n\n` +
@@ -518,13 +518,16 @@ async function chooseNewDataFolder(): Promise<AnyDirectoryHandle> {
     throw new Error('이 브라우저는 폴더 저장 기능을 지원하지 않습니다. Chrome, Edge, Whale 같은 Chromium 계열 데스크톱 브라우저를 사용해 주세요.')
   }
 
+  // 사용자는 BibleBell_Data의 이름을 정하지 않습니다.
+  // 바탕화면·문서·USB·외장하드 등 "저장할 위치"만 선택하면
+  // 그 위치 안에 고정 이름의 BibleBell_Data를 프로그램이 자동 생성합니다.
   const parent = await (window as any).showDirectoryPicker({
     mode: 'readwrite',
     id: 'biblebell-data-parent',
   })
 
-  // 사용자가 이미 BibleBell_Data 자체를 선택한 경우에는 같은 폴더를 그대로 씁니다.
-  // 그 외에는 사용자가 고른 자유로운 위치 안에 BibleBell_Data를 자동 생성합니다.
+  // 기존 BibleBell_Data 자체를 실수로 선택한 경우에는 중첩 폴더를 만들지 않고 그대로 재연결합니다.
+  // 신규 저장은 항상 부모 위치를 고르는 흐름으로 안내합니다.
   const dataFolder = parent.name === DATA_FOLDER_NAME
     ? parent
     : await parent.getDirectoryHandle(DATA_FOLDER_NAME, { create: true })
@@ -565,6 +568,41 @@ export async function preparePortableExportLocation(): Promise<AnyDirectoryHandl
 export async function connectPortableDataLocation(): Promise<{ folderName: string }> {
   const folder = await chooseNewDataFolder()
   return { folderName: folder.name ?? DATA_FOLDER_NAME }
+}
+
+/**
+ * 연결된 BibleBell_Data의 위치를 시스템 폴더 선택창에서 바로 보여줍니다.
+ * 웹 보안상 Finder/파일 탐색기 창을 임의로 직접 띄울 수 없으므로,
+ * 저장된 핸들을 시작 위치로 사용해 사용자가 언제든 위치를 확인할 수 있게 합니다.
+ * 선택 결과는 저장 위치를 바꾸지 않습니다.
+ */
+export async function openPortableDataLocation(): Promise<{ folderName: string }> {
+  if (!supportsPortableFolder()) {
+    throw new Error('이 브라우저는 폴더 열기 기능을 지원하지 않습니다. Chrome, Edge, Whale 같은 Chromium 계열 데스크톱 브라우저를 사용해 주세요.')
+  }
+
+  const saved = await getSavedDataHandle()
+  if (!saved) {
+    throw new Error('아직 연결된 BibleBell_Data 폴더가 없습니다. 먼저 전체 데이터 저장을 눌러 저장할 위치를 정해 주세요.')
+  }
+
+  const permission = await saved.queryPermission?.({ mode: 'readwrite' })
+  if (permission === 'prompt') {
+    const granted = await requestHandlePermission(saved, 'readwrite')
+    if (!granted) throw new Error('BibleBell_Data 폴더 접근 권한을 허용해 주세요.')
+  } else if (permission === 'denied') {
+    throw new Error('BibleBell_Data 폴더 접근이 차단되어 있습니다. 저장 위치 변경에서 같은 위치를 다시 연결해 주세요.')
+  }
+
+  // startIn으로 현재 연결된 BibleBell_Data를 바로 보여줍니다.
+  // 사용자가 다른 폴더를 눌러도 여기서는 연결 정보를 바꾸지 않습니다.
+  await (window as any).showDirectoryPicker({
+    mode: 'readwrite',
+    id: 'biblebell-data-open',
+    startIn: saved,
+  })
+
+  return { folderName: saved.name ?? DATA_FOLDER_NAME }
 }
 
 export async function selectPortableDataLocation(questions: QuizQuestion[]): Promise<{ folderName: string }> {
@@ -705,16 +743,14 @@ async function folderLooksLikeBibleBellData(folder: AnyDirectoryHandle): Promise
 }
 
 async function resolveImportFolder(selected: AnyDirectoryHandle): Promise<AnyDirectoryHandle> {
+  // 불러오기는 오직 BibleBell_Data 폴더 자체만 선택하도록 고정합니다.
+  // 저장과 복원의 기준 폴더가 하나뿐이어야 사용자가 헷갈리지 않습니다.
+  if (selected.name !== DATA_FOLDER_NAME) {
+    throw new Error('전체 데이터 불러오기는 “BibleBell_Data” 폴더 자체를 선택해 주세요. 그 위의 폴더나 media 하위 폴더를 선택하면 안 됩니다.')
+  }
   if (await folderLooksLikeBibleBellData(selected)) return selected
 
-  try {
-    const nested = await selected.getDirectoryHandle(DATA_FOLDER_NAME)
-    if (await folderLooksLikeBibleBellData(nested)) return nested
-  } catch {
-    // 아래의 명확한 안내 오류로 처리합니다.
-  }
-
-  throw new Error('선택한 위치에서 BibleBell_Data의 questions.xlsx 또는 questions.json을 찾지 못했습니다. BibleBell_Data 폴더 자체 또는 그 바로 위 폴더를 선택해 주세요.')
+  throw new Error('선택한 BibleBell_Data 폴더에서 questions.xlsx 또는 questions.json을 찾지 못했습니다. 전체 데이터 저장으로 만든 BibleBell_Data 폴더인지 확인해 주세요.')
 }
 
 function isValidPortableQuestionSet(value: unknown): value is QuizQuestion[] {
